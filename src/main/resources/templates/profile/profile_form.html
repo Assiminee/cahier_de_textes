@@ -1,0 +1,123 @@
+<form th:fragment="profile_form" id="profileForm" th:action="@{/users/{id}(id=${user.id})}"
+      th:method="POST" class="grid grid-cols-2 gap-6 px-10 pt-5 pb-10">
+
+    <input type="hidden" name="_method" value="PUT">
+
+    <!-- Role -->
+    <input type="hidden" name="role" id="role" th:value="${user.getRole().getAuthority()}">
+
+    <!-- Nom -->
+    <div>
+        <label for="nom" class="block mb-2 font-medium">Nom</label>
+        <input type="text" name="nom" id="nom" th:value="${user.getNom()}" pattern="^[a-zA-Z]+([ \-][a-zA-Z]+)*$"
+               class="peer/nom w-full p-3 rounded bg-gray-300 border border-gray-500 text-gray-700 inputList" disabled
+               required>
+        <p class="invisible peer-invalid/nom:visible text-pink-600 font-medium">
+            Nom invalid
+        </p>
+    </div>
+
+    <!-- Prenom -->
+    <div>
+        <label for="prenom" class="block mb-2 font-medium">Prénom</label>
+        <input type="text" name="prenom" id="prenom" th:value="${user.getPrenom()}" pattern="^[a-zA-Z]+([ \-][a-zA-Z]+)*$"
+               class="peer/prenom w-full p-3 rounded bg-gray-300 border border-gray-500 text-gray-700 inputList"
+               disabled required>
+        <p class="invisible peer-invalid/prenom:visible text-pink-600 font-medium">
+            Prénom invalid
+        </p>
+    </div>
+
+    <!-- Gender -->
+    <div>
+        <label for="genre" class="block mb-2 font-medium">Sexe</label>
+        <select id="genreSelect" name="genre"
+                class="w-full p-3 rounded bg-gray-300 border border-gray-500 text-gray-700 hidden inputList toToggle"
+                required>
+            <option th:selected="${user.getGenre().name() == 'M'}" value="M">Homme</option>
+            <option th:selected="${user.getGenre().name() == 'F'}" value="F">Femme</option>
+        </select>
+        <input id="genre" type="text" th:value="${user.getGenre().name() == 'F' ? 'Femme' : 'Homme'}"
+               class="w-full p-3 rounded bg-gray-300 border border-gray-500 text-gray-700 toToggle" disabled>
+
+    </div>
+
+    <!-- CIN -->
+    <div>
+        <label for="cin" class="block mb-2 font-medium">CIN</label>
+        <input type="text" name="cin" id="cin" th:value="${user.getCin()}" pattern="^[A-Za-z]{1,2}[0-9]{4,6}$"
+               class="peer/cin w-full p-3 rounded bg-gray-300 border border-gray-500 text-gray-700 inputList" disabled
+               required>
+        <p class="invisible peer-invalid/cin:visible text-pink-600 font-medium">
+            CIN invalid
+        </p>
+    </div>
+
+    <!-- Address -->
+    <div>
+        <label for="adresse" class="block mb-2 font-medium">Adresse</label>
+        <input type="text" name="adresse" id="adresse" th:value="${user.getAdresse()}"
+               class="w-full p-3 rounded bg-gray-300 border border-gray-500 text-gray-700 inputList" disabled required>
+    </div>
+
+    <!-- Phone -->
+    <div>
+        <label for="telephone" class="block mb-2 font-medium">Numéro de Téléphone</label>
+        <div class="items-center gap-2">
+            <input name="telephone" type="text" id="telephone" th:value="${user.getTelephone()}"
+                   pattern="^\+212[6-7][0-9]{8}$"
+                   class="peer/tel w-full p-3 rounded bg-gray-300 border border-gray-500 text-gray-700 inputList"
+                   disabled required>
+            <p class="invisible peer-invalid/tel:visible text-pink-600 font-medium">
+                Numéro de Téléphone invalid
+            </p>
+        </div>
+    </div>
+
+    <!-- Email -->
+    <div>
+        <label for="email" class="block mb-2 font-medium">Email</label>
+        <input type="email" name="email" id="email" th:value="${user.getEmail()}"
+               class="peer/email w-full p-3 rounded bg-gray-300 border border-gray-500 text-gray-700 inputList" disabled
+               required>
+        <p id="email_p_msg" class="invisible peer-[db-check]/email:peer-invalid/email:visible text-pink-600 font-medium">
+            Email invalid
+        </p>
+    </div>
+
+    <!-- Birthdate -->
+    <div>
+        <label for="dateNaissance" class="block mb-2 font-medium">Date de Naissance</label>
+        <input type="date" name="dateNaissance" id="dateNaissance" th:value="${user.getDateNaissance()}"
+               class="peer/bd w-full p-3 rounded bg-gray-300 border border-gray-500 text-gray-700 inputList" disabled required>
+        <p class="invisible peer-invalid/bd:visible text-pink-600 font-medium">
+            Vous devez être agé d'au moins 18 ans
+        </p>
+    </div>
+
+    <!-- Professor specific inputs -->
+    <div th:replace="profile/professor_inputs :: div"></div>
+
+    <!-- Action buttons -->
+    <div class="col-span-2 flex justify-between">
+        <button type="button"
+                class="bg-[#B10C74] hover:bg-[#db2777] text-white font-bold py-3 px-6 rounded">
+            Changer Mot de Passe
+        </button>
+
+        <div>
+            <button type="reset" id="cancelBtn"
+                    class="text-[#B10C74] border-2 border-[#B10C74] font-bold py-3 px-6 rounded hover:border-[#B10C74] hover:bg-[#B10C74] hover:text-white hidden toToggle">
+                Annuler
+            </button>
+            <button type="button" id="modBtn"
+                    class="border-2 border-[#313863] bg-[#313863] text-white font-bold py-3 px-6 rounded hover:bg-[#5663af] hover:border-[#5663af] toToggle">
+                Modifier
+            </button>
+            <button type="submit" id="confirmBtn"
+                    class="border-2 border-[#313863] bg-[#313863] text-white font-bold py-3 px-6 rounded hover:bg-[#5663af] hover:border-[#5663af] hidden toToggle">
+                Confirmer
+            </button>
+        </div>
+    </div>
+</form>

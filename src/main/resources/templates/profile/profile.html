@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head ('Mon profile')}"></head>
+<body class="bg-gray-100 h-screen">
+
+<div class="flex h-screen">
+
+    <aside th:replace="~{fragments/side_bar :: aside}"></aside>
+    <main class="bg-white rounded-l-lg shadow-lg w-full col-span-11 flex flex-col h-screen">
+        <nav th:replace="~{fragments/nav :: nav}"></nav>
+        <div class="flex-1 overflow-y-auto" id="THISISDADIV">
+
+            <div class="col-span-2 flex px-10 pt-10 justify-between">
+                <div class="flex flex-col">
+                    <h1 class="text-4xl font-semibold">Mes Informations</h1>
+                    <div th:replace="~{profile/edit_profile_errors :: div}"></div>
+                </div>
+            </div>
+
+            <form th:replace="~{profile/profile_form :: form}"></form>
+
+        </div>
+    </main>
+</div>
+<script type="module">
+    import {formButtonsBehavior} from '/public/js/enableProfileFormInputs.js';
+    import setMaxDate from '/public/js/setMaxDate.js';
+
+    setMaxDate();
+    formButtonsBehavior();
+</script>
+</body>
+</html>

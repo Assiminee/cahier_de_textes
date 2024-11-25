@@ -1,0 +1,21 @@
+<div th:fragment="edit_profile_errors" th:if="${error == true}" class="p-4 mt-2 text-sm text-red-800 rounded-lg bg-[#ffdbdc]"
+     role="alert">
+  <div th:if="${email != null}">
+    <p>
+      L'email <span class="font-bold" th:text="|'${email}'|"></span>
+      existe déjà
+    </p>
+  </div>
+  <div th:if="${telephone != null}">
+    <p>
+      Le numéro de téléphone <span class="font-bold" th:text="|'${telephone}'|"></span>
+      existe déjà
+    </p>
+  </div>
+  <div th:if="${cin != null}">
+    <p>
+      Le numéro de la CIN <span class="font-bold" th:text="|'${cin}'|"></span>
+      existe déjà
+    </p>
+  </div>
+</div>

@@ -1,0 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.inputStyle {
+    @apply w-full p-3 rounded bg-gray-300 border border-gray-500 text-gray-700;
+}
