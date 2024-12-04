@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestion des Utilisateurs</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+</head>
+
+
+<body class="bg-gray-100 font-sans">
+
+
+<div class="flex h-screen">
+  <!-- Sidebar -->
+  <aside th:replace="fragments/side_bar :: aside"></aside>
+  <!-- Main Content -->
+  <main class="flex-1 bg-white shadow-lg rounded-tl-lg overflow-hidden">
+
+    <header><nav th:replace="fragments/nav.html :: nav"></nav></header>
+
+    <div class="p-6 flex justify-between items-center">
+
+
+      <div class="flex items-center bg-gray-100 p-3 rounded-lg shadow-sm">
+        <span class="material-icons text-gray-500">search</span>
+        <input type="text" placeholder="Rechercher..." class="ml-3 bg-transparent outline-none">
+      </div>
+      <select class="bg-gray-100 py-2 px-4 rounded-lg shadow-sm">
+        <option>Filtrer par âge</option>
+        <option>Moins de 25 ans</option>
+        <option>25-35 ans</option>
+        <option>Plus de 35 ans</option>
+      </select>
+    </div>
+    <div class="p-6 flex justify-between items-center">
+      <h2 class="text-xl font-semibold text-gray-800">Liste des Utilisateurs</h2>
+      <button class="bg-[#313863] text-white py-2 px-4 rounded-md hover:bg-indigo-900 shadow-md">
+        + Ajouter Utilisateur
+      </button>
+    </div>
+
+    <!-- User Table -->
+    <section class="p-6 overflow-auto">
+      <table class="w-full border-collapse border border-gray-200 shadow-sm rounded-lg overflow-hidden">
+        <thead class="bg-[#b10c74] text-white">
+        <tr>
+          <th class="p-4 text-left"></th>
+          <th class="p-4 text-left">Nom</th>
+          <th class="p-4 text-left">Date de Naissance</th>
+          <th class="p-4 text-left">Rôle</th>
+          <th class="p-4 text-left">Email</th>
+          <th class="p-4 text-center">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr class="bg-gray-100 hover:bg-gray-200 transition-all">
+          <td class="p-4 text-left"><button class="hover:opacity-80">
+            <img src="/public/eye.png" alt="Supprimer" class="h-6 w-6">
+          </button></td>
+          <td class="p-4">Rania BOUBID</td>
+          <td class="p-4">01/01/1997</td>
+          <td class="p-4">Professeur</td>
+          <td class="p-4">raniabouabid7@gmail.com</td>
+          <td class="p-4 flex items-center justify-center gap-3">
+            <button class="hover:opacity-80">
+              <img src="/public/edit.png" alt="Modifier" class="h-6 w-6">
+            </button>
+            <button class="hover:opacity-80">
+              <img src="/public/trash.png" alt="Supprimer" class="h-6 w-6">
+            </button>
+          </td>
+        </tr>
+
+        </tbody>
+      </table>
+
+      <!-- Pagination -->
+      <div class="mt-6 flex justify-between items-center">
+        <button class="py-2 px-4 bg-gray-100 rounded-lg shadow-md hover:bg-gray-200">Précédent</button>
+        <button class="py-2 px-4 bg-gray-100 rounded-lg shadow-md hover:bg-gray-200">Suivant</button>
+      </div>
+    </section>
+  </main>
+</div>
+</body>
+
+</html>
