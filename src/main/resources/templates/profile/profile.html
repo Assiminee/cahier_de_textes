@@ -1,57 +1,32 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Profile Page</title>
+  <title>Collapsible Sidebar</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .sidebar-hover:hover {
+      width: 250px;
+    }
+  </style>
 </head>
 <body class="bg-gray-100">
 
 <div class="flex h-screen">
   <!-- Sidebar -->
-  <aside class="w-1/5 bg-beige shadow-lg flex flex-col justify-between">
-    <div>
-      <div class="py-4 px-6">
-        <img src="logo.png" alt="Logo" class="h-16 mx-auto">
-      </div>
-      <nav class="mt-6">
-        <ul class="space-y-4 px-6 text-gray-700">
-          <li class="flex items-center gap-4 hover:text-black">
-            <span class="material-icons">home</span> Accueil
-          </li>
-          <li class="flex items-center gap-4 hover:text-black">
-            <span class="material-icons">group</span> Utilisateurs
-          </li>
-          <li class="flex items-center gap-4 hover:text-black">
-            <span class="material-icons">school</span> Professeurs
-          </li>
-          <li class="flex items-center gap-4 hover:text-black">
-            <span class="material-icons">book</span> Modules
-          </li>
-          <li class="flex items-center gap-4 hover:text-black">
-            <span class="material-icons">library_books</span> Filières
-          </li>
-        </ul>
-      </nav>
-    </div>
-    <div class="py-4 px-6">
-      <button class="flex items-center gap-2 text-gray-600 hover:text-black">
-        <span class="material-icons">logout</span> Déconnexion
-      </button>
-    </div>
-  </aside>
-
+  <aside th:replace="fragments/side_bar :: aside"></aside>
   <!-- Main Content -->
-  <main class="flex-1 bg-black text-white p-10">
+  <!-- Main Content -->
+  <main class="flex-1 bg-white p-10 rounded-l-lg shadow-lg">
     <!-- Profile Header -->
     <div class="flex items-center justify-between mb-8">
       <h1 class="text-2xl font-bold">Profile</h1>
       <div class="flex items-center gap-4">
         <img src="profile-pic.jpg" alt="Profile" class="h-12 w-12 rounded-full">
         <div>
-          <p class="font-medium">Alexa Hawking</p>
-          <p class="text-sm text-gray-400">Service Pédagogique</p>
+          <p class="font-medium text-gray-800">Rania BOUBID</p>
+          <p class="text-sm text-gray-500">Professeur</p>
         </div>
       </div>
     </div>
@@ -59,49 +34,54 @@
     <!-- Profile Form -->
     <form class="grid grid-cols-2 gap-6">
       <div>
-        <label for="firstName" class="block mb-2">Prénom</label>
-        <input id="firstName" type="text" placeholder="Alexa" class="w-full p-3 rounded bg-gray-900 text-gray-300">
+        <label for="lastName" class="block mb-2 font-medium">Nom</label>
+        <input id="lastName" type="text" value="BOUBID" class="w-full p-3 rounded bg-gray-100 border border-gray-300 text-gray-700" disabled>
       </div>
       <div>
-        <label for="lastName" class="block mb-2">Nom</label>
-        <input id="lastName" type="text" placeholder="Hawking" class="w-full p-3 rounded bg-gray-900 text-gray-300">
+        <label for="firstName" class="block mb-2 font-medium">Prénom</label>
+        <input id="firstName" type="text" value="RANIA" class="w-full p-3 rounded bg-gray-100 border border-gray-300 text-gray-700" disabled>
       </div>
       <div>
-        <label for="gender" class="block mb-2">Genre</label>
-        <select id="gender" class="w-full p-3 rounded bg-gray-900 text-gray-300">
-          <option>Femme</option>
-          <option>Homme</option>
-        </select>
+        <label for="gender" class="block mb-2 font-medium">Sexe</label>
+        <input id="gender" type="text" value="Femme" class="w-full p-3 rounded bg-gray-100 border border-gray-300 text-gray-700" disabled>
       </div>
       <div>
-        <label for="id" class="block mb-2">ID</label>
-        <input id="id" type="text" placeholder="z608554" class="w-full p-3 rounded bg-gray-900 text-gray-300">
+        <label for="cin" class="block mb-2 font-medium">CIN</label>
+        <input id="cin" type="text" value="Z608554" class="w-full p-3 rounded bg-gray-100 border border-gray-300 text-gray-700" disabled>
       </div>
       <div>
-        <label for="address" class="block mb-2">Adresse</label>
-        <input id="address" type="text" placeholder="25 BD URBAIN MTFLEURI 2" class="w-full p-3 rounded bg-gray-900 text-gray-300">
+        <label for="address" class="block mb-2 font-medium">Adresse</label>
+        <input id="address" type="text" value="25 BD URBAIN MTFLEURI 2 FES" class="w-full p-3 rounded bg-gray-100 border border-gray-300 text-gray-700" disabled>
       </div>
       <div>
-        <label for="phone" class="block mb-2">Téléphone</label>
+        <label for="phone" class="block mb-2 font-medium">Numéro de Téléphone</label>
         <div class="flex items-center gap-2">
-          <select id="countryCode" class="p-3 bg-gray-900 text-gray-300 rounded">
-            <option>+212</option>
-            <option>+33</option>
-          </select>
-          <input id="phone" type="text" placeholder="695765607" class="w-full p-3 rounded bg-gray-900 text-gray-300">
+          <input id="phoneCode" type="text" value="+212" class="p-3 bg-gray-100 border border-gray-300 rounded w-20 text-center" disabled>
+          <input id="phone" type="text" value="695765607" class="w-full p-3 rounded bg-gray-100 border border-gray-300 text-gray-700" disabled>
         </div>
       </div>
       <div>
-        <label for="email" class="block mb-2">Email</label>
-        <input id="email" type="email" placeholder="Alexa@gmail.com" class="w-full p-3 rounded bg-gray-900 text-gray-300">
+        <label for="email" class="block mb-2 font-medium">Email</label>
+        <input id="email" type="email" value="raniabouabid7@gmail.com" class="w-full p-3 rounded bg-gray-100 border border-gray-300 text-gray-700" disabled>
       </div>
       <div>
-        <label for="birthDate" class="block mb-2">Date de Naissance</label>
-        <input id="birthDate" type="date" class="w-full p-3 rounded bg-gray-900 text-gray-300">
+        <label for="birthDate" class="block mb-2 font-medium">Date de Naissance</label>
+        <input id="birthDate" type="text" value="04/06/2002" class="w-full p-3 rounded bg-gray-100 border border-gray-300 text-gray-700" disabled>
       </div>
       <div class="col-span-2">
-        <button type="button" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded">
+        <label for="qualifications" class="block mb-2 font-medium">Qualifications</label>
+        <input id="qualifications" type="text" value="Assistant Professor at Vaughn College of Aeronautics" class="w-full p-3 rounded bg-gray-100 border border-gray-300 text-gray-700" disabled>
+      </div>
+      <div>
+        <label for="grade" class="block mb-2 font-medium">Grade</label>
+        <input id="grade" type="text" value="Docteur En Intelligence Artificielle" class="w-full p-3 rounded bg-gray-100 border border-gray-300 text-gray-700" disabled>
+      </div>
+      <div class="col-span-2 flex justify-between items-center">
+        <button type="button" class="bg-pink-600 hover:bg-pink-700 text-white font-bold py-3 px-6 rounded">
           Changer Mot de Passe
+        </button>
+        <button type="button" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded">
+          Consulter mes affectations
         </button>
       </div>
     </form>
