@@ -4,6 +4,9 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import upf.pjt.cahier_de_textes.dao.RoleRepository;
 import upf.pjt.cahier_de_textes.dao.UserRepository;
@@ -25,7 +28,7 @@ public class UserController {
     private EntityManager entityManager;
 
     @GetMapping()
-    public List<User> getUsers(
+    public ResponseEntity<List<User>> getUsers(
             @RequestParam(required = false) String field,
             @RequestParam(required = false) String keyword
 //            @RequestParam(required = false) int page,
@@ -40,6 +43,7 @@ public class UserController {
 //        return query.getResultList();
         String upperCaseKeyword = keyword.toUpperCase();
         RoleEnum roleEnum = RoleEnum.valueOf(upperCaseKeyword);
-        return userRepository.findAllByRole(roleRepository.findOneByRole(roleEnum));
+        List<User> users = userRepository.findAllByRole(roleRepository.findOneByRole(roleEnum));
+        return new ResponseEntity<>(users, HttpStatus.OK);
     }
 }

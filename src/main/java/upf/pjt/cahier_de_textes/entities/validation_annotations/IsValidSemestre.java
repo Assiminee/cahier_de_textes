@@ -1,4 +1,4 @@
-package upf.pjt.cahier_de_textes.entities.validation.annotations;
+package upf.pjt.cahier_de_textes.entities.validation_annotations;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;

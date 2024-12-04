@@ -35,7 +35,7 @@ public class ProfesseurService {
     @Transactional
     public void saveProfesseurAndModules() {
         Role prof = new Role();
-        prof.setRole(RoleEnum.PROF);
+        prof.setRole(RoleEnum.ROLE_PROF);
         roleRepository.save(prof);
 
         Professeur professeur = getProfesseur(prof);

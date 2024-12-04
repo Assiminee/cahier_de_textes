@@ -1,0 +1,38 @@
+package upf.pjt.cahier_de_textes.services;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import upf.pjt.cahier_de_textes.dao.UserRepository;
+import upf.pjt.cahier_de_textes.entities.User;
+import upf.pjt.cahier_de_textes.models.CustomUserDetails;
+
+@Service
+public class UserService implements UserDetailsService {
+
+    private final PasswordEncoder encoder;
+    private final UserRepository userRepository;
+
+    @Autowired
+    public UserService(PasswordEncoder bCryptPasswordEncoder, UserRepository userRepository) {
+        this.encoder = bCryptPasswordEncoder;
+        this.userRepository = userRepository;
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = userRepository.findByEmail(username);
+
+        System.out.println("UserServiceDetails");
+        if (user == null)
+            throw new UsernameNotFoundException(username);
+
+        user.setPwd(encoder.encode(user.getPwd()));
+
+        System.out.println(user);
+        return new CustomUserDetails(user);
+    }
+}

@@ -1,8 +1,7 @@
-package upf.pjt.cahier_de_textes.entities.validation.annotations;
+package upf.pjt.cahier_de_textes.entities.validation_annotations;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-import jakarta.validation.ConstraintViolation;
 import upf.pjt.cahier_de_textes.entities.Qualification;
 
 import java.util.List;

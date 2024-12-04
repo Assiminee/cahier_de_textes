@@ -1,8 +1,8 @@
 package upf.pjt.cahier_de_textes.entities.enumerations;
 
 public enum RoleEnum {
-    ADMIN,
-    PROF,
-    SS,
-    SP
+    ROLE_ADMIN,
+    ROLE_PROF,
+    ROLE_SS,
+    ROLE_SP
 }

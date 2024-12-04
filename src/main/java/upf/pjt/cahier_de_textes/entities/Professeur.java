@@ -3,45 +3,59 @@ package upf.pjt.cahier_de_textes.entities;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import upf.pjt.cahier_de_textes.entities.enumerations.Genre;
 import upf.pjt.cahier_de_textes.entities.enumerations.Grade;
-import upf.pjt.cahier_de_textes.entities.validation.annotations.HasAtLeastOneQualification;
+import upf.pjt.cahier_de_textes.entities.enumerations.RoleEnum;
+import upf.pjt.cahier_de_textes.entities.validation_annotations.HasAtLeastOneQualification;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
 @Entity
 @Table(name = "professeur")
 public class Professeur extends User {
-    public Professeur() {}
+    public Professeur() {
+        this.role = new Role(RoleEnum.ROLE_PROF);
+    }
 
-    @Getter
+    public Professeur(
+            String nom, String prenom, String telephone, String email,
+            LocalDate dateNaissance, String adresse, Genre genre,
+            String cin, String pwd, Grade grade,
+            LocalDate dateDernierDiplome, LocalDate dateEmbauche
+    ) {
+        super(nom, prenom, telephone, email, dateNaissance, adresse, genre, cin, pwd, new Role(RoleEnum.ROLE_PROF));
+        this.grade = grade;
+        this.dateDernierDiplome = dateDernierDiplome;
+        this.dateEmbauche = dateEmbauche;
+    }
+
     @Setter
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "grade", nullable = false)
     private Grade grade;
 
-    @Getter
     @Setter
     @NotNull
     @Column(name = "date_dernier_diplome", nullable = false)
     private LocalDate dateDernierDiplome;
 
-    @Getter
     @Setter
     @NotNull
     @Column(name = "date_embauche", nullable = false)
     private LocalDate dateEmbauche;
 
-    @Getter
     @Setter
     @OneToMany(mappedBy = "responsable", cascade = CascadeType.PERSIST)
     @JsonManagedReference
     private List<Module> modules = new ArrayList<>();
 
-    @Getter
     @Setter
     @NotNull
     @HasAtLeastOneQualification
@@ -49,7 +63,6 @@ public class Professeur extends User {
     @JsonManagedReference
     private List<Qualification> qualifications = new ArrayList<>();
 
-    @Getter
     @Setter
     @OneToOne(mappedBy = "coordinateur")
     @JsonManagedReference
