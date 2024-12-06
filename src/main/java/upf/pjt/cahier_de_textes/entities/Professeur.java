@@ -57,6 +57,7 @@ public class Professeur extends User {
     private List<Module> modules = new ArrayList<>();
 
     @Setter
+    @Getter
     @NotNull
     @HasAtLeastOneQualification
     @OneToMany(mappedBy = "prof", cascade = CascadeType.ALL)

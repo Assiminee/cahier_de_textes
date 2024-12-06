@@ -1,91 +1,84 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Collapsible Sidebar</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    .sidebar-hover:hover {
-      width: 250px;
-    }
-  </style>
-</head>
+<head th:replace="fragments/head :: head"></head>
 <body class="bg-gray-100">
 
-<div class="flex h-screen">
-  <!-- Sidebar -->
-  <aside th:replace="fragments/side_bar :: aside"></aside>
-  <!-- Main Content -->
-  <!-- Main Content -->
-  <main class="flex-1 bg-white p-10 rounded-l-lg shadow-lg">
-    <!-- Profile Header -->
-    <div class="flex items-center justify-between mb-8">
-      <h1 class="text-2xl font-bold">Profile</h1>
-      <div class="flex items-center gap-4">
-        <img src="profile-pic.jpg" alt="Profile" class="h-12 w-12 rounded-full">
-        <div>
-          <p class="font-medium text-gray-800">Rania BOUBID</p>
-          <p class="text-sm text-gray-500">Professeur</p>
-        </div>
-      </div>
-    </div>
+<div class="flex h-full">
 
-    <!-- Profile Form -->
-    <form class="grid grid-cols-2 gap-6">
-      <div>
-        <label for="lastName" class="block mb-2 font-medium">Nom</label>
-        <input id="lastName" type="text" value="BOUBID" class="w-full p-3 rounded bg-gray-100 border border-gray-300 text-gray-700" disabled>
-      </div>
-      <div>
-        <label for="firstName" class="block mb-2 font-medium">Prénom</label>
-        <input id="firstName" type="text" value="RANIA" class="w-full p-3 rounded bg-gray-100 border border-gray-300 text-gray-700" disabled>
-      </div>
-      <div>
-        <label for="gender" class="block mb-2 font-medium">Sexe</label>
-        <input id="gender" type="text" value="Femme" class="w-full p-3 rounded bg-gray-100 border border-gray-300 text-gray-700" disabled>
-      </div>
-      <div>
-        <label for="cin" class="block mb-2 font-medium">CIN</label>
-        <input id="cin" type="text" value="Z608554" class="w-full p-3 rounded bg-gray-100 border border-gray-300 text-gray-700" disabled>
-      </div>
-      <div>
-        <label for="address" class="block mb-2 font-medium">Adresse</label>
-        <input id="address" type="text" value="25 BD URBAIN MTFLEURI 2 FES" class="w-full p-3 rounded bg-gray-100 border border-gray-300 text-gray-700" disabled>
-      </div>
-      <div>
-        <label for="phone" class="block mb-2 font-medium">Numéro de Téléphone</label>
-        <div class="flex items-center gap-2">
-          <input id="phoneCode" type="text" value="+212" class="p-3 bg-gray-100 border border-gray-300 rounded w-20 text-center" disabled>
-          <input id="phone" type="text" value="695765607" class="w-full p-3 rounded bg-gray-100 border border-gray-300 text-gray-700" disabled>
-        </div>
-      </div>
-      <div>
-        <label for="email" class="block mb-2 font-medium">Email</label>
-        <input id="email" type="email" value="raniabouabid7@gmail.com" class="w-full p-3 rounded bg-gray-100 border border-gray-300 text-gray-700" disabled>
-      </div>
-      <div>
-        <label for="birthDate" class="block mb-2 font-medium">Date de Naissance</label>
-        <input id="birthDate" type="text" value="04/06/2002" class="w-full p-3 rounded bg-gray-100 border border-gray-300 text-gray-700" disabled>
-      </div>
-      <div class="col-span-2">
-        <label for="qualifications" class="block mb-2 font-medium">Qualifications</label>
-        <input id="qualifications" type="text" value="Assistant Professor at Vaughn College of Aeronautics" class="w-full p-3 rounded bg-gray-100 border border-gray-300 text-gray-700" disabled>
-      </div>
-      <div>
-        <label for="grade" class="block mb-2 font-medium">Grade</label>
-        <input id="grade" type="text" value="Docteur En Intelligence Artificielle" class="w-full p-3 rounded bg-gray-100 border border-gray-300 text-gray-700" disabled>
-      </div>
-      <div class="col-span-2 flex justify-between items-center">
-        <button type="button" class="bg-pink-600 hover:bg-pink-700 text-white font-bold py-3 px-6 rounded">
-          Changer Mot de Passe
-        </button>
-        <button type="button" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded">
-          Consulter mes affectations
-        </button>
-      </div>
-    </form>
-  </main>
+    <aside th:replace="fragments/side_bar :: aside"></aside>
+    <main class="bg-white rounded-l-lg shadow-lg w-full">
+        <nav th:replace="fragments/nav :: nav"></nav>
+
+        <form class="grid grid-cols-2 gap-6 p-10">
+            <div class="col-span-2 ">
+                <h1 class="text-4xl font-semibold">Mes Informations</h1>
+            </div>
+            <div>
+                <label for="lastName" class="block mb-2 font-medium">Nom</label>
+                <input id="lastName" type="text" th:value="${user.getNom()}"
+                       class="w-full p-3 rounded bg-gray-100 border border-gray-300 text-gray-700" disabled>
+            </div>
+            <div>
+                <label for="firstName" class="block mb-2 font-medium">Prénom</label>
+                <input id="firstName" type="text" th:value="${user.getPrenom()}"
+                       class="w-full p-3 rounded bg-gray-100 border border-gray-300 text-gray-700" disabled>
+            </div>
+            <div>
+                <label for="gender" class="block mb-2 font-medium">Sexe</label>
+                <input id="gender" type="text" th:value="${user.getGenre()}"
+                       class="w-full p-3 rounded bg-gray-100 border border-gray-300 text-gray-700" disabled>
+            </div>
+            <div>
+                <label for="cin" class="block mb-2 font-medium">CIN</label>
+                <input id="cin" type="text" th:value="${user.getCin()}"
+                       class="w-full p-3 rounded bg-gray-100 border border-gray-300 text-gray-700" disabled>
+            </div>
+            <div>
+                <label for="address" class="block mb-2 font-medium">Adresse</label>
+                <input id="address" type="text" th:value="${user.getAdresse()}"
+                       class="w-full p-3 rounded bg-gray-100 border border-gray-300 text-gray-700" disabled>
+            </div>
+            <div>
+                <label for="phone" class="block mb-2 font-medium">Numéro de Téléphone</label>
+                <div class="flex items-center gap-2">
+                    <input id="phone" type="text" th:value="${user.getTelephone()}"
+                           class="w-full p-3 rounded bg-gray-100 border border-gray-300 text-gray-700" disabled>
+                </div>
+            </div>
+            <div>
+                <label for="email" class="block mb-2 font-medium">Email</label>
+                <input id="email" type="email" th:value="${user.getEmail()}"
+                       class="w-full p-3 rounded bg-gray-100 border border-gray-300 text-gray-700" disabled>
+            </div>
+            <div>
+                <label for="birthDate" class="block mb-2 font-medium">Date de Naissance</label>
+                <input id="birthDate" type="text" th:value="${user.getDateNaissance()}"
+                       class="w-full p-3 rounded bg-gray-100 border border-gray-300 text-gray-700" disabled>
+            </div>
+            <div th:class="${user.getRole().getAuthority() == 'ROLE_PROF' ? 'col-span-2 grid grid-cols-2 w-full gap-6' : 'hidden'}">
+                <div>
+                    <label for="qualifications" class="block mb-2 font-medium">Qualifications</label>
+                    <select th:each="qual : ${user.getQualifications()}" name="qualifications" id="qualifications"
+                            class="w-full p-3 rounded bg-gray-100 border border-gray-300 text-gray-700">
+                        <option th:value="${qual.getIntitule()}" th:text="|${qual.getIntitule()}|"></option>
+                    </select>
+                </div>
+                <div>
+                    <label for="grade" class="block mb-2 font-medium">Grade</label>
+                    <input id="grade" type="text" th:value="${user.getGrade()}"
+                           class="w-full p-3 rounded bg-gray-100 border border-gray-300 text-gray-700" disabled>
+                </div>
+            </div>
+            <div class="col-span-2 flex justify-between items-center">
+                <button type="button" class="bg-pink-600 hover:bg-pink-700 text-white font-bold py-3 px-6 rounded">
+                    Changer Mot de Passe
+                </button>
+                <button type="button" th:class="${user.getRole().getAuthority() == 'ROLE_PROF' ? 'bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded' : 'hidden'}">
+                    Consulter mes affectations
+                </button>
+            </div>
+        </form>
+    </main>
 </div>
 
 </body>

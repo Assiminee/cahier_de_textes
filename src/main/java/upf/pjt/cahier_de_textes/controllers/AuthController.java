@@ -18,8 +18,4 @@ public class AuthController {
         return "logout";
     }
 
-    @GetMapping("/profile")
-    public String profile() {
-        return "profile/profile";
-    }
 }
