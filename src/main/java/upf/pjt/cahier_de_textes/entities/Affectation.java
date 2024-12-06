@@ -6,8 +6,8 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
-import upf.pjt.cahier_de_textes.entities.validation.annotations.IsValidNiveau;
-import upf.pjt.cahier_de_textes.entities.validation.annotations.IsValidSemestre;
+import upf.pjt.cahier_de_textes.entities.validation_annotations.IsValidNiveau;
+import upf.pjt.cahier_de_textes.entities.validation_annotations.IsValidSemestre;
 
 import java.util.UUID;
 

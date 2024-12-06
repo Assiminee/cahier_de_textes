@@ -15,6 +15,12 @@ import java.util.UUID;
 public class Qualification {
     public Qualification() {}
 
+    public Qualification(String intitule, LocalDate dateObtention, Professeur prof) {
+        this.intitule = intitule;
+        this.dateObtention = dateObtention;
+        this.prof = prof;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Getter

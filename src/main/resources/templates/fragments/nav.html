@@ -1,0 +1,18 @@
+<nav class="bg-[#f2eee7] shadow-md px-6 py-4 flex justify-end items-center w-full">
+    <div class=" flex items-center space-x-4">
+        <a href="profile">
+            <div class="flex items-center space-x-2">
+                <div th:switch='${user.getGenre().name()}'>
+                    <img th:case="'F'" th:src="@{/public/female.png}" alt="User Profile"
+                         class="h-10 w-10 rounded-full"/>
+                    <img th:case="'M'" th:src="@{/public/male.png}" alt="User Profile"
+                         class="h-10 w-10 rounded-full"/>
+                </div>
+                <div class="text-sm">
+                    <p class="font-medium text-gray-800" th:text="|${user.getNom()} ${user.getPrenom()}|"></p>
+                    <p class="text-gray-500" th:text="|${user.getRole().getAuthority()}|"></p>
+                </div>
+            </div>
+        </a>
+    </div>
+</nav>

@@ -5,16 +5,20 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.security.core.GrantedAuthority;
 import upf.pjt.cahier_de_textes.entities.enumerations.RoleEnum;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "role")
-public class Role {
+public class Role implements GrantedAuthority {
     public Role() {}
+
+    public Role(RoleEnum role) {
+        this.role = role;
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,4 +37,9 @@ public class Role {
     @Setter
     @JsonBackReference
     private List<User> users = new ArrayList<>();
+
+    @Override
+    public String getAuthority() {
+        return getRole().toString();
+    }
 }

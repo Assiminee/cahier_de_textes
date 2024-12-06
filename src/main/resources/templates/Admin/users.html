@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestion des Utilisateurs</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+
+<body class="bg-gray-100 font-sans">
+
+<div class="flex h-screen">
+  <!-- Sidebar -->
+  <aside th:replace="fragments/side_bar :: aside"></aside>
+
+  <!-- Main Content -->
+  <main class="flex-1 bg-white shadow-lg rounded-tl-lg overflow-hidden">
+    <header>
+      <nav th:replace="fragments/nav.html :: nav"></nav>
+    </header>
+
+    <div class="p-6 flex justify-between items-center">
+      <h2 class="text-xl font-semibold text-gray-800">Liste des Utilisateurs</h2>
+      <!-- Ajouter Utilisateur Button -->
+      <button id="addUserBtn" class="bg-[#313863] text-white py-2 px-6 rounded-lg hover:bg-blue-950 shadow-md">
+        + Ajouter Utilisateur
+      </button>
+    </div>
+
+    <!-- User Table -->
+    <section class="p-6 overflow-auto">
+      <table class="w-full border-collapse border border-gray-200 shadow-sm rounded-lg overflow-hidden">
+        <thead class="bg-[#b10c74] text-white">
+        <tr>
+          <th class="p-4 text-left"></th>
+          <th class="p-4 text-left">Nom</th>
+          <th class="p-4 text-left">Date de Naissance</th>
+          <th class="p-4 text-left">Rôle</th>
+          <th class="p-4 text-left">Email</th>
+          <th class="p-4 text-center">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr class="bg-gray-100 hover:bg-gray-200 transition-all">
+          <td class="p-4 text-left"><button class="hover:opacity-80">
+            <img src="/public/eye.png" alt="Supprimer" class="h-6 w-6">
+          </button></td>
+          <td class="p-4">Rania BOUBID</td>
+          <td class="p-4">01/01/1997</td>
+          <td class="p-4">Professeur</td>
+          <td class="p-4">raniabouabid7@gmail.com</td>
+          <td class="p-4 flex items-center justify-center gap-3">
+            <button class="hover:opacity-80">
+              <img src="/public/edit.png" alt="Modifier" class="h-6 w-6">
+            </button>
+            <button class="hover:opacity-80">
+              <img src="/public/trash.png" alt="Supprimer" class="h-6 w-6">
+            </button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+</div>
+
+<!-- Modal -->
+<div id="userModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+  <div class="w-full max-w-md max-h-[80vh] bg-[#f2eee7] p-6 rounded-lg shadow-lg overflow-hidden relative">
+    <button id="closeModalIcon" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+      </svg>
+    </button>
+    <h2 class="text-lg font-semibold text-center text-gray-800 mb-6">
+      Ajouter Un Nouvel Utilisateur
+    </h2>
+    <form class="overflow-y-auto max-h-[60vh] pr-2">
+      <div class="grid grid-cols-2 gap-4 mb-4">
+        <input type="text" placeholder="Saisir Nom" class="p-2 w-full border rounded-md focus:outline-none">
+        <input type="text" placeholder="Saisir Prénom" class="p-2 w-full border rounded-md focus:outline-none">
+      </div>
+      <div class="mb-4">
+        <input type="email" placeholder="Saisir Email" class="p-2 w-full border rounded-md focus:outline-none">
+      </div>
+      <div class="mb-4">
+        <input type="text" placeholder="Saisir CIN" class="p-2 w-full border rounded-md focus:outline-none">
+      </div>
+      <div class="mb-4 flex items-center gap-2">
+        <span class="inline-block p-2 bg-red-100 text-red-600 rounded-md">+212</span>
+        <input type="text" placeholder="Numéro de Téléphone" class="p-2 flex-1 border rounded-md focus:outline-none">
+      </div>
+      <div class="mb-4">
+        <input type="text" placeholder="Saisir Adresse" class="p-2 w-full border rounded-md focus:outline-none">
+      </div>
+      <div class="mb-4 relative">
+        <input type="date" placeholder="dd/mm/yy" class="p-2 w-full border rounded-md focus:outline-none">
+      </div>
+      <div class="grid grid-cols-2 gap-4 mb-4">
+        <input type="password" placeholder="Saisir Mot de Passe" class="p-2 w-full border rounded-md focus:outline-none">
+        <input type="password" placeholder="Confirmer Mot de Passe" class="p-2 w-full border rounded-md focus:outline-none">
+      </div>
+      <div class="mb-4">
+        <select class="p-2 w-full border rounded-md focus:outline-none">
+          <option value="femme">Femme</option>
+          <option value="homme">Homme</option>
+        </select>
+      </div>
+      <div class="flex justify-between mt-6">
+        <button type="button" id="closeModalBtn" class="px-4 py-2 text-white bg-[#b10c74] rounded-md hover:bg-pink-700">
+          Annuler
+        </button>
+        <button type="submit" class="px-4 py-2 text-white bg-[#313863] rounded-md hover:bg-blue-900">
+          Confirmer
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  const addUserBtn = document.getElementById("addUserBtn");
+  const userModal = document.getElementById("userModal");
+  const closeModalBtn = document.getElementById("closeModalBtn");
+  const closeModalIcon = document.getElementById("closeModalIcon");
+
+  addUserBtn.addEventListener("click", () => {
+    userModal.classList.remove("hidden");
+  });
+
+  closeModalBtn.addEventListener("click", () => {
+    userModal.classList.add("hidden");
+  });
+
+  closeModalIcon.addEventListener("click", () => {
+    userModal.classList.add("hidden");
+  });
+</script>
+
+</body>
+</html>
