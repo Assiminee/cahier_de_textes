@@ -1,8 +1,8 @@
 <aside th:fragment="side_bar"
-       class="sidebar-hover group relative w-24 transition-all duration-300 bg-[#F2EEE7] shadow-md flex flex-col justify-between">
+       class="w-1/8 hover:w-1/5 group relative w-16 transition-all duration-300 bg-[#F2EEE7] shadow-md flex flex-col justify-between">
     <div>
         <!-- Logo -->
-        <div class="py-4 px-4 flex justify-center">
+        <div class="py-4 flex justify-center">
             <img th:src="@{/public/logo.png}" alt="Logo" class="transition-all duration-300">
         </div>
 
@@ -14,7 +14,7 @@
                     <span class="ml-4 text-sm hidden group-hover:block">Accueil</span>
                 </li>
                 <!-- Admin specific routes -->
-                <li th:class="${user.getRole().getAuthority() == 'ROLE_ADMIN' ? '' : 'hidden'}">
+                <li th:if="${user.getRole().getAuthority() == 'ROLE_ADMIN'}">
                     <ul class="space-y-4">
                         <li class="group/user hover:bg-[#B10C74] flex justify-center group-hover:justify-start px-5 py-2 text-gray-700 hover:text-white transition-all duration-100">
                             <svg th:replace="fragments/icons/users_icon :: svg"></svg>

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import upf.pjt.cahier_de_textes.entities.enumerations.Genre;
 import upf.pjt.cahier_de_textes.entities.validation_annotations.IsAdult;
 import jakarta.persistence.*;
