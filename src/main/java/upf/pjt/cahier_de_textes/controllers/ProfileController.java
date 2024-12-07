@@ -14,6 +14,8 @@ import upf.pjt.cahier_de_textes.models.CustomUserDetails;
 import upf.pjt.cahier_de_textes.services.UserService;
 
 import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
 
 @Controller
 public class ProfileController {
@@ -34,8 +36,12 @@ public class ProfileController {
             User user = userDetails.getUser();
 
             if (Objects.equals(user.getRole().getAuthority(), RoleEnum.ROLE_PROF.name())) {
-                Professeur prof = professeurRepository.getReferenceById(user.getId());
-                model.addAttribute("user", prof);
+                UUID convertedId = UUID.fromString(String.valueOf(user.getId()));
+                Optional<Professeur> prof = professeurRepository.findById(convertedId);
+                System.out.println(prof);
+                if (prof.isEmpty())
+                    return "redirect:/auth/login";
+                model.addAttribute("user", prof.get());
             }
             else {
                 model.addAttribute("user", user);
