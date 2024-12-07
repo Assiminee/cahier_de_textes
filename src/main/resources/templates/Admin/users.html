@@ -5,33 +5,45 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Gestion des Utilisateurs</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    .hidden {
-      display: none;
-    }
-  </style>
+
 </head>
 
 <body class="bg-gray-100 font-sans">
 
 <div class="flex h-screen">
   <!-- Sidebar -->
-  <aside th:replace="fragments/side_bar :: aside"></aside>
+    <aside th:replace="fragments/side_bar :: aside"></aside>
 
   <!-- Main Content -->
   <main class="flex-1 bg-white shadow-lg rounded-tl-lg overflow-hidden">
-    <header>
-      <nav th:replace="fragments/nav.html :: nav"></nav>
-    </header>
+    <nav th:replace="fragments/nav :: nav"></nav>
+    <div class="p-6 flex justify-between items-center">
+      <!-- Search Bar -->
+      <input
+              type="text"
+              placeholder="Rechercher ici..."
+              class="p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 w-64"
+      />
 
+      <!-- Filter Dropdown -->
+      <select
+              class="p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600"
+      >
+        <option value="">Filtrer par rôle</option>
+        <option value="professeur">Professeur</option>
+        <option value="admin">Admin</option>
+        <option value="super admin">Super Admin</option>
+      </select>
+    </div>
+
+    <!-- Header Section -->
     <div class="p-6 flex justify-between items-center">
       <h2 class="text-xl font-semibold text-gray-800">Liste des Utilisateurs</h2>
       <!-- Ajouter Utilisateur Button -->
-      <button id="addUserBtn" class="bg-[#313863] text-white py-2 px-6 rounded-lg hover:bg-blue-950 shadow-md">
+      <label for="addUserModal" class="bg-[#313863] text-white py-2 px-6 rounded-lg hover:bg-blue-950 shadow-md cursor-pointer">
         + Ajouter Utilisateur
-      </button>
+      </label>
     </div>
-
     <!-- User Table -->
     <section class="p-6 overflow-auto">
       <table class="w-full border-collapse border border-gray-200 shadow-sm rounded-lg overflow-hidden">
@@ -46,101 +58,96 @@
         </tr>
         </thead>
         <tbody>
-        <tr class="bg-gray-100 hover:bg-gray-200 transition-all">
-          <td class="p-4 text-left"><button class="hover:opacity-80">
-            <img src="/public/eye.png" alt="Supprimer" class="h-6 w-6">
-          </button></td>
-          <td class="p-4">Rania BOUBID</td>
-          <td class="p-4">01/01/1997</td>
-          <td class="p-4">Professeur</td>
-          <td class="p-4">raniabouabid7@gmail.com</td>
+        <tr th:each="user : ${users}" class="bg-gray-100 hover:bg-gray-200 transition-all">
+          <td class="p-4 text-left">
+            <button class="hover:opacity-80">
+              <img src="/public/eye.png" alt="Voir" class="h-6 w-6">
+            </button>
+          </td>
+          <td class="p-4" th:text="${user.nom + ' ' + user.prenom}"></td>
+          <td class="p-4" th:text="${user.dateNaissance}"></td>
+          <td class="p-4" th:text="${user.role.getAuthority()}"></td>
+          <td class="p-4" th:text="${user.email}"></td>
           <td class="p-4 flex items-center justify-center gap-3">
             <button class="hover:opacity-80">
               <img src="/public/edit.png" alt="Modifier" class="h-6 w-6">
             </button>
+            <form th:action = "@{/Admin/delete(${user.id})}" method="POST">
             <button class="hover:opacity-80">
               <img src="/public/trash.png" alt="Supprimer" class="h-6 w-6">
-            </button>
+            </button></form>
           </td>
         </tr>
         </tbody>
+
       </table>
     </section>
   </main>
 </div>
 
 <!-- Modal -->
-<div id="userModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+<input type="checkbox" id="addUserModal" class="peer hidden">
+<div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden peer-checked:flex">
   <div class="w-full max-w-md max-h-[80vh] bg-[#f2eee7] p-6 rounded-lg shadow-lg overflow-hidden relative">
-    <button id="closeModalIcon" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800">
+    <label for="addUserModal" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 cursor-pointer">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
       </svg>
-    </button>
+    </label>
     <h2 class="text-lg font-semibold text-center text-gray-800 mb-6">
       Ajouter Un Nouvel Utilisateur
     </h2>
-    <form class="overflow-y-auto max-h-[60vh] pr-2">
-      <div class="grid grid-cols-2 gap-4 mb-4">
-        <input type="text" placeholder="Saisir Nom" class="p-2 w-full border rounded-md focus:outline-none">
-        <input type="text" placeholder="Saisir Prénom" class="p-2 w-full border rounded-md focus:outline-none">
-      </div>
-      <div class="mb-4">
-        <input type="email" placeholder="Saisir Email" class="p-2 w-full border rounded-md focus:outline-none">
-      </div>
-      <div class="mb-4">
-        <input type="text" placeholder="Saisir CIN" class="p-2 w-full border rounded-md focus:outline-none">
-      </div>
-      <div class="mb-4 flex items-center gap-2">
-        <span class="inline-block p-2 bg-red-100 text-red-600 rounded-md">+212</span>
-        <input type="text" placeholder="Numéro de Téléphone" class="p-2 flex-1 border rounded-md focus:outline-none">
-      </div>
-      <div class="mb-4">
-        <input type="text" placeholder="Saisir Adresse" class="p-2 w-full border rounded-md focus:outline-none">
-      </div>
-      <div class="mb-4 relative">
-        <input type="date" placeholder="dd/mm/yy" class="p-2 w-full border rounded-md focus:outline-none">
-      </div>
-      <div class="grid grid-cols-2 gap-4 mb-4">
-        <input type="password" placeholder="Saisir Mot de Passe" class="p-2 w-full border rounded-md focus:outline-none">
-        <input type="password" placeholder="Confirmer Mot de Passe" class="p-2 w-full border rounded-md focus:outline-none">
-      </div>
-      <div class="mb-4">
-        <select class="p-2 w-full border rounded-md focus:outline-none">
-          <option value="femme">Femme</option>
-          <option value="homme">Homme</option>
-        </select>
-      </div>
-      <div class="flex justify-between mt-6">
-        <button type="button" id="closeModalBtn" class="px-4 py-2 text-white bg-[#b10c74] rounded-md hover:bg-pink-700">
-          Annuler
-        </button>
-        <button type="submit" class="px-4 py-2 text-white bg-[#313863] rounded-md hover:bg-blue-900">
-          Confirmer
-        </button>
-      </div>
-    </form>
+    <!-- User Registration Form --><form method="POST" action="/Admin/add" class="overflow-y-auto max-h-[60vh] pr-2">
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+    <div class="grid grid-cols-2 gap-4 mb-4">
+      <input name="nom" type="text" placeholder="Saisir Nom" class="p-2 w-full border rounded-md focus:outline-none" required>
+      <input name="prenom" type="text" placeholder="Saisir Prénom" class="p-2 w-full border rounded-md focus:outline-none" required>
+    </div>
+    <div class="mb-4">
+      <input name="email" type="email" placeholder="Saisir Email" class="p-2 w-full border rounded-md focus:outline-none" required>
+    </div>
+    <div class="mb-4">
+      <input name="cin" type="text" placeholder="Saisir CIN" class="p-2 w-full border rounded-md focus:outline-none" required>
+    </div>
+    <div class="mb-4 flex items-center gap-2">
+      <span class="inline-block p-2 bg-red-100 text-red-600 rounded-md">+212</span>
+      <input name="telephone" type="text" placeholder="Numéro de Téléphone" class="p-2 flex-1 border rounded-md focus:outline-none" required>
+    </div>
+    <div class="mb-4">
+      <input name="adresse" type="text" placeholder="Saisir Adresse" class="p-2 w-full border rounded-md focus:outline-none" required>
+    </div>
+    <div class="mb-4">
+      <select name="role" class="p-2 w-full border rounded-md focus:outline-none" required>
+        <option value="ROLE_PROF">Professor</option>
+        <option value="ROLE_ADMIN">Admin</option>
+      </select>
+    </div>
+    <div class="mb-4">
+      <select name="genre" class="p-2 w-full border rounded-md focus:outline-none" required>
+        <option value="F">Femme</option>
+        <option value="M">Homme</option>
+      </select>
+    </div>
+    <div class="mb-4">
+      <input name="dateNaissance" type="date" class="p-2 w-full border rounded-md focus:outline-none" required>
+    </div>
+    <div class="grid grid-cols-2 gap-4 mb-4">
+      <input name="password" type="password" placeholder="Saisir Mot de Passe" class="p-2 w-full border rounded-md focus:outline-none" required>
+      <input name="confirmPassword" type="password" placeholder="Confirmer Mot de Passe" class="p-2 w-full border rounded-md focus:outline-none" required>
+    </div>
+    <div class="flex justify-between mt-6">
+      <label for="addUserModal" class="px-4 py-2 text-white bg-[#b10c74] rounded-md hover:bg-pink-700 cursor-pointer">
+        Annuler
+      </label>
+      <button type="submit" class="px-4 py-2 text-white bg-[#313863] rounded-md hover:bg-blue-900">
+        Confirmer
+      </button>
+    </div>
+  </form>
+
   </div>
 </div>
 
-<script>
-  const addUserBtn = document.getElementById("addUserBtn");
-  const userModal = document.getElementById("userModal");
-  const closeModalBtn = document.getElementById("closeModalBtn");
-  const closeModalIcon = document.getElementById("closeModalIcon");
-
-  addUserBtn.addEventListener("click", () => {
-    userModal.classList.remove("hidden");
-  });
-
-  closeModalBtn.addEventListener("click", () => {
-    userModal.classList.add("hidden");
-  });
-
-  closeModalIcon.addEventListener("click", () => {
-    userModal.classList.add("hidden");
-  });
-</script>
 
 </body>
 </html>

@@ -55,20 +55,20 @@
                 <input id="birthDate" type="text" th:value="${user.getDateNaissance()}"
                        class="w-full p-3 rounded bg-gray-100 border border-gray-300 text-gray-700" disabled>
             </div>
-            <div th:class="${user.getRole().getAuthority() == 'ROLE_PROF' ? 'col-span-2 grid grid-cols-2 w-full gap-6' : 'hidden'}">
-                <div>
-                    <label for="qualifications" class="block mb-2 font-medium">Qualifications</label>
-                    <select th:each="qual : ${user.getQualifications()}" name="qualifications" id="qualifications"
-                            class="w-full p-3 rounded bg-gray-100 border border-gray-300 text-gray-700">
-                        <option th:value="${qual.getIntitule()}" th:text="|${qual.getIntitule()}|"></option>
-                    </select>
-                </div>
-                <div>
+            <div th:if="${user.getRole().getAuthority() == 'ROLE_PROF'}">
+                <label for="qualifications" class="block mb-2 font-medium">Qualifications</label>
+                <select name="qualifications" id="qualifications" class="w-full p-3 rounded bg-gray-100 border border-gray-300 text-gray-700">
+                    <option th:each="qual : ${user.getQualifications()}"
+                            th:value="${qual.intitule}"
+                            th:text="${qual.intitule}"></option>
+                </select>
+            </div>
+           <!-- <div>
                     <label for="grade" class="block mb-2 font-medium">Grade</label>
                     <input id="grade" type="text" th:value="${user.getGrade()}"
                            class="w-full p-3 rounded bg-gray-100 border border-gray-300 text-gray-700" disabled>
                 </div>
-            </div>
+            </div>-->
             <div class="col-span-2 flex justify-between items-center">
                 <button type="button" class="bg-pink-600 hover:bg-pink-700 text-white font-bold py-3 px-6 rounded">
                     Changer Mot de Passe

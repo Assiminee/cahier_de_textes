@@ -1,6 +1,9 @@
 package upf.pjt.cahier_de_textes.dao;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import upf.pjt.cahier_de_textes.entities.Role;
 import upf.pjt.cahier_de_textes.entities.User;
@@ -13,4 +16,8 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     List<User> findAllByRole(Role role);
     User findByEmailAndPwd(String email, String password);
     User findByEmail(String email);
+    @Modifying
+    @Query("DELETE FROM User u WHERE u.id = :id")
+    void deleteById(@Param("id") UUID id);
+
 }

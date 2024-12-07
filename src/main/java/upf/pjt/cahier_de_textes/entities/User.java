@@ -99,7 +99,9 @@ public class User {
     protected String cin;
 
     @NotBlank
+/*
     @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$")
+*/
     @Column(name = "pwd", nullable = false)
     @Getter
     @Setter

@@ -15,9 +15,12 @@
                             <span class="ml-4 text-sm hidden group-hover:block">Accueil</span>
                         </li>
                         <li class="group/user hover:bg-pink-600 flex items-center px-4 py-2 text-gray-700 hover:text-white hover:bg-pink-600 transition-all duration-300">
+                        <a th:href="@{/Admin/users}" class="flex items-center w-full h-full">
                             <svg th:replace="fragments/icons/users_icon :: svg"></svg>
                             <span class="ml-4 text-sm hidden group-hover:block">Utilisateurs</span>
-                        </li>
+                        </a>
+                    </li>
+
                         <li class="group/professor hover:bg-pink-600 flex items-center px-4 py-2 text-gray-700 hover:text-white hover:bg-pink-600 transition-all duration-300">
                             <svg th:replace="fragments/icons/professors_icon :: svg"></svg>
                             <span class="ml-4 text-sm hidden group-hover:block">Professeurs</span>
