@@ -2,12 +2,10 @@
     <div class=" flex items-center space-x-4">
         <a href="profile">
             <div class="flex items-center space-x-2">
-                <div th:switch='${user.getGenre().name()}'>
-                    <img th:case="'F'" th:src="@{/public/female.png}" alt="User Profile"
-                         class="h-10 w-10 rounded-full"/>
-                    <img th:case="'M'" th:src="@{/public/male.png}" alt="User Profile"
-                         class="h-10 w-10 rounded-full"/>
-                </div>
+                <img th:if="${user.getGenre().name() == 'F'}" th:src="@{/public/female.png}" alt="User Profile"
+                     class="h-10 w-10 rounded-full"/>
+                <img th:if="${user.getGenre().name() == 'M'}" th:src="@{/public/male.png}" alt="User Profile"
+                     class="h-10 w-10 rounded-full"/>
                 <div class="text-sm">
                     <p class="font-medium text-gray-800" th:text="|${user.getNom()} ${user.getPrenom()}|"></p>
                     <p class="text-gray-500" th:text="|${user.getRole().getAuthority()}|"></p>

@@ -8,94 +8,15 @@
     <aside th:replace="fragments/side_bar :: aside"></aside>
     <main class="bg-white rounded-l-lg shadow-lg w-full col-span-11 flex flex-col h-screen">
         <nav th:replace="fragments/nav :: nav"></nav>
-
         <div class="flex-1 overflow-y-auto" id="THISISDADIV">
-            <form class="grid grid-cols-2 gap-6 p-10">
-                <div class="col-span-2 flex justify-between">
-                    <h1 class="text-4xl font-semibold">Mes Informations</h1>
-                    <div class="flex">
-                        <button type="button"
-                                th:class="${user.getRole().getAuthority() == 'ROLE_PROF' ? 'bg-[#B10C74] hover:bg-[#db2777] text-white font-bold py-3 px-6 me-5 rounded' : 'hidden'}">
-                            Consulter mes affectations
-                        </button>
-                        <button type="button"
-                                class="mod bg-[#313863] hover:bg-[#7680bc] text-white font-bold py-3 px-6 rounded">
-                            Modifier
-                        </button>
-                    </div>
-                </div>
-                <div>
-                    <label for="lastName" class="block mb-2 font-medium">Nom</label>
-                    <input id="lastName" type="text" th:value="${user.getNom()}"
-                           class="w-full p-3 rounded bg-gray-100 border border-gray-300 text-gray-700" disabled>
-                </div>
-                <div>
-                    <label for="firstName" class="block mb-2 font-medium">Prénom</label>
-                    <input id="firstName" type="text" th:value="${user.getPrenom()}"
-                           class="w-full p-3 rounded bg-gray-100 border border-gray-300 text-gray-700" disabled>
-                </div>
-                <div>
-                    <label for="gender" class="block mb-2 font-medium">Sexe</label>
-                    <input id="gender" type="text" th:value="${user.getGenre()}"
-                           class="w-full p-3 rounded bg-gray-100 border border-gray-300 text-gray-700" disabled>
-                </div>
-                <div>
-                    <label for="cin" class="block mb-2 font-medium">CIN</label>
-                    <input id="cin" type="text" th:value="${user.getCin()}"
-                           class="w-full p-3 rounded bg-gray-100 border border-gray-300 text-gray-700" disabled>
-                </div>
-                <div>
-                    <label for="address" class="block mb-2 font-medium">Adresse</label>
-                    <input id="address" type="text" th:value="${user.getAdresse()}"
-                           class="w-full p-3 rounded bg-gray-100 border border-gray-300 text-gray-700" disabled>
-                </div>
-                <div>
-                    <label for="phone" class="block mb-2 font-medium">Numéro de Téléphone</label>
-                    <div class="flex items-center gap-2">
-                        <input id="phone" type="text" th:value="${user.getTelephone()}"
-                               class="w-full p-3 rounded bg-gray-100 border border-gray-300 text-gray-700" disabled>
-                    </div>
-                </div>
-                <div>
-                    <label for="email" class="block mb-2 font-medium">Email</label>
-                    <input id="email" type="email" th:value="${user.getEmail()}"
-                           class="w-full p-3 rounded bg-gray-100 border border-gray-300 text-gray-700" disabled>
-                </div>
-                <div>
-                    <label for="birthDate" class="block mb-2 font-medium">Date de Naissance</label>
-                    <input id="birthDate" type="text" th:value="${user.getDateNaissance()}"
-                           class="w-full p-3 rounded bg-gray-100 border border-gray-300 text-gray-700" disabled>
-                </div>
-                <div th:if="${user.getRole().getAuthority() == 'ROLE_PROF'}"
-                     class="col-span-2 grid grid-cols-2 w-full gap-6">
-                    <div>
-                        <label for="qualifications" class="block mb-2 font-medium">Qualifications</label>
-                        <select name="qualifications" id="qualifications"
-                                class="w-full p-3 rounded bg-gray-100 border border-gray-300 text-gray-700">
-                            <option th:each="qual : ${user.getQualifications()}"
-                                    th:value="${qual.getIntitule()}"
-                                    th:text="|${qual.getIntitule()}|">
-                            </option>
-                            <option th:if="${#lists.isEmpty(user.getQualifications())}" disabled selected>
-                            </option>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="grade" class="block mb-2 font-medium">Grade</label>
-                        <input id="grade" type="text" th:value="${user.getGrade()}"
-                               class="w-full p-3 rounded bg-gray-100 border border-gray-300 text-gray-700" disabled>
-                    </div>
-                </div>
-                <div class="col-span-2 flex flex-row-reverse">
-                    <button type="button"
-                            class="bg-[#B10C74] hover:bg-[#db2777] text-white font-bold py-3 px-6 rounded">
-                        Changer Mot de Passe
-                    </button>
-                </div>
-            </form>
+            <form th:replace="profile/profile_form :: form"></form>
         </div>
     </main>
 </div>
+<script type="module">
+    import modify_profile_data from '/public/js/modify_profile_data.js';
 
+    $("#modBtn").click(modify_profile_data);
+</script>
 </body>
 </html>
