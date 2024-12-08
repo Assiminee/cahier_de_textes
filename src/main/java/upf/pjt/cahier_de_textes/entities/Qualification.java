@@ -38,7 +38,7 @@ public class Qualification {
     @Setter
     private LocalDate dateObtention;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     @JoinColumn(name = "prof")
     @Getter
     @Setter

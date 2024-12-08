@@ -3,62 +3,81 @@ package upf.pjt.cahier_de_textes.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import upf.pjt.cahier_de_textes.dao.ProfesseurRepository;
 import upf.pjt.cahier_de_textes.dao.RoleRepository;
 import upf.pjt.cahier_de_textes.dao.UserRepository;
 import upf.pjt.cahier_de_textes.dto.UserRegistrationDto;
+import upf.pjt.cahier_de_textes.entities.Professeur;
 import upf.pjt.cahier_de_textes.entities.Role;
 import upf.pjt.cahier_de_textes.entities.User;
 import upf.pjt.cahier_de_textes.entities.enumerations.RoleEnum;
 
-    @Service
-    public class UserRegistrationService {
+import java.util.UUID;
 
-        @Autowired
-        private UserRepository userRepository;
+@Service
+public class UserRegistrationService {
 
-        @Autowired
-        private RoleRepository roleRepository;
+    @Autowired
+    private ProfesseurRepository professeurRepository;
 
-        @Autowired
-        private PasswordEncoder passwordEncoder;
+    @Autowired
+    private UserRepository userRepository;
 
-        public void registerUser(UserRegistrationDto dto) {
-            // Map DTO to Entity
-            User user = new User();
-            user.setNom(dto.getNom());
-            user.setPrenom(dto.getPrenom());
-            user.setTelephone(dto.getTelephone());
-            user.setEmail(dto.getEmail());
-            user.setDateNaissance(dto.getDateNaissance());
-            user.setAdresse(dto.getAdresse());
-            user.setGenre(dto.getGenre());
-            user.setCin(dto.getCin());
+    @Autowired
+    private RoleRepository roleRepository;
 
-            // Validate Password in the Service
-            String password = dto.getPassword();
-            if (!password.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$")) {
-                throw new IllegalArgumentException("Password must meet security requirements.");
-            }
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
-            // Set Encoded Password
-            user.setPwd(passwordEncoder.encode(password));
+    @Transactional
+    public void registerUser(UserRegistrationDto dto) {
+        // Fetch the role
+        RoleEnum selectedRoleEnum = RoleEnum.valueOf(dto.getRole().toUpperCase());
+        Role role = roleRepository.findOneByRole(selectedRoleEnum);
+        if (role == null) {
+            throw new IllegalArgumentException("Role not found for: " + dto.getRole());
+        }
 
-            // Convert String to RoleEnum
-            RoleEnum roleEnum;
-            try {
-                roleEnum = RoleEnum.valueOf(dto.getRole().toUpperCase());
-            } catch (IllegalArgumentException e) {
-                throw new IllegalArgumentException("Invalid role specified: " + dto.getRole());
-            }
+        // Create and save the User entity
+        User user = new User();
+        user.setNom(dto.getNom());
+        user.setPrenom(dto.getPrenom());
+        user.setTelephone(dto.getTelephone());
+        user.setEmail(dto.getEmail());
+        user.setDateNaissance(dto.getDateNaissance());
+        user.setAdresse(dto.getAdresse());
+        user.setGenre(dto.getGenre());
+        user.setCin(dto.getCin());
+        user.setPwd(passwordEncoder.encode(dto.getPassword()));
+        user.setRole(role);
 
-            // Fetch Role by RoleEnum
-            Role role = roleRepository.findOneByRole(roleEnum);
-            if (role == null) {
-                throw new IllegalArgumentException("Role not found for: " + dto.getRole());
-            }
-            user.setRole(role);
+        if (selectedRoleEnum == RoleEnum.ROLE_PROF) {
+            // If the role is Professeur, create the Professeur entity
+            Professeur professeur = new Professeur();
+            professeur.setNom(dto.getNom());
+            professeur.setPrenom(dto.getPrenom());
+            professeur.setTelephone(dto.getTelephone());
+            professeur.setEmail(dto.getEmail());
+            professeur.setDateNaissance(dto.getDateNaissance());
+            professeur.setAdresse(dto.getAdresse());
+            professeur.setGenre(dto.getGenre());
+            professeur.setCin(dto.getCin());
+            professeur.setPwd(passwordEncoder.encode(dto.getPassword()));
+            professeur.setRole(role); // Same role as User
+            professeur.setGrade(dto.getGrade());
+            professeur.setDateDernierDiplome(dto.getDateDernierDiplome());
+            professeur.setDateEmbauche(dto.getDateEmbauche());
 
-            // Save User
+            // Save the Professeur directly
+            professeurRepository.save(professeur);
+            System.out.println("Professeur saved with ID: " + professeur.getId());
+        } else {
+            // Save the User directly for non-prof roles
             userRepository.save(user);
+            System.out.println("User saved with ID: " + user.getId());
         }
     }
+
+
+}

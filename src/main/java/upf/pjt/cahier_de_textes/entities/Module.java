@@ -41,7 +41,7 @@ public class Module {
 
     @Getter
     @Setter
-    @ManyToOne
+    @ManyToOne()
     @JoinColumn(name = "responsable")
     @JsonBackReference
     private Professeur responsable;

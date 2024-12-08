@@ -19,6 +19,7 @@ import java.util.UUID;
 @Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "user")
 public class User {
+
     public User() {}
 
     public User(
@@ -42,6 +43,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.UUID)
     @Getter
     protected UUID id;
+
 
     @NotBlank
     @Pattern(regexp = "^[a-zA-Z]+$")

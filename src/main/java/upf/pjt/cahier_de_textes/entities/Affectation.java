@@ -42,21 +42,21 @@ public class Affectation {
     @Getter
     @Setter
     @NotNull
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false,cascade = CascadeType.REMOVE)
     @JoinColumn(name = "filiere", nullable = false)
     private Filiere filiere;
 
     @Getter
     @Setter
     @NotNull
-    @ManyToOne(optional = false)
+    @ManyToOne
     @JoinColumn(name = "prof", nullable = false)
     private Professeur prof;
 
     @Getter
     @Setter
     @NotNull
-    @ManyToOne(optional = false)
+    @ManyToOne
     @JoinColumn(name = "module", nullable = false)
     private Module module;
 }

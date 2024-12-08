@@ -14,6 +14,7 @@ import java.util.List;
 @Entity
 @Table(name = "role")
 public class Role implements GrantedAuthority {
+
     public Role() {}
 
     public Role(RoleEnum role) {

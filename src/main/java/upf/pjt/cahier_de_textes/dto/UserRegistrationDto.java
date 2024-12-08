@@ -1,16 +1,14 @@
 package upf.pjt.cahier_de_textes.dto;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
 import upf.pjt.cahier_de_textes.entities.enumerations.Genre;
+import upf.pjt.cahier_de_textes.entities.enumerations.Grade;
 import upf.pjt.cahier_de_textes.entities.validation_annotations.IsAdult;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -57,4 +55,17 @@ public class UserRegistrationDto {
     private String confirmPassword;
 
     private String role;
+
+    @NotNull(message = "Grade is required", groups = ProfessorValidationGroup.class)
+    private Grade grade;
+
+    @NotNull(message = "Date Dernier Diplôme is required for professors", groups = ProfessorValidationGroup.class)
+    private LocalDate dateDernierDiplome;
+
+    @NotNull(message = "Date d'Embauche is required for professors", groups = ProfessorValidationGroup.class)
+    private LocalDate dateEmbauche;
+
+    @Null(message = "ID should be null", groups = CommonValidationGroup.class)
+    private UUID id;
+
 }

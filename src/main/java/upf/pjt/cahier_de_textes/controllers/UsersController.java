@@ -8,8 +8,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import upf.pjt.cahier_de_textes.dto.UserRegistrationDto;
 import upf.pjt.cahier_de_textes.entities.User;
+import upf.pjt.cahier_de_textes.entities.enumerations.Genre;
+import upf.pjt.cahier_de_textes.entities.enumerations.Grade;
+import upf.pjt.cahier_de_textes.entities.enumerations.RoleEnum;
 import upf.pjt.cahier_de_textes.models.CustomUserDetails;
 import upf.pjt.cahier_de_textes.services.UserRegistrationService;
 import upf.pjt.cahier_de_textes.services.UserService;
@@ -30,7 +34,10 @@ public class UsersController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication.getPrincipal() instanceof CustomUserDetails userDetails) {
             User currentUser = userDetails.getUser();
-            model.addAttribute("user", currentUser); // Pass the user to the model
+            model.addAttribute("user", currentUser);
+            model.addAttribute("grades", Grade.values());
+            model.addAttribute("roles", RoleEnum.values());
+            model.addAttribute("genres", Genre.values());// Pass the user to the model
         }
 
         // Fetch all users for the table
@@ -50,20 +57,26 @@ public class UsersController {
             return "redirect:/Admin/users"; // Redirect to the user list or a success page
         } catch (IllegalArgumentException e) {
             model.addAttribute("errorMessage", e.getMessage());
-            return "Admin/addUserForm"; // Show the form again with an error message
+            return "Admin/users"; // Show the form again with an error message
         }
     }
 
+
+
     @PostMapping("/Admin/delete/{id}")
-    public String deleteUser(@PathVariable UUID id, Model model) {
+    public String deleteUser(@PathVariable UUID id, RedirectAttributes redirectAttributes) {
         try {
-            userService.DeleteUserById(id);
-            model.addAttribute("successMessage", "User deleted successfully");
+            System.out.println("Delete request received for user ID: " + id);
+            userService.deleteUser(id);
+            redirectAttributes.addFlashAttribute("message", "User deleted successfully!");
         } catch (Exception e) {
-            model.addAttribute("errorMessage", "Error deleting user: " + e.getMessage());
+            System.err.println("Error deleting user: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("error", "Error deleting user: " + e.getMessage());
         }
-        return "redirect:/Admin/users"; // Redirect to the user list after deletion
+        return "redirect:/Admin/users";
     }
+
+
 
 
 }

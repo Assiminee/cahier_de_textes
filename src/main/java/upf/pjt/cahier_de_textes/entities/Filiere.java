@@ -57,8 +57,8 @@ public class Filiere {
     @Getter
     @Setter
     @NotNull
-    @OneToOne(optional = false)
-    @JoinColumn(name = "coordinateur", nullable = false, unique = true)
+    @OneToOne
+    @JoinColumn(name = "coordinateur", unique = true)
     @JsonBackReference
     private Professeur coordinateur;
 }
