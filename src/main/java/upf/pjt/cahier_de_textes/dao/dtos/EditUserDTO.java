@@ -24,10 +24,9 @@ public class EditUserDTO {
     private String telephone;
     private String email;
     private LocalDate dateNaissance;
-    private Grade grade;
     private RoleEnum role;
 
-    public EditUserDTO(String nom, String prenom, String genre, String cin, String adresse, String telephone, String email, String dateNaissance, String grade, String role) {
+    public EditUserDTO(String nom, String prenom, String genre, String cin, String adresse, String telephone, String email, String dateNaissance, String role) {
         this.nom = nom;
         this.prenom = prenom;
         this.genre = Genre.valueOf(genre);
@@ -36,7 +35,6 @@ public class EditUserDTO {
         this.telephone = telephone;
         this.email = email;
         this.dateNaissance = LocalDate.parse(dateNaissance);
-        this.grade = Grade.valueOf(grade);
         this.role = RoleEnum.valueOf(role);
     }
 
@@ -49,10 +47,5 @@ public class EditUserDTO {
         user.setTelephone(telephone);
         user.setEmail(email);
         user.setDateNaissance(dateNaissance);
-    }
-
-    public void setProfDetails(Professeur prof) {
-        setUserDetails(prof);
-        prof.setGrade(grade);
     }
 }

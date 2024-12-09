@@ -78,7 +78,7 @@ public class UserController {
 
             Professeur professeur = prof.get();
             log.info("Old prof data:\n{}", professeur);
-            incomingUser.setProfDetails(professeur);
+            incomingUser.setUserDetails(professeur);
             professeurRepository.save(professeur);
             log.info("Updated prof:\n{}", professeur);
             model.addAttribute("user", professeur);
