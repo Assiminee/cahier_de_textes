@@ -50,7 +50,7 @@ public class UserController {
             telephoneExists = userRepository.existsByTelephone(incomingUser.getTelephone());
 
         if (!user.getCin().equals(incomingUser.getCin()))
-            cinExists = userRepository.existsByCin(incomingUser.getTelephone());
+            cinExists = userRepository.existsByCin(incomingUser.getCin());
 
         if (emailExists || telephoneExists || cinExists) {
             redirectAttributes.addFlashAttribute("error", true);
