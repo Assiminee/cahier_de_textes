@@ -1,12 +1,11 @@
-package upf.pjt.cahier_de_textes.entities;
+package upf.pjt.cahier_de_textes.dao.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
-import upf.pjt.cahier_de_textes.entities.enumerations.RoleEnum;
+import upf.pjt.cahier_de_textes.dao.entities.enumerations.RoleEnum;
 import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;

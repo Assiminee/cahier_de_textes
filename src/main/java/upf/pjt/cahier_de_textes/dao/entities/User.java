@@ -1,11 +1,11 @@
-package upf.pjt.cahier_de_textes.entities;
+package upf.pjt.cahier_de_textes.dao.entities;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
-import upf.pjt.cahier_de_textes.entities.enumerations.Genre;
-import upf.pjt.cahier_de_textes.entities.validation_annotations.IsAdult;
+import upf.pjt.cahier_de_textes.dao.entities.enumerations.Genre;
+import upf.pjt.cahier_de_textes.dao.entities.validation_annotations.IsAdult;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -43,14 +43,14 @@ public class User {
     protected UUID id;
 
     @NotBlank
-    @Pattern(regexp = "^[a-zA-Z]+$")
+    @Pattern(regexp = "^[a-zA-Z]+([ -][a-zA-Z]+)*$")
     @Column(name = "nom", nullable = false)
     @Getter
     @Setter
     protected String nom;
 
     @NotBlank
-    @Pattern(regexp = "^[a-zA-Z]+$")
+    @Pattern(regexp = "^[a-zA-Z]+([ -][a-zA-Z]+)*$")
     @Column(name = "prenom", nullable = false)
     @Getter
     @Setter
@@ -98,7 +98,7 @@ public class User {
     protected String cin;
 
     @NotBlank
-    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$")
+//    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$")
     @Column(name = "pwd", nullable = false)
     @Getter
     @Setter

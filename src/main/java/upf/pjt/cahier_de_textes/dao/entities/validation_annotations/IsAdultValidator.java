@@ -1,8 +1,7 @@
-package upf.pjt.cahier_de_textes.entities.validation_annotations;
+package upf.pjt.cahier_de_textes.dao.entities.validation_annotations;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-
 import java.time.LocalDate;
 import java.time.Period;
 

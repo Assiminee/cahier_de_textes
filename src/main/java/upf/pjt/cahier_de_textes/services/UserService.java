@@ -7,8 +7,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import upf.pjt.cahier_de_textes.dao.UserRepository;
-import upf.pjt.cahier_de_textes.entities.User;
-import upf.pjt.cahier_de_textes.models.CustomUserDetails;
+import upf.pjt.cahier_de_textes.dao.entities.User;
+import upf.pjt.cahier_de_textes.dao.dtos.CustomUserDetails;
 
 @Service
 public class UserService implements UserDetailsService {

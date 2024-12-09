@@ -1,11 +1,11 @@
-package upf.pjt.cahier_de_textes.models;
+package upf.pjt.cahier_de_textes.dao.dtos;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import upf.pjt.cahier_de_textes.entities.User;
+import upf.pjt.cahier_de_textes.dao.entities.User;
 
 import java.util.Collection;
 import java.util.List;

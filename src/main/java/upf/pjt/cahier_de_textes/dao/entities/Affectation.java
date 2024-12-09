@@ -1,4 +1,4 @@
-package upf.pjt.cahier_de_textes.entities;
+package upf.pjt.cahier_de_textes.dao.entities;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
@@ -6,9 +6,8 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
-import upf.pjt.cahier_de_textes.entities.validation_annotations.IsValidNiveau;
-import upf.pjt.cahier_de_textes.entities.validation_annotations.IsValidSemestre;
-
+import upf.pjt.cahier_de_textes.dao.entities.validation_annotations.IsValidNiveau;
+import upf.pjt.cahier_de_textes.dao.entities.validation_annotations.IsValidSemestre;
 import java.util.UUID;
 
 @Entity

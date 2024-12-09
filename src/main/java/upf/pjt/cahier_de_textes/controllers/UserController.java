@@ -1,49 +1,102 @@
 package upf.pjt.cahier_de_textes.controllers;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.TypedQuery;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import upf.pjt.cahier_de_textes.dao.RoleRepository;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import upf.pjt.cahier_de_textes.dao.ProfesseurRepository;
 import upf.pjt.cahier_de_textes.dao.UserRepository;
-import upf.pjt.cahier_de_textes.entities.User;
-import upf.pjt.cahier_de_textes.entities.enumerations.RoleEnum;
+import upf.pjt.cahier_de_textes.dao.entities.Professeur;
+import upf.pjt.cahier_de_textes.dao.entities.User;
+import upf.pjt.cahier_de_textes.dao.dtos.EditUserDTO;
 
-import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
-@RestController
-@RequestMapping(name = "UserEndpoint", path = "/api/users", method = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.PUT})
+@Slf4j
+@Controller
+@RequestMapping(name = "User management endpoints", path = "/users")
 public class UserController {
-    @Autowired
+    private final ProfileController profileController;
     private UserRepository userRepository;
+    private ProfesseurRepository professeurRepository;
 
     @Autowired
-    private RoleRepository roleRepository;
+    public UserController(UserRepository userRepository, ProfesseurRepository professeurRepository, ProfileController profileController) {
+        this.userRepository = userRepository;
+        this.professeurRepository = professeurRepository;
+        this.profileController = profileController;
+    }
 
-    @PersistenceContext
-    private EntityManager entityManager;
+    @PostMapping(path = "/{id}")
+    public String editUser(@PathVariable("id") String id, @ModelAttribute EditUserDTO incomingUser, Model model, RedirectAttributes redirectAttributes) {
+        if (incomingUser == null)
+            return "redirect:/profile";
 
-    @GetMapping()
-    public ResponseEntity<List<User>> getUsers(
-            @RequestParam(required = false) String field,
-            @RequestParam(required = false) String keyword
-//            @RequestParam(required = false) int page,
-//            @RequestParam(required = false) int count
-    ) {
-//        String hql = "SELECT u FROM User u WHERE u." + field + " LIKE :keyword";
-//        TypedQuery<User> query = entityManager.createQuery(hql, User.class);
-////        query.setParameter("field", "%" + field + "%");
-//        query.setParameter("keyword", "%" + keyword + "%");
-//        query.setFirstResult((page - 1) * count);
-//        query.setMaxResults(count);
-//        return query.getResultList();
-        String upperCaseKeyword = keyword.toUpperCase();
-        RoleEnum roleEnum = RoleEnum.valueOf(upperCaseKeyword);
-        List<User> users = userRepository.findAllByRole(roleRepository.findOneByRole(roleEnum));
-        return new ResponseEntity<>(users, HttpStatus.OK);
+        UUID convertedId = UUID.fromString(String.valueOf(id));
+        User user = userRepository.findById(convertedId).orElse(null);
+
+        if (user == null)
+            return "profile/profile";
+
+        boolean emailExists = false, telephoneExists = false, cinExists = false;
+
+        if (!user.getEmail().equals(incomingUser.getEmail()))
+            emailExists = userRepository.existsByEmail(incomingUser.getEmail());
+
+        if (!user.getTelephone().equals(incomingUser.getTelephone()))
+            telephoneExists = userRepository.existsByTelephone(incomingUser.getTelephone());
+
+        if (!user.getCin().equals(incomingUser.getCin()))
+            cinExists = userRepository.existsByCin(incomingUser.getTelephone());
+
+        if (emailExists || telephoneExists || cinExists) {
+            redirectAttributes.addFlashAttribute("error", true);
+            if (emailExists) {
+                redirectAttributes.addFlashAttribute("email",
+                        "L'email '" + incomingUser.getEmail() + "' existe deja");
+            }
+            if (telephoneExists) {
+                redirectAttributes.addFlashAttribute("telephone",
+                        "Le numero de telephone '" + incomingUser.getTelephone() + "' existe deja");
+            }
+            if (cinExists) {
+                redirectAttributes.addFlashAttribute("cin",
+                        "Le CIN '" + incomingUser.getCin() + "' existe deja");
+            }
+            profileController.profile(model);
+            return "redirect:/profile";
+        }
+
+        if (incomingUser.getRole().name().equals("ROLE_PROF")) {
+            Optional<Professeur> prof = professeurRepository.findById(convertedId);
+
+            if (prof.isEmpty())
+                return "redirect:/profile";
+
+            Professeur professeur = prof.get();
+            log.info("Old prof data:\n{}", professeur);
+            incomingUser.setProfDetails(professeur);
+            professeurRepository.save(professeur);
+            log.info("Updated prof:\n{}", professeur);
+            model.addAttribute("user", professeur);
+            return "profile/profile";
+        }
+
+        Optional<User> optionalUser = userRepository.findById(convertedId);
+
+        if (optionalUser.isEmpty())
+            return "redirect:/profile";
+
+        User loggedUser = optionalUser.get();
+        log.info("Old user data:\n{}", loggedUser);
+        incomingUser.setUserDetails(loggedUser);
+        userRepository.save(loggedUser);
+        log.info("Updated user:\n{}", incomingUser);
+        model.addAttribute("user", loggedUser);
+
+        return "profile/profile";
     }
 }

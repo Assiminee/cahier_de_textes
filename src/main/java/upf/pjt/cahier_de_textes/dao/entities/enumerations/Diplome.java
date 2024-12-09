@@ -1,4 +1,4 @@
-package upf.pjt.cahier_de_textes.entities.enumerations;
+package upf.pjt.cahier_de_textes.dao.entities.enumerations;
 
 public enum Diplome {
     CI,  // Cycle d'Ingenieur

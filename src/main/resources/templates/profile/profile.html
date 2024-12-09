@@ -9,14 +9,35 @@
     <main class="bg-white rounded-l-lg shadow-lg w-full col-span-11 flex flex-col h-screen">
         <nav th:replace="fragments/nav :: nav"></nav>
         <div class="flex-1 overflow-y-auto" id="THISISDADIV">
+
+            <div class="col-span-2 flex px-10 pt-10 justify-between">
+                <div class="flex flex-col">
+                    <h1 class="text-4xl font-semibold">Mes Informations</h1>
+                    <div th:if="${error == true}" class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-[#ffa9a3]" role="alert">
+                        <span th:if="${email != null}" class="font-medium" th:text="${email}"></span><br>
+                        <span th:if="${telephone != null}" class="font-medium" th:text="${telephone}"></span>
+                        <span th:if="${cin != null}" class="font-medium" th:text="${cin}"></span>
+                    </div>
+                </div>
+                <div class="flex">
+                    <button type="button"
+                            th:class="${user.getRole().getAuthority() == 'ROLE_PROF' ? 'bg-[#B10C74] hover:bg-[#db2777] text-white font-bold py-3 px-6 rounded' : 'hidden'}">
+                        Consulter mes affectations
+                    </button>
+                </div>
+            </div>
+
             <form th:replace="profile/profile_form :: form"></form>
+
         </div>
     </main>
 </div>
 <script type="module">
-    import modify_profile_data from '/public/js/modify_profile_data.js';
+    import {formButtonsBehavior} from '/public/js/enableProfileFormInputs.js';
+    import setMaxDate from '/public/js/setMaxDate.js';
 
-    $("#modBtn").click(modify_profile_data);
+    setMaxDate();
+    formButtonsBehavior();
 </script>
 </body>
 </html>

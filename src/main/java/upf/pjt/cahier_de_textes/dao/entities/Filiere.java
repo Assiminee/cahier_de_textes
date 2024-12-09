@@ -1,4 +1,4 @@
-package upf.pjt.cahier_de_textes.entities;
+package upf.pjt.cahier_de_textes.dao.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
@@ -8,7 +8,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
-import upf.pjt.cahier_de_textes.entities.enumerations.Diplome;
+import upf.pjt.cahier_de_textes.dao.entities.enumerations.Diplome;
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -57,8 +57,8 @@ public class Filiere {
     @Getter
     @Setter
     @NotNull
-    @OneToOne(optional = false)
-    @JoinColumn(name = "coordinateur", nullable = false, unique = true)
+    @OneToOne
+    @JoinColumn(name = "coordinateur", unique = true)
     @JsonBackReference
     private Professeur coordinateur;
 }

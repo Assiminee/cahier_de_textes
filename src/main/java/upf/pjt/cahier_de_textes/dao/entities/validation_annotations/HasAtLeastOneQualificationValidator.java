@@ -1,9 +1,8 @@
-package upf.pjt.cahier_de_textes.entities.validation_annotations;
+package upf.pjt.cahier_de_textes.dao.entities.validation_annotations;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-import upf.pjt.cahier_de_textes.entities.Qualification;
-
+import upf.pjt.cahier_de_textes.dao.entities.Qualification;
 import java.util.List;
 
 public class HasAtLeastOneQualificationValidator implements ConstraintValidator<HasAtLeastOneQualification, List<?>> {

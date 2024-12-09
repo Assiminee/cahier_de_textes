@@ -1,16 +1,14 @@
-package upf.pjt.cahier_de_textes.entities;
+package upf.pjt.cahier_de_textes.dao.entities;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import upf.pjt.cahier_de_textes.entities.enumerations.Genre;
-import upf.pjt.cahier_de_textes.entities.enumerations.Grade;
-import upf.pjt.cahier_de_textes.entities.enumerations.RoleEnum;
-import upf.pjt.cahier_de_textes.entities.validation_annotations.HasAtLeastOneQualification;
+import upf.pjt.cahier_de_textes.dao.entities.enumerations.Genre;
+import upf.pjt.cahier_de_textes.dao.entities.enumerations.Grade;
+import upf.pjt.cahier_de_textes.dao.entities.enumerations.RoleEnum;
+import upf.pjt.cahier_de_textes.dao.entities.validation_annotations.HasAtLeastOneQualification;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -60,7 +58,7 @@ public class Professeur extends User {
     @Getter
     @NotNull
     @HasAtLeastOneQualification
-    @OneToMany(mappedBy = "prof", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "prof", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<Qualification> qualifications = new ArrayList<>();
 

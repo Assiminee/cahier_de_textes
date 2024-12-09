@@ -1,8 +1,7 @@
-package upf.pjt.cahier_de_textes.entities.validation_annotations;
+package upf.pjt.cahier_de_textes.dao.entities.validation_annotations;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

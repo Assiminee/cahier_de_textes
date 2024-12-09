@@ -3,8 +3,8 @@ package upf.pjt.cahier_de_textes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import upf.pjt.cahier_de_textes.entities.Qualification;
-import upf.pjt.cahier_de_textes.entities.validation_annotations.HasAtLeastOneQualificationValidator;
+import upf.pjt.cahier_de_textes.dao.entities.Qualification;
+import upf.pjt.cahier_de_textes.dao.entities.validation_annotations.HasAtLeastOneQualificationValidator;
 
 import jakarta.validation.ConstraintValidatorContext;
 import java.util.ArrayList;

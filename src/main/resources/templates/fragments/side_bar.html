@@ -40,7 +40,7 @@
     <!-- Logout -->
     <div class="py-4 px-4 flex justify-center group-hover:justify-start">
         <form th:action="@{/logout}" th:method="POST">
-            <button class="flex items-center gap-2 text-gray-600 hover:text-black">
+            <button type="submit" class="flex items-center gap-2 text-gray-600 hover:text-black">
                 <svg th:replace="fragments/icons/logout_icon :: svg"/>
                 <span class="hidden group-hover:block text-sm">Déconnexion</span>
             </button>
