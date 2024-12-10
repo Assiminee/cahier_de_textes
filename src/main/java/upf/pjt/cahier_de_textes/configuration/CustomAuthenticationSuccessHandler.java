@@ -1,18 +1,14 @@
 package upf.pjt.cahier_de_textes.configuration;
 
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
-import upf.pjt.cahier_de_textes.entities.Role;
-import upf.pjt.cahier_de_textes.entities.enumerations.RoleEnum;
+import upf.pjt.cahier_de_textes.dao.entities.enumerations.RoleEnum;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Map;
 
 @Component
 public class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
@@ -26,6 +22,5 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
                 return;
             }
         }
-        response.sendRedirect("/hello?name=none");
     }
 }

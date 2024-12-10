@@ -1,47 +1,63 @@
 package upf.pjt.cahier_de_textes;
 
-import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import upf.pjt.cahier_de_textes.dao.ProfesseurService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import upf.pjt.cahier_de_textes.dao.UserRepository;
-import upf.pjt.cahier_de_textes.entities.User;
-
-import java.util.List;
+//import upf.pjt.cahier_de_textes.dao.repo.FiliereRepository;
+//import upf.pjt.cahier_de_textes.dao.repo.ModuleRepository;
+//import upf.pjt.cahier_de_textes.dao.repo.ProfesseurRepository;
+//import upf.pjt.cahier_de_textes.dao.repo.UserRepository;
 
 @SpringBootApplication
-@RestController
 class CahierDeTextesApplication implements CommandLineRunner {
 
-    @Autowired
-    UserRepository userRepository;
-
-    @Autowired
-    private ProfesseurService professeurService;
-
-    @Autowired
-    PasswordEncoder passwordEncoder;
+//    @Autowired
+//    UserRepository userRepository;
+//    @Autowired
+//    ProfesseurRepository professeurRepository;
+//    @Autowired
+//    ModuleRepository moduleRepository;
+//    @Autowired
+//    FiliereRepository filiereRepository;
 
     public static void main(String[] args) {
         SpringApplication.run(CahierDeTextesApplication.class, args);
     }
 
-    @GetMapping("/hello")
-    public String hello(@RequestParam(value = "name", defaultValue = "World") String name) {
-        return String.format("Hello %s!", name);
-    }
 
     @Override
-    public void run(String... args) throws Exception {
-        List<User> userList = userRepository.findAll();
-
-        for (User user : userList) {
-            System.out.println("\"id\": \"" + user.getId() + "\", \"email\": \"" + user.getEmail() + "\", ");
-        }
-    }
+    public void run(String... args) throws Exception {}
+//    @Transactional
+//    @Override
+//    public void run(String... args) throws Exception {
+//        UUID id = UUID.fromString("42345678-1234-5678-1234-567812345678");
+//        User user = userRepository.findById(id).orElse(null);
+//
+//        if (user == null)
+//            return;
+//
+//        if (user.getRole().getAuthority().equals("ROLE_PROF")) {
+//            Professeur prof = professeurRepository.findById(id).orElse(null);
+//
+//            if (prof == null)
+//                return;
+//
+//            for (Module module : prof.getModules()) {
+//                module.setResponsable(null);
+//                moduleRepository.save(module);
+//            }
+//            prof.setModules(null);
+//
+//            if (prof.getFiliere() != null) {
+//                prof.getFiliere().setCoordinateur(null);
+//                filiereRepository.save(prof.getFiliere());
+//                prof.setFiliere(null);
+//            }
+//
+//            userRepository.delete(user);
+//        }
+//
+//
+//    }
 }

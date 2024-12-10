@@ -12,10 +12,4 @@ public class AuthController {
     public String login() {
         return "login";
     }
-
-    @GetMapping("/auth/logout")
-    public String welcome() {
-        return "logout";
-    }
-
 }
