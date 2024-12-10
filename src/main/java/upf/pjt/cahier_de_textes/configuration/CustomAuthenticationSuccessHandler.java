@@ -22,6 +22,5 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
                 return;
             }
         }
-        response.sendRedirect("/hello?name=none");
     }
 }

@@ -6,14 +6,14 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import upf.pjt.cahier_de_textes.dao.ProfesseurRepository;
 import upf.pjt.cahier_de_textes.dao.entities.Professeur;
 import upf.pjt.cahier_de_textes.dao.entities.User;
 import upf.pjt.cahier_de_textes.dao.entities.enumerations.RoleEnum;
 import upf.pjt.cahier_de_textes.dao.dtos.CustomUserDetails;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+
+import java.util.*;
 
 @Controller
 public class ProfileController {
@@ -26,7 +26,7 @@ public class ProfileController {
     }
 
     @GetMapping("/profile")
-    public String profile(Model model) {
+    public String profile(Model model, RedirectAttributes redirectAttributes) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -37,8 +37,11 @@ public class ProfileController {
                 UUID convertedId = UUID.fromString(String.valueOf(user.getId()));
                 Optional<Professeur> prof = professeurRepository.findById(convertedId);
 
-                if (prof.isEmpty())
+                if (prof.isEmpty()) {
+                    redirectAttributes.addFlashAttribute("login_err", true);
                     return "redirect:/auth/login";
+                }
+
                 model.addAttribute("user", prof.get());
             }
             else {

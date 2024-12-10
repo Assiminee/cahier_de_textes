@@ -13,11 +13,7 @@
             <div class="col-span-2 flex px-10 pt-10 justify-between">
                 <div class="flex flex-col">
                     <h1 class="text-4xl font-semibold">Mes Informations</h1>
-                    <div th:if="${error == true}" class="p-4 mt-2 text-sm text-red-800 rounded-lg bg-[#ffa9a3]" role="alert">
-                        <span th:if="${email != null}" class="font-medium" th:text="${email}"><br></span>
-                        <span th:if="${telephone != null}" class="font-medium" th:text="${telephone}"><br></span>
-                        <span th:if="${cin != null}" class="font-medium" th:text="${cin}"></span>
-                    </div>
+                    <div th:replace="~{profile/edit_profile_errors :: div}"></div>
                 </div>
                 <div class="flex justify-center items-center">
                     <button type="button"

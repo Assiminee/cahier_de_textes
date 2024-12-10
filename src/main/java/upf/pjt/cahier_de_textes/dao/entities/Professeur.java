@@ -50,7 +50,7 @@ public class Professeur extends User {
     private LocalDate dateEmbauche;
 
     @Setter
-    @OneToMany(mappedBy = "responsable", cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "responsable")
     @JsonManagedReference
     private List<Module> modules = new ArrayList<>();
 
