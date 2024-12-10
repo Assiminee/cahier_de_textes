@@ -2,18 +2,42 @@ package upf.pjt.cahier_de_textes.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import upf.pjt.cahier_de_textes.dao.UserRepository;
+import upf.pjt.cahier_de_textes.dao.entities.Module;
+import upf.pjt.cahier_de_textes.dao.repositories.*;
 import upf.pjt.cahier_de_textes.dao.dtos.EditUserDTO;
 import upf.pjt.cahier_de_textes.dao.entities.User;
+import upf.pjt.cahier_de_textes.dao.entities.Professeur;
+
+import java.util.UUID;
 
 @Service
 public class UserService {
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+    private ProfesseurRepository professorRepository;;
+    private AffectationRepository affectationRepository;
+    private QualificationRepository qualificationRepository;
+    private  ModuleRepository moduleRepository;
+    private  FiliereRepository filiereRepository;
 
     @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(
+            UserRepository userRepository,
+            FiliereRepository filiereRepository,
+            RoleRepository roleRepository,
+            ProfesseurRepository professorRepository,
+            AffectationRepository affectationRepository,
+            QualificationRepository qualificationRepository,ModuleRepository moduleRepository
+    ) {
         this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
+        this.professorRepository = professorRepository;
+        this.qualificationRepository = qualificationRepository;
+        this.affectationRepository = affectationRepository;
+        this.moduleRepository = moduleRepository;
+        this.filiereRepository = filiereRepository;
     }
 
     private boolean hasDuplicateEmail(User user, String email) {
@@ -57,5 +81,37 @@ public class UserService {
             return false;
         }
         return true;
+    }
+
+    @Transactional
+    public void deleteUser(UUID userId) {
+        User user = userRepository.findById(userId).orElse(null);
+
+        if (user == null)
+            throw new IllegalArgumentException("User not found with ID: " + userId);
+
+        if (user.getRole().getAuthority().equals("ROLE_PROF")) {
+            Professeur prof = professorRepository.findById(userId).orElse(null);
+            if (prof == null)
+                throw new IllegalArgumentException("Professeur not found with ID: " + userId);
+
+            for (Module module : prof.getModules()) {
+                System.out.println("Nullifying responsable for module: " + module.getId());
+                module.setResponsable(null);
+                moduleRepository.save(module);
+            }
+            prof.setModules(null);
+
+            if (prof.getFiliere() != null) {
+                System.out.println("Nullifying coordinateur for filiere: " + prof.getFiliere().getId());
+                prof.getFiliere().setCoordinateur(null);
+                filiereRepository.save(prof.getFiliere());
+                prof.setFiliere(null);
+            }
+
+            professorRepository.delete(prof);
+        }
+
+        userRepository.delete(user);
     }
 }

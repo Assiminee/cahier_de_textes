@@ -1,30 +1,25 @@
 package upf.pjt.cahier_de_textes;
 
-import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.transaction.annotation.Transactional;
-import upf.pjt.cahier_de_textes.dao.FiliereRepository;
-import upf.pjt.cahier_de_textes.dao.ModuleRepository;
-import upf.pjt.cahier_de_textes.dao.ProfesseurRepository;
-import upf.pjt.cahier_de_textes.dao.UserRepository;
-import upf.pjt.cahier_de_textes.dao.entities.Module;
-import upf.pjt.cahier_de_textes.dao.entities.Professeur;
-import upf.pjt.cahier_de_textes.dao.entities.User;
-import java.util.UUID;
+//import upf.pjt.cahier_de_textes.dao.repo.FiliereRepository;
+//import upf.pjt.cahier_de_textes.dao.repo.ModuleRepository;
+//import upf.pjt.cahier_de_textes.dao.repo.ProfesseurRepository;
+//import upf.pjt.cahier_de_textes.dao.repo.UserRepository;
 
 @SpringBootApplication
 class CahierDeTextesApplication implements CommandLineRunner {
 
-    @Autowired
-    UserRepository userRepository;
-    @Autowired
-    ProfesseurRepository professeurRepository;
-    @Autowired
-    ModuleRepository moduleRepository;
-    @Autowired
-    FiliereRepository filiereRepository;
+//    @Autowired
+//    UserRepository userRepository;
+//    @Autowired
+//    ProfesseurRepository professeurRepository;
+//    @Autowired
+//    ModuleRepository moduleRepository;
+//    @Autowired
+//    FiliereRepository filiereRepository;
 
     public static void main(String[] args) {
         SpringApplication.run(CahierDeTextesApplication.class, args);

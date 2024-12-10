@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import upf.pjt.cahier_de_textes.dao.ProfesseurRepository;
+import upf.pjt.cahier_de_textes.dao.repositories.ProfesseurRepository;
 import upf.pjt.cahier_de_textes.dao.entities.Professeur;
 import upf.pjt.cahier_de_textes.dao.entities.User;
 import upf.pjt.cahier_de_textes.dao.entities.enumerations.RoleEnum;

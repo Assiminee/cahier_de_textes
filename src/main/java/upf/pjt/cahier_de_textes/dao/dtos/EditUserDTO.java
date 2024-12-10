@@ -2,10 +2,8 @@ package upf.pjt.cahier_de_textes.dao.dtos;
 
 import lombok.*;
 import org.springframework.stereotype.Component;
-import upf.pjt.cahier_de_textes.dao.entities.Professeur;
 import upf.pjt.cahier_de_textes.dao.entities.User;
 import upf.pjt.cahier_de_textes.dao.entities.enumerations.Genre;
-import upf.pjt.cahier_de_textes.dao.entities.enumerations.Grade;
 import upf.pjt.cahier_de_textes.dao.entities.enumerations.RoleEnum;
 
 import java.time.LocalDate;
