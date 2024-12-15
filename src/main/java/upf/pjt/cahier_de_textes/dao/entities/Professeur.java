@@ -13,6 +13,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+@Setter
 @Getter
 @Entity
 @Table(name = "professeur")
@@ -33,36 +34,29 @@ public class Professeur extends User {
         this.dateEmbauche = dateEmbauche;
     }
 
-    @Setter
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "grade", nullable = false)
     private Grade grade;
 
-    @Setter
     @NotNull
     @Column(name = "date_dernier_diplome", nullable = false)
     private LocalDate dateDernierDiplome;
 
-    @Setter
     @NotNull
     @Column(name = "date_embauche", nullable = false)
     private LocalDate dateEmbauche;
 
-    @Setter
     @OneToMany(mappedBy = "responsable")
     @JsonManagedReference
     private List<Module> modules = new ArrayList<>();
 
-    @Setter
-    @Getter
     @NotNull
 //    @HasAtLeastOneQualification
     @OneToMany(mappedBy = "prof", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<Qualification> qualifications = new ArrayList<>();
 
-    @Setter
     @OneToOne(mappedBy = "coordinateur")
     @JsonManagedReference
     private Filiere filiere;
