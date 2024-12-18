@@ -37,7 +37,8 @@
 
                         <h2 class="text-lg font-semibold text-center text-gray-800 mb-6">Editer Le Module</h2>
 
-                        <form th:action="@{/modules/edit/{id}(id=${module?.id})}" method="post" class="overflow-y-auto max-h-[60vh] pr-2">
+                        <form th:action="@{/modules/{id}(id=${module?.id})}" method="post" class="overflow-y-auto max-h-[60vh] pr-2">
+                            <input type="hidden" name="_method" value="PUT">
                             <div class="py-2 mb-4">
                                 <label class="py-2 text-gray-900">Intitulé</label>
                                 <input
@@ -52,8 +53,7 @@
                                 <label class="py-2 text-gray-900">Choisir Responsable</label>
                                 <select
                                         name="responsable"
-                                        class="p-2 w-full border rounded-md focus:outline-none"
-                                        required>
+                                        class="p-2 w-full border rounded-md focus:outline-none">
                                     <option value="" disabled selected>Choisir un professeur</option>
                                     <option
                                             th:each="professor : ${professors}"

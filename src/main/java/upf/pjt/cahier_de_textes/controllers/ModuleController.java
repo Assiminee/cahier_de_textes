@@ -85,7 +85,7 @@ public class ModuleController {
         }
         return "redirect:/modules";
     }
-    @GetMapping("/edit/{id}")
+    @GetMapping("/{id}")
     public String showEditModule(@PathVariable UUID id, Model model) {
         Module module = moduleRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Module not found"));
@@ -96,11 +96,11 @@ public class ModuleController {
         model.addAttribute("professors", professors);
         return "Admin/module";
     }
-    @PostMapping("/edit/{id}")
+    @PutMapping("/{id}")
     public String editModule(
             @PathVariable UUID id,
             @RequestParam String intitule,
-            @RequestParam UUID responsable,
+            @RequestParam(required = false) UUID responsable, // Optional parameter
             @RequestParam Integer nombre_heures,
             @RequestParam String modeEvaluation,
             RedirectAttributes redirectAttributes) {
@@ -109,18 +109,20 @@ public class ModuleController {
                     .orElseThrow(() -> new IllegalArgumentException("Module not found"));
 
             existingModule.setIntitule(intitule);
-            existingModule.setResponsable(professorRepository.findById(responsable)
-                    .orElseThrow(() -> new IllegalArgumentException("Responsable not found")));
             existingModule.setNombre_heures(nombre_heures);
             existingModule.setModeEvaluation(ModeEval.valueOf(modeEvaluation));
+            if (responsable != null) {
+                existingModule.setResponsable(professorRepository.findById(responsable)
+                        .orElseThrow(() -> new IllegalArgumentException("Responsable not found")));
+            }
 
             moduleRepository.save(existingModule);
-
             redirectAttributes.addFlashAttribute("editSuccess", "Module updated successfully!");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("editError", "Error updating module: " + e.getMessage());
         }
         return "redirect:/modules";
     }
+
 }
 
