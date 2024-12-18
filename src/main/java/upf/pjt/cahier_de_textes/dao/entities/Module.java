@@ -32,13 +32,16 @@ public class Module {
     @Column(name = "nombre_heures", nullable = false)
     private int nombre_heures;
 
-    @Getter
+
     @Setter
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "mode_evaluation", nullable = false, columnDefinition = "VARCHAR(255) DEFAULT 'EXAM'")
     private ModeEval modeEvaluation;
 
+    public String getModeEvaluation() {
+        return modeEvaluation.toString();
+    }
 
 
     @Getter
