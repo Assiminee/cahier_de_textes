@@ -39,6 +39,8 @@ public class Module {
     @Column(name = "mode_evaluation", nullable = false, columnDefinition = "VARCHAR(255) DEFAULT 'EXAM'")
     private ModeEval modeEvaluation;
 
+
+
     @Getter
     @Setter
     @ManyToOne
