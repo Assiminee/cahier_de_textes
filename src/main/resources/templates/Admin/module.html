@@ -8,24 +8,21 @@
 </head>
 <body class="bg-gray-100 font-sans">
 <div class="flex h-screen">
-
   <aside th:replace="fragments/side_bar :: aside"></aside>
   <main class="bg-white rounded-l-lg shadow-lg w-full flex flex-col h-screen">
-    <!-- Navigation -->
     <header th:replace="fragments/nav.html :: nav"></header>
-
     <section class="p-6 flex justify-between items-center">
       <h2 class="text-xl font-semibold text-gray-800">Liste des Modules</h2>
-
       <label for="addModuleModal"
              class="bg-[#313863] text-white py-2 px-6 rounded-lg hover:bg-blue-950 shadow-md cursor-pointer">
         + Ajouter Module
       </label>
     </section>
+    <form id="searchForm" th:action="@{/modules}" method="GET" class="p-6 flex gap-4 w-full">
+      <input type="text" name="intitule" th:value="${searchTerm}" placeholder="Rechercher un module" class="p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 w-64"/>
+    </form>
     <section class="px-6">
-      <div th:if="${deleteSuccess}"
-           class="p-4 mt-2 text-sm text-green-800 rounded-lg bg-[#c9e8b9]"
-           role="alert">
+      <div th:if="${deleteSuccess}" class="p-4 mt-2 text-sm text-green-800 rounded-lg bg-[#c9e8b9]" role="alert">
         <p th:text="${deleteSuccess}"></p>
       </div>
       <div th:if="${error}"
@@ -44,12 +41,9 @@
         <p th:text="${errorAddModule}"></p>
       </div>
     </section>
-
     <section th:replace="Admin/ModuleList.html :: div"></section>
     <input type="checkbox" id="addModuleModal" class="peer hidden">
     <section th:replace="Admin/addModuleModal.html :: div"></section>
-
-
   </main>
 </div>
 </body>

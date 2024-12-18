@@ -28,15 +28,22 @@ public class ModuleController {
     private ProfesseurRepository professorRepository;
 
     @GetMapping()
-    public String showModules(Model model) {
+    public String showModules(@RequestParam(required = false) String intitule, Model model) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication.getPrincipal() instanceof CustomUserDetails userDetails) {
             User currentUser = userDetails.getUser();
             model.addAttribute("user", currentUser);
         }
-        List<Module> modules = moduleRepository.findAll();
+
+        List<Module> modules;
+        if (intitule == null || intitule.isBlank()) {
+            modules = moduleRepository.findAll();
+        } else {
+            modules = moduleRepository.findByIntituleContainingIgnoreCase(intitule);
+        }
         model.addAttribute("modules", modules);
         model.addAttribute("professors", professorRepository.findAll());
+        model.addAttribute("searchTerm", intitule);
         return "Admin/module";
     }
 
@@ -55,7 +62,7 @@ public class ModuleController {
             return "redirect:/modules";
         } catch (IllegalArgumentException e) {
             redAtt.addFlashAttribute("errorAddModule", "Erreur : " + e.getMessage());
-            return "Admin/module"; // Show the form again with an error message
+            return "Admin/module";
         }
     }
 
@@ -85,11 +92,9 @@ public class ModuleController {
 
         List<Professeur> professors = professorRepository.findAll();
 
-        // Add module and professors to the model
         model.addAttribute("module", module);
         model.addAttribute("professors", professors);
-
-        return "Admin/module"; // Ensure this corresponds to the main page containing the modal
+        return "Admin/module";
     }
     @PostMapping("/edit/{id}")
     public String editModule(
