@@ -18,4 +18,9 @@
       existe déjà
     </p>
   </div>
+  <div th:if="${password != null}">
+    <p>
+      <span class="font-bold" th:text="|'${password}'|"></span>
+    </p>
+  </div>
 </div>
