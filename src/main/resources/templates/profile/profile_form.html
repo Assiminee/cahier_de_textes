@@ -96,15 +96,10 @@
     </div>
 
     <!-- Professor specific inputs -->
-    <div th:replace="profile/professor_inputs :: div"></div>
+    <div th:replace="~{profile/professor_inputs :: div}"></div>
 
     <!-- Action buttons -->
     <div class="col-span-2 flex justify-between">
-        <button type="button"
-                class="bg-[#B10C74] hover:bg-[#db2777] text-white font-bold py-3 px-6 rounded">
-            Changer Mot de Passe
-        </button>
-
         <div>
             <button type="reset" id="cancelBtn"
                     class="text-[#B10C74] border-2 border-[#B10C74] font-bold py-3 px-6 rounded hover:border-[#B10C74] hover:bg-[#B10C74] hover:text-white hidden toToggle">
