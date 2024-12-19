@@ -50,4 +50,8 @@ public class Module {
     @JoinColumn(name = "responsable")
     @JsonBackReference
     private Professeur responsable;
+
+   /* public String getProfesseur(String responsable) {
+        return responsable.ge;
+    }*/
 }

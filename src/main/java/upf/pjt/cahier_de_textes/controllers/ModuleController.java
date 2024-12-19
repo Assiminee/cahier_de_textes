@@ -59,11 +59,11 @@ public class ModuleController {
             moduleRepository.save(module);
             System.out.println("Module: " + module);
             redAtt.addFlashAttribute("addSucessModule", "Module\t" + module.getIntitule() + "\ta été ajouté avec succès");
-            return "redirect:/modules";
+
         } catch (IllegalArgumentException e) {
             redAtt.addFlashAttribute("errorAddModule", "Erreur : " + e.getMessage());
-            return "Admin/module";
         }
+        return "redirect:/modules";
     }
 
     @DeleteMapping("/{id}")
@@ -102,7 +102,7 @@ public class ModuleController {
             @RequestParam String intitule,
             @RequestParam(required = false) UUID responsable, // Optional parameter
             @RequestParam Integer nombre_heures,
-            @RequestParam String modeEvaluation,
+            @RequestParam ModeEval modeEvaluation,
             RedirectAttributes redirectAttributes) {
         try {
             Module existingModule = moduleRepository.findById(id)
@@ -110,7 +110,7 @@ public class ModuleController {
 
             existingModule.setIntitule(intitule);
             existingModule.setNombre_heures(nombre_heures);
-            existingModule.setModeEvaluation(ModeEval.valueOf(modeEvaluation));
+            existingModule.setModeEvaluation(modeEvaluation);
             if (responsable != null) {
                 existingModule.setResponsable(professorRepository.findById(responsable)
                         .orElseThrow(() -> new IllegalArgumentException("Responsable not found")));
