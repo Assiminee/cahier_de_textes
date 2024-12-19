@@ -10,6 +10,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import upf.pjt.cahier_de_textes.dao.dtos.CustomUserDetails;
+import upf.pjt.cahier_de_textes.dao.dtos.EditPwdDTO;
 import upf.pjt.cahier_de_textes.dao.dtos.UserRegistrationDto;
 import upf.pjt.cahier_de_textes.dao.entities.Professeur;
 import upf.pjt.cahier_de_textes.dao.entities.User;
@@ -84,10 +85,8 @@ public class UserController {
         if (user == null)
             return "redirect:/auth/login";
 
-        if (!userService.hasUniqueAttributes(user, incomingUser, redirectAttributes)) {
-//            profileController.profile(model);
+        if (!userService.hasUniqueAttributes(user, incomingUser, redirectAttributes))
             return "redirect:/profile";
-        }
 
         if (incomingUser.getRole().name().equals("ROLE_PROF")) {
             Optional<Professeur> prof = professeurRepository.findById(convertedId);
@@ -105,7 +104,8 @@ public class UserController {
         Optional<User> optionalUser = userRepository.findById(convertedId);
 
         if (optionalUser.isEmpty())
-            return "redirect:/auth/login";;
+            return "redirect:/auth/login";
+        ;
 
         User loggedUser = optionalUser.get();
         incomingUser.setUserDetails(loggedUser);
@@ -134,5 +134,36 @@ public class UserController {
             redirectAttributes.addFlashAttribute("error", "Error deleting user: " + e.getMessage());
         }
         return "redirect:/users";
+    }
+
+    @PutMapping("/{id}/password")
+    public String updatePassword(@PathVariable UUID id, @ModelAttribute EditPwdDTO editPwdDTO, RedirectAttributes redAtts) throws Exception {
+        System.out.println(editPwdDTO);
+        User user = userRepository.findById(id).orElse(null);
+
+        System.out.println(user);
+
+        if (user == null)
+            throw new Exception("User with ID '" + id + "' not found");
+
+        String message;
+
+        try {
+            boolean correctPassword = userService.correctPassword(editPwdDTO.getOldPassword(), user.getPwd());
+
+            if (correctPassword) {
+                user.setPwd(userService.getEncoder().encode(editPwdDTO.getNewPassword()));
+                userRepository.save(user);
+            }
+
+            System.out.println(user);
+
+            message = correctPassword ? "Le mot de passe a bien été modifié" : "L'ancien mot de passe fourni est incorrecte";
+        } catch (Exception e) {
+            message = "Impossible de changer de mot de passe. Veuillez reessayer plus tard.";
+        }
+
+        redAtts.addFlashAttribute("password", message);
+        return "redirect:/profile";
     }
 }

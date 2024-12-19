@@ -45,11 +45,12 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
-                                .loginPage("/auth/login")
-                                .loginProcessingUrl("/login")
-                                .usernameParameter("email")
-                                .successHandler(authSuccessHandler)
-                                .permitAll()
+                        .loginPage("/auth/login")
+                        .loginProcessingUrl("/login")
+                        .usernameParameter("email")
+                        .successHandler(authSuccessHandler)
+                        .failureUrl("/auth/login?error")
+                        .permitAll()
                 )
                 // .httpBasic()
                 .logout(logout -> logout

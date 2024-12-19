@@ -9,7 +9,7 @@
 <body class="flex h-screen">
 <div class="w-1/2 bg-light text-black flex flex-col justify-center items-center p-10">
     <h1 class="text-4xl font-bold mb-10">Bienvenue sur UPF-management</h1>
-    <div th:if="${login_err == true}" class="p-4 mt-2 text-sm text-red-800 rounded-lg bg-[#ffdbdc]"
+    <div th:if="${error != null}" class="p-2 mb-4 text-sm text-red-800 w-1/2 rounded-3xl bg-[#ffdbdc] flex justify-center items-center"
          role="alert">
             <span class="font-bold">Email ou mot de passe invalide</span>
     </div>

@@ -1,0 +1,7 @@
+<form th:fragment="search_bar" id="searchForm" class="flex gap-4 w-full">
+    <input id="searchInput" type="text" name="query" placeholder="Rechercher"
+           class="p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 w-64"/>
+    <button type="submit">
+        <svg th:replace="~{fragments/icons/search_icon :: svg}"></svg>
+    </button>
+</form>

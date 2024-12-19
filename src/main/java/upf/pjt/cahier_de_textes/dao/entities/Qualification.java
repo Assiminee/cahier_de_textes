@@ -5,14 +5,20 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
+
 import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
+@ToString
+@NoArgsConstructor
+@Getter
+@Setter
 @Table(name = "qualification")
 public class Qualification {
-    public Qualification() {}
 
     public Qualification(String intitule, LocalDate dateObtention, Professeur prof) {
         this.intitule = intitule;
@@ -22,25 +28,18 @@ public class Qualification {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Getter
     private UUID id;
 
     @NotBlank
     @Column(name = "intitule", nullable = false)
-    @Getter
-    @Setter
     private String intitule;
 
     @NotNull
     @Column(name = "date_obtention", nullable = false)
-    @Getter
-    @Setter
     private LocalDate dateObtention;
 
     @ManyToOne
     @JoinColumn(name = "prof")
-    @Getter
-    @Setter
     @JsonBackReference
     private Professeur prof;
 }

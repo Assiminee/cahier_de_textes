@@ -1,20 +1,14 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gestion des Utilisateurs</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-
-</head>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head ('Gestion d\'utilisateurs')}"></head>
 
 <body class="bg-gray-100 font-sans">
 
 <div class="flex h-screen">
 
-  <aside th:replace="fragments/side_bar :: aside"></aside>
+  <aside th:replace="~{fragments/side_bar :: aside}"></aside>
   <main class="bg-white rounded-l-lg shadow-lg w-full col-span-11 flex flex-col h-screen">
-    <nav th:replace="fragments/nav :: nav"></nav>
+    <nav th:replace="~{fragments/nav :: nav}"></nav>
     <div class="p-6 flex justify-between items-center">
       <!-- Search Bar -->
       <form id="searchForm" th:action="@{/Admin/search}" method="GET" class="flex gap-4 w-full">

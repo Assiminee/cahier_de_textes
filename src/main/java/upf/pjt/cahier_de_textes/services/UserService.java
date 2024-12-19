@@ -1,6 +1,8 @@
 package upf.pjt.cahier_de_textes.services;
 
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -9,7 +11,6 @@ import upf.pjt.cahier_de_textes.dao.repositories.*;
 import upf.pjt.cahier_de_textes.dao.dtos.EditUserDTO;
 import upf.pjt.cahier_de_textes.dao.entities.User;
 import upf.pjt.cahier_de_textes.dao.entities.Professeur;
-
 import java.util.UUID;
 
 @Service
@@ -21,6 +22,8 @@ public class UserService {
     private QualificationRepository qualificationRepository;
     private  ModuleRepository moduleRepository;
     private  FiliereRepository filiereRepository;
+    @Getter
+    private PasswordEncoder encoder;
 
     @Autowired
     public UserService(
@@ -29,7 +32,9 @@ public class UserService {
             RoleRepository roleRepository,
             ProfesseurRepository professorRepository,
             AffectationRepository affectationRepository,
-            QualificationRepository qualificationRepository,ModuleRepository moduleRepository
+            QualificationRepository qualificationRepository,
+            ModuleRepository moduleRepository,
+            PasswordEncoder encoder
     ) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
@@ -38,6 +43,7 @@ public class UserService {
         this.affectationRepository = affectationRepository;
         this.moduleRepository = moduleRepository;
         this.filiereRepository = filiereRepository;
+        this.encoder = encoder;
     }
 
     private boolean hasDuplicateEmail(User user, String email) {
@@ -113,5 +119,9 @@ public class UserService {
         }
 
         userRepository.delete(user);
+    }
+
+    public boolean correctPassword(String incomingPassword, String currentPassword){
+        return encoder.matches(incomingPassword, currentPassword);
     }
 }
