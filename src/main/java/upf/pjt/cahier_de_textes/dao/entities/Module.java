@@ -51,7 +51,7 @@ public class Module {
     @JsonBackReference
     private Professeur responsable;
 
-   /* public String getProfesseur(String responsable) {
-        return responsable.ge;
-    }*/
+  public String getResponsableNom() {
+      return responsable.nom;
+  }
 }

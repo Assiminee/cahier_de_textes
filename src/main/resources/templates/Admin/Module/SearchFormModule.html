@@ -1,0 +1,29 @@
+<form th:action="@{/modules}" method="GET" class="py-1 px-5 flex gap-4 w-full">
+  <div class="flex border border-gray-300 rounded-md shadow-sm">
+    <input
+            type="text"
+            name="intitule"
+            placeholder="Chercher par Intitulé"
+            th:value="${searchTerm}"
+    class="block w-1/2 rounded-l-md py-2 px-3 text-sm placeholder-gray-400 focus:ring-indigo-500 focus:border-indigo-500"
+    />
+    <div class="w-[0.5px] bg-gray-300"></div>
+    <input
+            type="text"
+            name="responsable"
+            placeholder="Chercher par Responsable"
+            th:value="${responsableSearchTerm}"
+    class="block w-1/2 rounded-r-md py-2 px-3 text-sm placeholder-gray-400 focus:ring-indigo-500 focus:border-indigo-500"
+    />
+  </div>
+  <button type="submit" class="hover:opacity-80">
+    <img src="/public/seach.png" alt="Rechercher" class="h-6 w-6">
+  </button>
+
+  <select class="pr-6 ml-auto p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600">
+    <option value="">Filtrer heures</option>
+    <option value=""></option>
+  </select>
+</form>
+
+

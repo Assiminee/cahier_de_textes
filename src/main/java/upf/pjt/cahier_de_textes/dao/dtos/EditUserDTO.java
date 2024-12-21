@@ -37,6 +37,7 @@ public class EditUserDTO {
     }
 
     public void setUserDetails(User user) {
+
         user.setNom(nom);
         user.setPrenom(prenom);
         user.setGenre(genre);

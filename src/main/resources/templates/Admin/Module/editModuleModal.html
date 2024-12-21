@@ -1,0 +1,75 @@
+<!-- Modal -->
+<div th:fragment="modal(iterStatIndex, module, professors)">
+  <input type="checkbox" th:id="'editModuleModal-' + ${iterStat.index}" class="peer hidden">
+  <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden peer-checked:flex">
+    <div class="w-full max-w-md max-h-[80vh] bg-[#f2eee7] p-6 rounded-lg shadow-lg overflow-hidden relative">
+      <!-- Close Button -->
+      <label th:for="'editModuleModal-' + ${iterStat.index}" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 cursor-pointer">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </label>
+
+      <h2 class="text-lg font-semibold text-center text-gray-800 mb-6">Editer Le Module</h2>
+
+      <form th:action="@{/modules/{id}(id=${module?.id})}" method="post" class="overflow-y-auto max-h-[60vh] pr-2">
+        <input type="hidden" name="_method" value="PUT">
+        <div class="py-2 mb-4">
+          <label class="py-2 text-gray-900">Intitulé</label>
+          <input
+                  name="intitule"
+                  th:value="${module?.intitule}"
+                  class="py-2 w-full border rounded-md focus:outline-none"
+                  required
+          />
+        </div>
+
+        <div class="py-2 mb-4">
+          <label class="py-2 text-gray-900">Choisir Responsable</label>
+          <select
+                  name="responsable"
+                  class="p-2 w-full border rounded-md focus:outline-none">
+            <option value="" disabled selected>Choisir un professeur</option>
+            <option
+                    th:each="professor : ${professors}"
+                    th:value="${professor.id}"
+                    th:selected="${professor.id == module?.responsable?.id}"
+                    th:text="${professor.nom} + ' ' + ${professor.prenom}">
+            </option>
+          </select>
+        </div>
+
+        <div class="py-2 mb-4">
+          <label class="py-2 text-gray-900">Nombres d'heures</label>
+          <input
+                  type="number"
+                  name="nombre_heures"
+                  th:value="${module?.nombre_heures}"
+                  class="py-2 w-full border rounded-md focus:outline-none"
+                  required
+          />
+        </div>
+
+        <div class="py-2 mb-4">
+          <label class="py-2 text-gray-900">Choisir Mode D'évaluation</label>
+          <select
+                  name="modeEvaluation"
+                  class="p-2 w-full border rounded-md focus:outline-none"
+                  required>
+            <option th:value="PROJECT" th:selected="${module?.modeEvaluation == 'PROJECT'}">Projet</option>
+            <option th:value="EXAM" th:selected="${module?.modeEvaluation == 'EXAM'}">Examen Final</option>
+          </select>
+        </div>
+
+        <div class="flex justify-between mt-6">
+          <label th:for="'editModuleModal-' + ${iterStat.index}" class="px-4 py-2 text-white bg-[#b10c74] rounded-md hover:bg-pink-700 cursor-pointer">
+            Annuler
+          </label>
+          <button type="submit" class="px-4 py-2 text-white bg-[#313863] rounded-md hover:bg-blue-900">
+            Confirmer
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

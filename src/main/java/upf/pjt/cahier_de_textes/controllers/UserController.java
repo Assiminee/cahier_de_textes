@@ -31,9 +31,9 @@ import java.util.UUID;
 @RequestMapping(name = "User management endpoints", path = "/users")
 public class UserController {
     private final UserService userService;
-    private UserRepository userRepository;
-    private ProfesseurRepository professeurRepository;
-    private UserRegistrationService userRegistrationService;
+    private final UserRepository userRepository;
+    private final ProfesseurRepository professeurRepository;
+    private final UserRegistrationService userRegistrationService;
 
 
     @Autowired

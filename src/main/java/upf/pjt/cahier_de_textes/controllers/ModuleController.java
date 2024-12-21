@@ -1,8 +1,10 @@
 package upf.pjt.cahier_de_textes.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -13,49 +15,72 @@ import upf.pjt.cahier_de_textes.dao.entities.Module;
 import upf.pjt.cahier_de_textes.dao.entities.Professeur;
 import upf.pjt.cahier_de_textes.dao.entities.User;
 import upf.pjt.cahier_de_textes.dao.entities.enumerations.ModeEval;
-import upf.pjt.cahier_de_textes.dao.dtos.CustomUserDetails;
+import upf.pjt.cahier_de_textes.utils.AuthUtils;
 import java.util.List;
 import java.util.UUID;
+
 
 @Controller
 @RequestMapping(name = "Module management endpoints", path = "/modules")
 public class ModuleController {
 
-    @Autowired
-    private ModuleRepository moduleRepository;
+    private final ModuleRepository moduleRepository;
+    private final  ProfesseurRepository professorRepository;
 
     @Autowired
-    private ProfesseurRepository professorRepository;
+    public ModuleController(
+            ModuleRepository moduleRepository,
+            ProfesseurRepository professorRepository
+    ) {
+        this.moduleRepository = moduleRepository;
+        this.professorRepository = professorRepository;
+    }
 
     @GetMapping()
-    public String showModules(@RequestParam(required = false) String intitule, Model model) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication.getPrincipal() instanceof CustomUserDetails userDetails) {
-            User currentUser = userDetails.getUser();
+    public String showModules(@RequestParam(required = false) String intitule,
+                              @RequestParam(required = false) String responsable,
+                              @RequestParam(defaultValue = "0") int page,
+                              @RequestParam(defaultValue = "10") int size,
+                              Model model) {
+        try {
+            User currentUser = AuthUtils.getAuthenticatedUser();
             model.addAttribute("user", currentUser);
+        } catch (IllegalStateException e) {
+            return "redirect:/login";
         }
 
-        List<Module> modules;
-        if (intitule == null || intitule.isBlank()) {
-            modules = moduleRepository.findAll();
-        } else {
-            modules = moduleRepository.findByIntituleContainingIgnoreCase(intitule);
-        }
-        model.addAttribute("modules", modules);
-        model.addAttribute("professors", professorRepository.findAll());
+        Pageable pageable = PageRequest.of(page, size, Sort.by("intitule").ascending());
+        Page<Module> modulesPage = Page.empty(); // Initialize with a default value
+
+        if ((intitule == null || intitule.isBlank()) && (responsable == null || responsable.isBlank())) {
+            modulesPage = moduleRepository.findAll(pageable);
+        } else if (intitule != null && !intitule.isBlank() && (responsable == null || responsable.isBlank())) {
+            modulesPage = moduleRepository.findByIntituleContainingIgnoreCase(intitule, pageable);
+        } else if ((intitule == null || intitule.isBlank()) && responsable != null && !responsable.isBlank()) {
+            modulesPage = moduleRepository.findByResponsable_NomContainingIgnoreCase(responsable, pageable);
+        }else
+            modulesPage = moduleRepository.findByIntituleContainingIgnoreCaseAndResponsable_NomContainingIgnoreCase(intitule, responsable, pageable);
+
+        model.addAttribute("modules", modulesPage.getContent());
+        model.addAttribute("totalPages", modulesPage.getTotalPages());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("size", size);
         model.addAttribute("searchTerm", intitule);
-        return "Admin/module";
+        model.addAttribute("responsableSearchTerm", responsable);
+        return "Admin/Module/module";
     }
+
 
     @PostMapping()
     public String addModule(@ModelAttribute Module module, Model model, RedirectAttributes redAtt) {
         try {
-            // Fetch the authenticated user
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            if (authentication.getPrincipal() instanceof CustomUserDetails userDetails) {
-                User currentUser = userDetails.getUser();
+            try {
+                User currentUser = AuthUtils.getAuthenticatedUser();
                 model.addAttribute("user", currentUser);
+            } catch (IllegalStateException e) {
+                return "redirect:/login";
             }
+
             moduleRepository.save(module);
             System.out.println("Module: " + module);
             redAtt.addFlashAttribute("addSucessModule", "Module\t" + module.getIntitule() + "\ta été ajouté avec succès");
@@ -94,7 +119,7 @@ public class ModuleController {
 
         model.addAttribute("module", module);
         model.addAttribute("professors", professors);
-        return "Admin/module";
+        return "Admin/Module/module";
     }
     @PutMapping("/{id}")
     public String editModule(
@@ -117,9 +142,9 @@ public class ModuleController {
             }
 
             moduleRepository.save(existingModule);
-            redirectAttributes.addFlashAttribute("editSuccess", "Module updated successfully!");
+            redirectAttributes.addFlashAttribute("editSucessModule", "Module'" + existingModule.getIntitule()+ "' Modifier avec succès");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("editError", "Error updating module: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("erroreditModule", "Erreur Modification du Module , veuillez essayer plut tard  " + e.getMessage());
         }
         return "redirect:/modules";
     }
