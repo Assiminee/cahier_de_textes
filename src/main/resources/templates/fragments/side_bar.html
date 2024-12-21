@@ -18,7 +18,7 @@
                     <ul class="space-y-4">
 
                             <li class="group/user hover:bg-[#B10C74] flex justify-center group-hover:justify-start px-5 py-2 text-gray-700 hover:text-white transition-all duration-100">
-                                <a th:href="@{/users}">
+                                <a th:href="@{/users}" class="flex">
                                 <svg th:replace="fragments/icons/users_icon :: svg"></svg>
                                 <span class="ml-4 text-sm hidden group-hover:block">Utilisateurs</span>
                                 </a>
@@ -30,7 +30,7 @@
                         </li>
 
                         <li class="group/module hover:bg-[#B10C74] flex justify-center group-hover:justify-start px-5 py-2 text-gray-700 hover:text-white transition-all duration-100">
-                            <a th:href="@{/modules}">
+                            <a th:href="@{/modules}" class="flex">
                             <svg th:replace="fragments/icons/module_icon :: svg"></svg>
                             <span class="ml-4 text-sm hidden group-hover:block">Modules</span>
                             </a>

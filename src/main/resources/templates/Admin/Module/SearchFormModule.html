@@ -19,10 +19,10 @@
   <button type="submit" class="hover:opacity-80">
     <img src="/public/seach.png" alt="Rechercher" class="h-6 w-6">
   </button>
-
-  <select class="pr-6 ml-auto p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600">
-    <option value="">Filtrer heures</option>
-    <option value=""></option>
+  <select name="modeEvaluation" class="pr-6 ml-auto p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600">
+    <option value="" disabled selected>Filtrer par Mode d'evaluation</option>
+    <option th:value="'EXAM'" th:text="'Examen'"></option>
+    <option th:value="'PROJECT'" th:text="'Projet'"></option>
   </select>
 </form>
 

@@ -35,10 +35,10 @@ public class ModuleController {
         this.moduleRepository = moduleRepository;
         this.professorRepository = professorRepository;
     }
-
     @GetMapping()
     public String showModules(@RequestParam(required = false) String intitule,
                               @RequestParam(required = false) String responsable,
+                              @RequestParam(required = false) ModeEval modeEvaluation,
                               @RequestParam(defaultValue = "0") int page,
                               @RequestParam(defaultValue = "10") int size,
                               Model model) {
@@ -52,14 +52,26 @@ public class ModuleController {
         Pageable pageable = PageRequest.of(page, size, Sort.by("intitule").ascending());
         Page<Module> modulesPage = Page.empty(); // Initialize with a default value
 
-        if ((intitule == null || intitule.isBlank()) && (responsable == null || responsable.isBlank())) {
+        if ((intitule == null || intitule.isBlank()) &&
+                (responsable == null || responsable.isBlank()) &&
+                (modeEvaluation == null )) {
             modulesPage = moduleRepository.findAll(pageable);
-        } else if (intitule != null && !intitule.isBlank() && (responsable == null || responsable.isBlank())) {
+        } else if (intitule != null && !intitule.isBlank() &&
+                (responsable == null || responsable.isBlank()) &&
+                (modeEvaluation == null )) {
             modulesPage = moduleRepository.findByIntituleContainingIgnoreCase(intitule, pageable);
-        } else if ((intitule == null || intitule.isBlank()) && responsable != null && !responsable.isBlank()) {
+        } else if ((intitule == null || intitule.isBlank()) &&
+                responsable != null && !responsable.isBlank() &&
+                (modeEvaluation == null )) {
             modulesPage = moduleRepository.findByResponsable_NomContainingIgnoreCase(responsable, pageable);
-        }else
-            modulesPage = moduleRepository.findByIntituleContainingIgnoreCaseAndResponsable_NomContainingIgnoreCase(intitule, responsable, pageable);
+        } else if ((intitule == null || intitule.isBlank()) &&
+                (responsable == null || responsable.isBlank()) &&
+                modeEvaluation != null ) {
+            modulesPage = moduleRepository.findByModeEvaluationContainingIgnoreCase(modeEvaluation, pageable);
+        } else {
+            modulesPage = moduleRepository.findByIntituleContainingIgnoreCaseAndResponsable_NomContainingIgnoreCaseAndModeEvaluation(
+                    intitule, responsable, modeEvaluation, pageable);
+        }
 
         model.addAttribute("modules", modulesPage.getContent());
         model.addAttribute("totalPages", modulesPage.getTotalPages());
@@ -67,6 +79,7 @@ public class ModuleController {
         model.addAttribute("size", size);
         model.addAttribute("searchTerm", intitule);
         model.addAttribute("responsableSearchTerm", responsable);
+        model.addAttribute("modeEvaluation", modeEvaluation);
         return "Admin/Module/module";
     }
 
