@@ -29,7 +29,7 @@
                     <img src="/public/edit.png" alt="edit" class="h-6 w-6">
                 </label>
 
-                <div th:replace="Admin/Module/editModuleModal.html :: modal(iterStatIndex=${iterStat.index}, module=${module}, professors=${professors})"></div>
+                <div th:replace="~{Admin/Module/editModuleModal.html :: modal(iterStatIndex=${iterStat.index}, module=${module}, professors=${professors})}"></div>
 
                 <form method="post" th:action="@{/modules/{id}(id=${module.id})}">
                     <input type="hidden" name="_method" value="DELETE">
