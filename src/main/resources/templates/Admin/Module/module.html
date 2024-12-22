@@ -3,9 +3,9 @@
 <head th:replace="~{fragments/head :: head ('module')}"></head>
 <body class="bg-gray-100 font-sans">
 <div class="flex h-screen">
-  <aside th:replace="fragments/side_bar :: aside"></aside>
+  <div th:replace="~{fragments/side_bar :: aside}"></div>
   <main class="bg-white rounded-l-lg shadow-lg w-full flex flex-col h-screen">
-    <header th:replace="fragments/nav.html :: nav"></header>
+    <header th:replace="~{fragments/nav.html :: nav}"></header>
 
     <section class="px-7 py-6 pr-8  flex justify-between items-center">
       <h2 class="text-3xl font-medium text-gray-800">Liste des Modules</h2>
@@ -15,16 +15,16 @@
       </label>
     </section>
 
-    <section th:replace="Admin/Module/ErrorHandeling.html :: ErrorHandeling"></section>
+    <section th:replace="~{Admin/Module/ErrorHandeling.html :: ErrorHandeling}"></section>
 
-    <form th:replace="Admin/Module/SearchFormModule.html :: form"></form>
+    <form th:replace="~{Admin/Module/SearchFormModule.html :: form}"></form>
 
-    <section th:replace="Admin/Module/ModuleList.html :: div"></section>
+    <section th:replace="~{Admin/Module/ModuleList.html :: div}"></section>
 
     <input type="checkbox" id="addModuleModal" class="peer hidden">
-    <section th:replace="Admin/Module/addModuleModal.html :: div"></section>
+    <section th:replace="~{Admin/Module/addModuleModal.html :: div}"></section>
 
-    <section th:replace="Admin/Module/Modulepagination.html :: div"></section>
+    <section th:replace="~{Admin/Module/Modulepagination.html :: div}"></section>
   </main>
 </div>
 <script>
