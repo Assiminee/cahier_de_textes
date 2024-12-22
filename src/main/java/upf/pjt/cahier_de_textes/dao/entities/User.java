@@ -94,6 +94,10 @@ public class User {
     @JsonManagedReference
     protected Role role;
 
+    public String getFullName() {
+        return nom + " " + prenom;
+    }
+
     @Override
     public String toString() {
         return "User{" +

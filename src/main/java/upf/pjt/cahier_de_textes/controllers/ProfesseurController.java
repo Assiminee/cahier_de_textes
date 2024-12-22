@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import upf.pjt.cahier_de_textes.dao.dtos.CustomUserDetails;
 import upf.pjt.cahier_de_textes.dao.entities.Professeur;
 import upf.pjt.cahier_de_textes.dao.repositories.ProfesseurRepository;
-
 import java.util.UUID;
 
 @Slf4j
