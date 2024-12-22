@@ -1,33 +1,47 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gestion des Modules</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-</head>
+<head th:replace="fragments/head :: head"></head>
 
 <body class="bg-gray-100 font-sans">
 <div class="flex h-screen">
   <aside th:replace="fragments/side_bar :: aside"></aside>
   <main class="bg-white rounded-l-lg shadow-lg w-full flex flex-col h-screen">
     <header th:replace="fragments/nav.html :: nav"></header>
-    <section class="p-6 flex justify-between items-center">
-      <h2 class="text-xl font-semibold text-gray-800">Liste des Modules</h2>
+
+    <!-- Section with header and add button -->
+    <section class="px-7 py-6 pr-8  flex justify-between items-center">
+      <h2 class="text-3xl font-medium text-gray-800">Liste des Modules</h2>
       <label for="addModuleModal"
              class="bg-[#313863] text-white py-2 px-6 rounded-lg hover:bg-blue-950 shadow-md cursor-pointer">
         + Ajouter Module
       </label>
     </section>
 
+    <!-- Error handling directly below the header -->
+    <section th:replace="Admin/Module/ErrorHandeling.html :: ErrorHandeling"></section>
+
+    <!-- Search Form -->
     <form th:replace="Admin/Module/SearchFormModule.html :: form"></form>
-    <section th:replace="Admin/Module/ErrorHandeling.html ::section"></section>
+
+    <!-- Module List -->
     <section th:replace="Admin/Module/ModuleList.html :: div"></section>
+
+    <!-- Add Module Modal -->
     <input type="checkbox" id="addModuleModal" class="peer hidden">
     <section th:replace="Admin/Module/addModuleModal.html :: div"></section>
+
+    <!-- Pagination -->
     <section th:replace="Admin/Module/Modulepagination.html :: div"></section>
 
   </main>
 </div>
+<script>
+  // Ensure the reset button functionality is correctly implemented
+  $("#resetButton").click(function () {
+    $('input').val('');
+    $('select').val('');
+    $('#filterForm').submit();
+  });
+</script>
 </body>
 </html>

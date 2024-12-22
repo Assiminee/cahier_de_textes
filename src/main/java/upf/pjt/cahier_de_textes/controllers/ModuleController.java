@@ -36,12 +36,15 @@ public class ModuleController {
         this.professorRepository = professorRepository;
     }
     @GetMapping()
-    public String showModules(@RequestParam(required = false) String intitule,
-                              @RequestParam(required = false) String responsable,
-                              @RequestParam(required = false) ModeEval modeEvaluation,
-                              @RequestParam(defaultValue = "0") int page,
-                              @RequestParam(defaultValue = "10") int size,
-                              Model model) {
+    public String showModules(
+            @RequestParam(required = false) String intitule,
+            @RequestParam(required = false) String responsable,
+            @RequestParam(required = false) String modeEvaluation,
+            @RequestParam(required = false) Integer min,
+            @RequestParam(required = false) Integer max,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            Model model) {
         try {
             User currentUser = AuthUtils.getAuthenticatedUser();
             model.addAttribute("user", currentUser);
@@ -50,29 +53,32 @@ public class ModuleController {
         }
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("intitule").ascending());
-        Page<Module> modulesPage = Page.empty(); // Initialize with a default value
+        Page<Module> modulesPage = Page.empty();
+
+        // Convert modeEvaluation from String to Enum
+        ModeEval modeEvalEnum = null;
+        if (modeEvaluation != null && !modeEvaluation.isBlank()) {
+            try {
+                modeEvalEnum = ModeEval.valueOf(modeEvaluation.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                model.addAttribute("error", "Invalid mode d'évaluation");
+            }
+        }
 
         if ((intitule == null || intitule.isBlank()) &&
                 (responsable == null || responsable.isBlank()) &&
-                (modeEvaluation == null )) {
+                modeEvalEnum == null && min == null && max == null) {
             modulesPage = moduleRepository.findAll(pageable);
         } else if (intitule != null && !intitule.isBlank() &&
                 (responsable == null || responsable.isBlank()) &&
-                (modeEvaluation == null )) {
+                modeEvalEnum == null && min == null && max == null) {
             modulesPage = moduleRepository.findByIntituleContainingIgnoreCase(intitule, pageable);
-        } else if ((intitule == null || intitule.isBlank()) &&
-                responsable != null && !responsable.isBlank() &&
-                (modeEvaluation == null )) {
-            modulesPage = moduleRepository.findByResponsable_NomContainingIgnoreCase(responsable, pageable);
-        } else if ((intitule == null || intitule.isBlank()) &&
-                (responsable == null || responsable.isBlank()) &&
-                modeEvaluation != null ) {
-            modulesPage = moduleRepository.findByModeEvaluationContainingIgnoreCase(modeEvaluation, pageable);
         } else {
-            modulesPage = moduleRepository.findByIntituleContainingIgnoreCaseAndResponsable_NomContainingIgnoreCaseAndModeEvaluation(
-                    intitule, responsable, modeEvaluation, pageable);
+            modulesPage = moduleRepository.filterModules(intitule, responsable, modeEvalEnum, min, max, pageable);
         }
+        List<Professeur> professors = professorRepository.findAll();
 
+        model.addAttribute("professors", professors);
         model.addAttribute("modules", modulesPage.getContent());
         model.addAttribute("totalPages", modulesPage.getTotalPages());
         model.addAttribute("currentPage", page);
@@ -80,6 +86,8 @@ public class ModuleController {
         model.addAttribute("searchTerm", intitule);
         model.addAttribute("responsableSearchTerm", responsable);
         model.addAttribute("modeEvaluation", modeEvaluation);
+        model.addAttribute("min", min);
+        model.addAttribute("max", max);
         return "Admin/Module/module";
     }
 

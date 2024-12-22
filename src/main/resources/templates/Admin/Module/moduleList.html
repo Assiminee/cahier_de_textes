@@ -1,4 +1,4 @@
-<div class="p-3 overflow-auto">
+<div th:fragment ="moduleList" class="px-7 pt-5 overflow-auto">
     <table class="w-full border-collapse border border-gray-200 shadow-sm rounded-lg overflow-hidden">
         <thead class="bg-[#b10c74] text-white">
         <tr>
@@ -29,11 +29,9 @@
                     <img src="/public/edit.png" alt="edit" class="h-6 w-6">
                 </label>
 
-                <!-- Include Modal -->
                 <div th:replace="Admin/Module/editModuleModal.html :: modal(iterStatIndex=${iterStat.index}, module=${module}, professors=${professors})"></div>
 
 
-                <!-- Delete Button -->
                 <form method="post" th:action="@{/modules/{id}(id=${module.id})}">
                     <input type="hidden" name="_method" value="DELETE">
                     <button class="hover:opacity-80">

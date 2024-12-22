@@ -60,7 +60,7 @@ public class UserController {
         List<User> users = userRepository.findAll();
         model.addAttribute("users", users); // Pass users list to the model
 
-        return "Admin/users";
+        return "Admin/User/users";
     }
 
     @PostMapping()
@@ -72,7 +72,7 @@ public class UserController {
             return "redirect:/users"; // Redirect to the user list or a success page
         } catch (IllegalArgumentException e) {
             model.addAttribute("errorMessage", e.getMessage());
-            return "Admin/users"; // Show the form again with an error message
+            return "Admin/User/users"; // Show the form again with an error message
         }
     }
 

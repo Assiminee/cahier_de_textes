@@ -1,21 +1,23 @@
-
-<div class=" py-6 pagination-container">
+<div class="py-6 pagination-container">
   <ul class="pagination flex justify-center gap-4">
     <!-- Previous Page -->
     <li th:if="${currentPage > 0}">
-      <a th:href="@{/modules(page=${currentPage - 1}, size=${size}, intitule=${searchTerm}, responsable=${responsableSearchTerm})}"
+      <a th:href="@{/modules(page=${currentPage - 1}, size=${size}, intitule=${searchTerm}, responsable=${responsableSearchTerm}, modeEvaluation=${modeEvaluation})}"
          class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">Précédent</a>
     </li>
+
+    <!-- Page Numbers -->
     <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
         th:classappend="${i == currentPage} ? 'font-bold text-blue-600'">
-      <a th:href="@{/modules(page=${i}, size=${size}, intitule=${searchTerm}, responsable=${responsableSearchTerm})}"
+      <a th:href="@{/modules(page=${i}, size=${size}, intitule=${searchTerm}, responsable=${responsableSearchTerm}, modeEvaluation=${modeEvaluation})}"
          class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
          th:text="${i + 1}"></a>
     </li>
+
+    <!-- Next Page -->
     <li th:if="${currentPage < totalPages - 1}">
-      <a th:href="@{/modules(page=${currentPage + 1}, size=${size}, intitule=${searchTerm}, responsable=${responsableSearchTerm})}"
+      <a th:href="@{/modules(page=${currentPage + 1}, size=${size}, intitule=${searchTerm}, responsable=${responsableSearchTerm}, modeEvaluation=${modeEvaluation})}"
          class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">Suivant</a>
     </li>
   </ul>
 </div>
-

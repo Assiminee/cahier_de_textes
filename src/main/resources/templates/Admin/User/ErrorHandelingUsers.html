@@ -1,0 +1,14 @@
+
+    <div class="flex flex-col">
+        <div th:if="${action == true}" class="p-4 mt-2 text-sm text-green-800 rounded-lg bg-[#c9e8b9]"
+             role="alert">
+            <p th:if="${added != null}">
+                Utilisateur <span class="font-bold" th:text="|'${added}'|"></span>
+                ajouté avec succès
+            </p>
+            <p th:if="${deleted != null}">
+                Utilisateur <span class="font-bold" th:text="|'${deleted}'|"></span>
+                suprimé avec succès
+            </p>
+        </div>
+    </div>

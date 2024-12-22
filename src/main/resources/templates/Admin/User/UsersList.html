@@ -1,0 +1,38 @@
+<section th:fragment="UsersList" class="p-6 overflow-auto">
+    <table class="w-full border-collapse border border-gray-200 shadow-sm rounded-lg overflow-hidden">
+        <thead class="bg-[#b10c74] text-white">
+        <tr>
+            <th class="p-4 text-left"></th>
+            <th class="p-4 text-left">Nom</th>
+            <th class="p-4 text-left">Date de Naissance</th>
+            <th class="p-4 text-left">Rôle</th>
+            <th class="p-4 text-left">Email</th>
+            <th class="p-4 text-center">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="user : ${users}" class="bg-gray-100 hover:bg-gray-200 transition-all">
+            <td class="p-4 text-left">
+                <button class="hover:opacity-80">
+                    <img src="/public/eye.png" alt="Voir" class="h-6 w-6">
+                </button>
+            </td>
+            <td class="p-4" th:text="${user.nom + ' ' + user.prenom}"></td>
+            <td class="p-4" th:text="${user.dateNaissance}"></td>
+            <td class="p-4" th:text="${user.role.getAuthority()}"></td>
+            <td class="p-4" th:text="${user.email}"></td>
+            <td class="p-4 flex items-center justify-center gap-3">
+                <button class="hover:opacity-80">
+                    <img src="/public/edit.png" alt="Modifier" class="h-6 w-6">
+                </button>
+                <form th:action="@{/users/{id}(id=${user.id})}" method="POST">
+                    <input type="hidden" name="_method" value="DELETE">
+                    <button type="submit" class="hover:opacity-80">
+                        <img src="/public/trash.png" alt="Delete" class="h-6 w-6">
+                    </button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</section>
