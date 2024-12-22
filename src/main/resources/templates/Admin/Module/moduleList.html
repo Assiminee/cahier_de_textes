@@ -1,0 +1,44 @@
+<div th:fragment ="moduleList" class="px-7 pt-5 overflow-auto">
+    <table class="w-full border-collapse border border-gray-200 shadow-sm rounded-lg overflow-hidden">
+        <thead class="bg-[#b10c74] text-white">
+        <tr>
+            <th class="p-4 text-left">Intitulé</th>
+            <th class="p-4 text-left">Enseignant Responsable</th>
+            <th class="p-4 text-left">Nombre d'heures</th>
+            <th class="p-4 text-left">Mode d'Évaluation</th>
+            <th class="p-4 text-center">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:if="${#lists.isEmpty(modules)}">
+            <td colspan="5" class="text-center p-4 text-gray-500">
+                Aucun module trouvé
+            </td>
+        </tr>
+        <tr th:each="module, iterStat : ${modules}" class="bg-gray-100 hover:bg-gray-200 transition-all">
+            <td th:text="${module.intitule}" class="p-4"></td>
+            <td th:text="${module.responsable != null ? module.responsable.nom + ' ' + module.responsable.prenom : 'Pas de prof responsable attribué'}" class="p-4"></td>
+            <td th:text="${module.nombre_heures}" class="p-4"></td>
+            <td class="p-4">
+                <span th:if="${module.getModeEvaluation() == 'EXAM'}" class="bg-yellow-100 rounded px-2 py-1">Examen Final</span>
+                <span th:if="${module.getModeEvaluation() == 'PROJECT'}" class="bg-green-100 rounded px-2 py-1">Projet</span>
+            </td>
+            <td class="p-4 flex items-center justify-center gap-3">
+
+                <label th:for="'editModuleModal-' + ${iterStat.index}" class="cursor-pointer">
+                    <img src="/public/edit.png" alt="edit" class="h-6 w-6">
+                </label>
+
+                <div th:replace="Admin/Module/editModuleModal.html :: modal(iterStatIndex=${iterStat.index}, module=${module}, professors=${professors})"></div>
+
+                <form method="post" th:action="@{/modules/{id}(id=${module.id})}">
+                    <input type="hidden" name="_method" value="DELETE">
+                    <button class="hover:opacity-80">
+                        <img src="/public/trash.png" alt="Supprimer" class="h-6 w-6">
+                    </button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
