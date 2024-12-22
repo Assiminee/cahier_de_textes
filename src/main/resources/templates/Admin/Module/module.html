@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
-<head th:replace="fragments/head :: head"></head>
+<head th:replace="~{fragments/head :: head ('module')}"></head>
 <body class="bg-gray-100 font-sans">
 <div class="flex h-screen">
   <aside th:replace="fragments/side_bar :: aside"></aside>
