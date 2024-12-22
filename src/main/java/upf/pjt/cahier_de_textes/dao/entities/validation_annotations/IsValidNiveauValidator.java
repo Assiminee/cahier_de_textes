@@ -21,7 +21,7 @@ public class IsValidNiveauValidator implements ConstraintValidator<IsValidNiveau
         // the Default Constraint Violation
         context.disableDefaultConstraintViolation();
         String errorMessage = String.format(
-                "Niveau must be between 1 and %d for the associated filiere",
+                "Le niveau doit être compris entre 1 et %d",
                 nombreAnnees
         );
         // Add a new Constraint Violation with the desired text

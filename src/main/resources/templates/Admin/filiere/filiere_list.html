@@ -1,0 +1,44 @@
+<table th:fragment="filiere_table" class="w-full border-collapse border border-gray-200 shadow-sm rounded-lg overflow-hidden">
+  <thead class="bg-[#b10c74] text-white">
+  <tr>
+    <th class="py-4 text-left"></th>
+    <th class="py-4 text-center">Intitulé</th>
+    <th class="py-4 text-center">Expiration de Reconnaisance</th>
+    <th class="py-4 text-center">Type de Diplome</th>
+    <th class="py-4 text-center">Coordinateur</th>
+    <th class="py-4 px-10 text-center">Action</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:if="${filieres.getNumberOfElements() == 0}"
+      class="text-center bg-gray-100 hover:bg-gray-200 transition-all"
+  >
+    <td colspan="6" class="p-4 font-medium" th:text="'Aucune filière à afficher'"></td>
+  </tr>
+  <tr th:each="fil : ${filieres}"
+      class="text-center bg-gray-100 hover:bg-gray-200 transition-all">
+    <td class="p-4">
+      <button class="hover:opacity-80">
+        <img src="/public/eye.png" alt="Voir" class="h-6 w-8">
+      </button>
+    </td>
+    <td class="p-4" th:text="${fil.getIntitule()}"></td>
+    <td class="p-4" th:text="${fil.getDateExpiration()}"></td>
+    <td class="p-4" th:text="${fil.getDiplome().getFullName()}"></td>
+    <td class="p-4" th:if="${fil.getCoordinateur() != null}"
+        th:text="${fil.getCoordinateur().getFullName()}"></td>
+    <td class="p-4" th:if="${fil.getCoordinateur() == null}">Aucun Coordinateur</td>
+    <td class="p-4 flex items-center justify-center gap-3">
+      <button class="hover:opacity-80">
+        <img src="/public/edit.png" alt="Modifier" class="h-6 w-6">
+      </button>
+      <form th:action="@{/users/{id}(id=${user.id})}" method="POST">
+        <input type="hidden" name="_method" value="DELETE">
+        <button type="submit" class="hover:opacity-80">
+          <img src="/public/trash.png" alt="Delete" class="h-6 w-6">
+        </button>
+      </form>
+    </td>
+  </tr>
+  </tbody>
+</table>

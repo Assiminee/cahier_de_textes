@@ -31,8 +31,10 @@
                             <span class="ml-4 text-sm hidden group-hover:block">Modules</span>
                         </li>
                         <li class="group/filiere hover:bg-[#B10C74] flex justify-center group-hover:justify-start px-5 py-2 text-gray-700 hover:text-white transition-all duration-100">
-                            <svg th:replace="fragments/icons/filiere_icon :: svg"></svg>
-                            <span class="ml-4 text-sm hidden group-hover:block">Filières</span>
+                            <a th:href="@{/filieres}" class="flex">
+                                <svg th:replace="fragments/icons/filiere_icon :: svg"></svg>
+                                <span class="ml-4 text-sm hidden group-hover:block">Filières</span>
+                            </a>
                         </li>
                     </ul>
                 </li>

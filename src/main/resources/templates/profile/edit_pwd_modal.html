@@ -21,7 +21,7 @@
             </div>
             <!-- Modal body -->
             <div class="p-4 md:p-5 space-y-4">
-                <form th:action="@{/users/{id}/password (id=${user.getId()})}" th:method="POST">
+                <form th:action="@{/users/{id}/password (id=${user.getId()})}" th:method="POST" id="editPwdForm">
                     <input type="hidden" name="_method" value="PUT">
                     <!-- Old Password -->
                     <div>

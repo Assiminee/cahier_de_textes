@@ -15,16 +15,16 @@
                     <h1 class="text-4xl font-semibold">Mes Informations</h1>
                     <div th:replace="~{profile/edit_profile_errors :: div}"></div>
                 </div>
+                <div>
+                    <button data-modal-target="editPwdModal" data-modal-toggle="editPwdModal" type="button"
+                            class="bg-[#B10C74] hover:bg-[#db2777] text-white font-bold py-3 px-6 rounded">
+                        Changer Mot de Passe
+                    </button>
+                </div>
+                <div th:replace="~{profile/edit_pwd_modal :: div}"></div>
             </div>
 
             <form th:replace="~{profile/profile_form :: form}"></form>
-
-            <button data-modal-target="editPwdModal" data-modal-toggle="editPwdModal" type="button"
-                    class="bg-[#B10C74] hover:bg-[#db2777] text-white font-bold py-3 px-6 rounded">
-                Changer Mot de Passe
-            </button>
-
-            <div th:replace="~{profile/edit_pwd_modal :: div}"></div>
         </div>
     </main>
 </div>
@@ -33,13 +33,12 @@
     import {setMaxDate} from '/public/js/setMaxDate.js';
     import {checkPasswords} from "/public/js/checkPasswords.js";
 
-    setMaxDate();
-    formButtonsBehavior();
     const newPass = $("#newPasswordInput");
     const confPass = $("#confirmPasswordInput");
 
-    newPass.on("input", checkPasswords(newPass, confPass));
-    confPass.on("input", checkPasswords(newPass, confPass));
+    setMaxDate();
+    formButtonsBehavior();
+    checkPasswords(newPass, confPass);
 </script>
 </body>
 </html>

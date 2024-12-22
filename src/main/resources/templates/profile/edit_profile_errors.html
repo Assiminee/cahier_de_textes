@@ -1,4 +1,4 @@
-<div th:fragment="edit_profile_errors" th:if="${error == true}" class="p-4 mt-2 text-sm text-red-800 rounded-lg bg-[#ffdbdc]"
+<div th:fragment="edit_profile_errors" th:if="${error == true || password != null}" class="p-4 mt-2 text-sm text-red-800 rounded-lg bg-[#ffdbdc]"
      role="alert">
   <div th:if="${email != null}">
     <p>
@@ -20,7 +20,7 @@
   </div>
   <div th:if="${password != null}">
     <p>
-      <span class="font-bold" th:text="|'${password}'|"></span>
+      <span class="font-bold" th:text="|${password}|"></span>
     </p>
   </div>
 </div>

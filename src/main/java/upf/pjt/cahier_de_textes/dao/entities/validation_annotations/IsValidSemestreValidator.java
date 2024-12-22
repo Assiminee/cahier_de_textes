@@ -18,7 +18,7 @@ public class IsValidSemestreValidator implements ConstraintValidator<IsValidSeme
             return true;
 
         context.disableDefaultConstraintViolation();
-        String err = "The value of semestre can either be " + niveau * 2 + " or " + ((niveau * 2) - 1) + ".";
+        String err = "Le semestre pour le niveau " + niveau + " ne peut prendre que les valeurs S" + niveau * 2 + " ou S" + ((niveau * 2) - 1) + ".";
         context.buildConstraintViolationWithTemplate(err);
 
         return false;

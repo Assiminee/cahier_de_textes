@@ -8,6 +8,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import upf.pjt.cahier_de_textes.dao.entities.enumerations.Jour;
 import upf.pjt.cahier_de_textes.dao.entities.validation_annotations.IsValidNiveau;
 import upf.pjt.cahier_de_textes.dao.entities.validation_annotations.IsValidSemestre;
 import java.util.UUID;
@@ -25,7 +26,6 @@ public class Affectation {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-
     @Min(1)
     @Max(5)
     @Column(name = "niveau", nullable = false)
@@ -36,6 +36,18 @@ public class Affectation {
     @NotNull
     @Column(name = "semestre", nullable = false)
     private int semestre;
+
+    @NotNull
+    @Column(name = "heure_debut", nullable = false)
+    private int heureDebut;
+
+    @NotNull
+    @Column(name = "heure_fin", nullable = false)
+    private int heureFin;
+
+    @NotBlank
+    @Column(name = "jour", nullable = false)
+    private Jour jour;
 
     @NotNull
     @ManyToOne(optional = false)
@@ -51,16 +63,4 @@ public class Affectation {
     @ManyToOne(optional = false)
     @JoinColumn(name = "module", nullable = false)
     private Module module;
-
-    @NotNull
-    @Column(name = "heure_debut", nullable = false)
-    private int heureDebut;
-
-    @NotNull
-    @Column(name = "heure_fin", nullable = false)
-    private int heureFin;
-
-    @NotBlank
-    @Column(name = "jour", nullable = false)
-    private String jour;
 }
