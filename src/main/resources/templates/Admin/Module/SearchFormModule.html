@@ -1,0 +1,33 @@
+<form th:action="@{/modules}" method="GET" class="px-7 pt-4 pr-8 flex gap-4 w-full items-center" id="filterForm">
+  <div class="flex border border-gray-300 rounded-md shadow-sm">
+    <input type="text" name="intitule" placeholder="Chercher par Intitulé" th:value="${searchTerm}"
+            class="block w-1/2 rounded-l-md py-2 px-3 text-sm placeholder-gray-400 focus:ring-indigo-500 focus:border-indigo-500"/>
+
+    <input type="text" name="responsable" placeholder="Chercher par Responsable" th:value="${responsableSearchTerm}"
+            class="block w-1/2 rounded-r-md py-2 px-3 text-sm placeholder-gray-400 focus:ring-indigo-500 focus:border-indigo-500"/>
+  </div>
+  <div class="flex border border-gray-300 rounded-md shadow-sm">
+    <input type="number" name="min" min="1" id="min" placeholder="heures min"
+            th:value="${min}"
+            class="block w-[120px] rounded-l-md py-2 px-3 text-sm placeholder-gray-400 focus:ring-indigo-500 focus:border-indigo-500"/>
+    <input type="number" name="max" max="100"  id="max" placeholder=" heures max"
+            th:value="${max}"
+            class="block w-[120px] rounded-r-md py-2 px-3 text-sm placeholder-gray-400 focus:ring-indigo-500 focus:border-indigo-500"/>
+  </div>
+  <div class="flex flex-col ml-auto">
+    <select name="modeEvaluation" id="modeEvaluation"
+            class="pr-6 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600">
+      <option value="" th:selected="${modeEvaluation == null}">Tous les types</option>
+      <option th:value="EXAM" th:selected="${modeEvaluation == 'EXAM'}">Examen</option>
+      <option th:value="PROJECT" th:selected="${modeEvaluation == 'PROJECT'}">Projet</option>
+    </select>
+  </div>
+
+  <button type="submit" class="px-2 hover:opacity-80">
+    <img src="/public/seach.png" alt="Rechercher" class="h-6 w-6">
+  </button>
+
+  <button type="button" class="px-2 hover:opacity-80" id="resetButton">
+    <img src="/public/reset.png" alt="reset" class="h-6 w-6">
+  </button>
+</form>
