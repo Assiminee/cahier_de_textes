@@ -1,0 +1,20 @@
+<section th:fragment="ErrorHandeling" class=" px-7  w-[430px]">
+  <div th:if="${deleteSuccess}" class="p-4 text-sm text-green-800 rounded-lg bg-[#c9e8b9]" role="alert">
+    <p th:text="${deleteSuccess}"></p>
+  </div>
+  <div th:if="${error}" class="p-4 text-sm text-red-800 rounded-lg bg-[#f8d7da]" role="alert">
+    <p th:text="${error}"></p>
+  </div>
+  <div th:if="${addSucessModule}" class="p-4 text-sm text-green-800 rounded-lg bg-[#c9e8b9]" role="alert">
+    <p th:text="${addSucessModule}"></p>
+  </div>
+  <div th:if="${errorAddModule}" class="p-4 text-sm text-red-800 rounded-lg bg-[#f8d7da]" role="alert">
+    <p th:text="${errorAddModule}"></p>
+  </div>
+  <div th:if="${editSucessModule}" class="p-4 text-sm text-green-800 rounded-lg bg-[#c9e8b9]" role="alert">
+    <p th:text="${editSucessModule}"></p>
+  </div>
+  <div th:if="${erroreditModule}" class="p-4 text-sm text-red-800 rounded-lg bg-[#f8d7da]" role="alert">
+    <p th:text="${erroreditModule}"></p>
+  </div>
+</section>
