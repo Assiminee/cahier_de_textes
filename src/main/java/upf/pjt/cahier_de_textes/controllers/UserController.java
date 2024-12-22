@@ -105,7 +105,6 @@ public class UserController {
 
         if (optionalUser.isEmpty())
             return "redirect:/auth/login";
-        ;
 
         User loggedUser = optionalUser.get();
         incomingUser.setUserDetails(loggedUser);

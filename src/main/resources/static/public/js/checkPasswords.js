@@ -1,9 +1,18 @@
 export const checkPasswords = (newPassword, confirmPassword) => {
+    const form = $("#editPwdForm");
 
-    const pwdErr = $("#confPWDerr");
+    form.on('submit', async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
 
-    if (newPassword.val() !== confirmPassword.val())
+        const pwdErr = $("#confPWDerr");
+
+        if (newPassword.val() !== confirmPassword.val()) {
+            pwdErr.removeClass("hidden");
+            return;
+        }
+
         pwdErr.addClass("hidden");
-    else
-        pwdErr.removeClass("hidden");
+        e.target.submit();
+    });
 }
