@@ -16,21 +16,41 @@
 <!--                        <div th:replace="~{profile/edit_profile_errors :: div}"></div>-->
                     </div>
                     <div>
-                        <button data-modal-target="addFilModal" data-modal-toggle="addFilModal" type="button"
-                                class="bg-[#B10C74] hover:bg-[#db2777] text-white font-bold py-3 px-6 rounded">
+                        <button data-modal-target="filModal" data-modal-toggle="filModal" type="button"
+                                class="bg-[#B10C74] hover:bg-[#db2777] text-white font-bold py-3 px-6 rounded" id="addFiliereBtn">
                             + Ajouter une filière
                         </button>
                     </div>
-<!--                    <div th:replace="~{profile/edit_pwd_modal :: div}"></div>-->
+                    <div th:if="${filieres != null}" th:replace="~{Admin/filiere/add_filiere_modal :: div (${diplomes}, ${profs})}"></div>
+                    <div th:if="${filieres != null}" th:replace="~{Admin/filiere/affectation_modal :: div (${modules}, ${profs})}"></div>
                 </div>
                 <div class="mt-5 mb-6 flex justify-between">
                     <form th:replace="~{Admin/filiere/search_bar :: form}"></form>
                 </div>
-                <table th:replace="Admin/filiere/filiere_list"></table>
+                <table th:replace="~{Admin/filiere/filiere_list}"></table>
                 <div th:replace="~{Admin/filiere/filiere_pagination :: div}"></div>
             </section>
         </div>
     </main>
 </div>
+<script type="module">
+    import { updateYears, prefillFiliereForm, resetFiliereModal, prefillAffectationsForm } from '/public/js/filiereFuncs.js'
+
+    updateYears();
+    prefillFiliereForm();
+    $("#addFiliereBtn").click(resetFiliereModal);
+    $("#affectationBtn").click(prefillAffectationsForm);
+
+    $("#affectationModalForm").on("submit", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const form = new FormData(e.target);
+
+        for (const [key, value] of form.entries())
+            console.log(`${key} : ${value}`);
+    });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
 </body>
 </html>

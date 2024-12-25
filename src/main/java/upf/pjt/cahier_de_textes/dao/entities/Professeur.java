@@ -60,4 +60,7 @@ public class Professeur extends User {
     @OneToOne(mappedBy = "coordinateur")
     @JsonManagedReference
     private Filiere filiere;
+
+    @OneToMany(mappedBy = "prof", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Affectation> affectations;
 }
