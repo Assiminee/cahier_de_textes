@@ -1,6 +1,5 @@
 package upf.pjt.cahier_de_textes.dao.entities;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -11,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import upf.pjt.cahier_de_textes.dao.entities.enumerations.Diplome;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -23,7 +23,6 @@ public class Filiere {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-
 
     @NotBlank
     @Column(name = "intitule", nullable = false)
@@ -48,7 +47,9 @@ public class Filiere {
     private Diplome diplome;
 
     @OneToOne
-    @JoinColumn(name = "coordinateur", nullable = true, unique = true)
-    @JsonBackReference
+    @JoinColumn(name = "coordinateur", unique = true)
     private Professeur coordinateur;
+
+    @OneToMany(mappedBy = "filiere", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Affectation> affectations;
 }

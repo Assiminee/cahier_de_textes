@@ -47,6 +47,7 @@ public class Affectation {
 
     @NotBlank
     @Column(name = "jour", nullable = false)
+    @Enumerated(EnumType.STRING)
     private Jour jour;
 
     @NotNull

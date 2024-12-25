@@ -2,10 +2,13 @@ package upf.pjt.cahier_de_textes.services;
 
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import upf.pjt.cahier_de_textes.dao.dtos.CustomUserDetails;
 import upf.pjt.cahier_de_textes.dao.entities.Module;
 import upf.pjt.cahier_de_textes.dao.repositories.*;
 import upf.pjt.cahier_de_textes.dao.dtos.EditUserDTO;
@@ -123,5 +126,19 @@ public class UserService {
 
     public boolean correctPassword(String incomingPassword, String currentPassword){
         return encoder.matches(incomingPassword, currentPassword);
+    }
+
+    public static User getAuthenticatedAdmin() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (!(authentication.getPrincipal() instanceof CustomUserDetails userDetails))
+            return null;
+
+        User loggedUser = userDetails.getUser();
+
+        if (loggedUser == null || !loggedUser.getRole().getAuthority().equals("ROLE_ADMIN"))
+            return null;
+
+        return loggedUser;
     }
 }

@@ -10,12 +10,13 @@
   </tr>
   </thead>
   <tbody>
-  <tr th:if="${filieres.getNumberOfElements() == 0}"
+  <tr th:if="${filieres == null || filieres.getNumberOfElements() == 0}"
       class="text-center bg-gray-100 hover:bg-gray-200 transition-all"
   >
     <td colspan="6" class="p-4 font-medium" th:text="'Aucune filière à afficher'"></td>
   </tr>
-  <tr th:each="fil : ${filieres}"
+  <tr th:if="${filieres != null}" th:each="fil : ${filieres}"
+      th:with="exp = ${fil.getDateExpiration()}, rec = ${fil.getDateReconnaissance()}"
       class="text-center bg-gray-100 hover:bg-gray-200 transition-all">
     <td class="p-4">
       <button class="hover:opacity-80">
@@ -29,7 +30,16 @@
         th:text="${fil.getCoordinateur().getFullName()}"></td>
     <td class="p-4" th:if="${fil.getCoordinateur() == null}">Aucun Coordinateur</td>
     <td class="p-4 flex items-center justify-center gap-3">
-      <button class="hover:opacity-80">
+      <button class="hover:opacity-80 modalBtns" data-modal-target="filModal" data-modal-toggle="filModal" th:id="${fil.getId()}"
+              th:data-id="${fil.getId()}"
+              th:data-intitule="${fil.getIntitule()}"
+              th:data-dateexp="${exp}"
+              th:data-daterec="${rec}"
+              th:data-diplome="${fil.getDiplome().name()}"
+              th:data-coordinateur="${fil.getCoordinateur() != null ? fil.getCoordinateur().getId() : ''}"
+              th:data-affectations="${fil.getJsonifiedAffectations()}"
+      >
+
         <img src="/public/edit.png" alt="Modifier" class="h-6 w-6">
       </button>
       <form th:action="@{/users/{id}(id=${user.id})}" method="POST">
