@@ -19,5 +19,9 @@ public class ProfesseurDTO {
         this.prenom = prof.getPrenom();
     }
 
+    public ProfesseurDTO(UUID id) {
+        this.id = id;
+    }
+
     public String getFullName() { return nom + " " + prenom; }
 }

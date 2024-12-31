@@ -24,7 +24,6 @@ public class FiliereDTO {
     private ProfesseurDTO coordinateur;
     private String affectations;
 
-
     public FiliereDTO(Filiere filiere) {
         this.id = filiere.getId();
         this.intitule = filiere.getIntitule();
@@ -36,10 +35,10 @@ public class FiliereDTO {
     }
 
     public void setAffectations(Filiere filiere, ObjectMapper objectMapper) throws JsonProcessingException {
-        this.affectations = mapAffectations(filiere, objectMapper);
+        this.affectations = objectMapper.writeValueAsString(mapAffectations(filiere));
     }
 
-    private String mapAffectations(Filiere filiere, ObjectMapper objectMapper) throws JsonProcessingException {
+    private Map<String, Map<String, List<AffectationDTO>>> mapAffectations(Filiere filiere) {
         Map<String, Map<String, List<AffectationDTO>>> affectations = new HashMap<>();
 
         for (Affectation affectation : filiere.getAffectations()) {
@@ -57,6 +56,6 @@ public class FiliereDTO {
             map.get(semestre).add(new AffectationDTO(affectation));
         }
 
-        return objectMapper.writeValueAsString(affectations);
+        return affectations;
     }
 }
