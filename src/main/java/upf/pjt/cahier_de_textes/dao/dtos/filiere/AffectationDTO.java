@@ -1,14 +1,11 @@
 package upf.pjt.cahier_de_textes.dao.dtos.filiere;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import upf.pjt.cahier_de_textes.dao.entities.Affectation;
 import upf.pjt.cahier_de_textes.dao.entities.enumerations.Jour;
 import java.util.UUID;
 
-@Getter @Setter @NoArgsConstructor
+@Getter @Setter @NoArgsConstructor @ToString
 public class AffectationDTO {
     private UUID id;
     private int niveau;
@@ -29,5 +26,26 @@ public class AffectationDTO {
 
         this.professeur = new ProfesseurDTO(affectation.getProf());
         this.module = new ModuleDTO(affectation.getModule());
+    }
+
+    public AffectationDTO(SaveEditAffectationDTO affectationDTO) {
+        System.out.println("Used this constructor");
+        this.id = affectationDTO.getId();
+        this.niveau = affectationDTO.getNiveau();
+        this.semestre = affectationDTO.getSemestre();
+        this.heureDebut = parseHeure(affectationDTO.getHeureDebut());
+        this.heureFin = parseHeure(affectationDTO.getHeureFin());
+        this.jour = affectationDTO.getJour();
+
+        this.professeur = new ProfesseurDTO(affectationDTO.getProfesseur());
+        this.module = new ModuleDTO(affectationDTO.getModule());
+    }
+
+    private int parseHeure(String heure) {
+        heure = heure.replace("0", "");
+        heure = heure.replace(":", "");
+        heure = heure.replace(" ", "");
+
+        return Integer.parseInt(heure);
     }
 }

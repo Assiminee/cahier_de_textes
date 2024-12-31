@@ -6,4 +6,6 @@ import upf.pjt.cahier_de_textes.dao.entities.Module;
 import java.util.UUID;
 
 @Repository
-public interface ModuleRepository extends  JpaRepository<Module, UUID> {}
+public interface ModuleRepository extends  JpaRepository<Module, UUID> {
+    String findModuleIntituleById(UUID id);
+}

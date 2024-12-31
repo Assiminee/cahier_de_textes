@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -13,7 +14,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import upf.pjt.cahier_de_textes.dao.dtos.UserDTO;
+import upf.pjt.cahier_de_textes.dao.dtos.filiere.AffectationDTO;
 import upf.pjt.cahier_de_textes.dao.dtos.filiere.FiliereDTO;
+import upf.pjt.cahier_de_textes.dao.dtos.filiere.SaveEditAffectationDTO;
+import upf.pjt.cahier_de_textes.dao.entities.Affectation;
 import upf.pjt.cahier_de_textes.dao.entities.Filiere;
 import upf.pjt.cahier_de_textes.dao.entities.Professeur;
 import upf.pjt.cahier_de_textes.dao.entities.User;
@@ -23,6 +27,7 @@ import upf.pjt.cahier_de_textes.dao.repositories.FiliereRepository;
 import org.springframework.data.domain.Pageable;
 import upf.pjt.cahier_de_textes.dao.repositories.ModuleRepository;
 import upf.pjt.cahier_de_textes.dao.repositories.ProfesseurRepository;
+import upf.pjt.cahier_de_textes.services.AffectationService;
 import upf.pjt.cahier_de_textes.services.FilieresService;
 import upf.pjt.cahier_de_textes.services.UserService;
 
@@ -40,6 +45,7 @@ public class FiliereController {
     private final ModuleRepository moduleRepository;
     private final FilieresService filieresService;
     private final ObjectMapper objectMapper;
+    private final AffectationService affectationService;
     private final int SIZE = 10;
 
     public FiliereController(
@@ -47,13 +53,14 @@ public class FiliereController {
             ProfesseurRepository professeurRepository,
             ModuleRepository moduleRepository,
             FilieresService filieresService,
-            ObjectMapper objectMapper
+            ObjectMapper objectMapper, AffectationService affectationService
     ) {
         this.filiereRepository = filiereRepository;
         this.professeurRepository = professeurRepository;
         this.moduleRepository = moduleRepository;
         this.filieresService = filieresService;
         this.objectMapper = objectMapper;
+        this.affectationService = affectationService;
     }
 
     @GetMapping
@@ -111,7 +118,7 @@ public class FiliereController {
 
     @DeleteMapping("/{id}")
     @Transactional
-    public String deleteFiliere (@PathVariable("id") UUID id, RedirectAttributes redAtts) {
+    public String deleteFiliere(@PathVariable("id") UUID id, RedirectAttributes redAtts) {
         redAtts.addFlashAttribute("delete", true);
         try {
             Filiere filiere = filiereRepository.findById(id).orElse(null);
@@ -164,7 +171,11 @@ public class FiliereController {
     }
 
     @GetMapping("/{id}/affectations")
-    public String getAffectations(@PathVariable("id") UUID id, Model model, RedirectAttributes redAtts) {
+    public String getAffectations(
+            @PathVariable("id") UUID id,
+            Model model,
+            RedirectAttributes redAtts
+    ) {
         User user = UserService.getAuthenticatedUser();
 
         if (user == null)
@@ -188,17 +199,32 @@ public class FiliereController {
         UserDTO userDTO = new UserDTO();
         userDTO.setUserDTODetails(user);
 
-        HashMap<String, String> jours = new HashMap<>();
-
-        for (Jour jour : Jour.values())
-            jours.put(jour.name(), jour.getJourComplet());
-
         model.addAttribute("user", userDTO);
         model.addAttribute("filiere", filiereDTO);
-        model.addAttribute("jours", jours);
         model.addAttribute("modules", moduleRepository.findAll());
         model.addAttribute("profs", professeurRepository.getAvailableProfesseurs());
 
         return "Admin/affectations/affectations";
     }
+
+//    @PostMapping("/{id}/affectations")
+//    public String saveAffecation(@PathVariable("id") UUID id, @ModelAttribute SaveEditAffectationDTO affectationDTO, RedirectAttributes redAtts) {
+//        Filiere filiere = filiereRepository.findById(id).orElse(null);
+//
+//        if (filiere == null) {
+//            redAtts.addFlashAttribute("error", true);
+//            redAtts.addFlashAttribute("msg", "L'opération a echouée");
+//
+//            return "redirect:/filieres";
+//        }
+//
+//        Affectation affectation = affectationService.saveAffectation(filiere, new AffectationDTO(affectationDTO));
+//
+//        if (affectation == null) {
+//            redAtts.addFlashAttribute("error", true);
+//            redAtts.addFlashAttribute("msg", "L'opération a echouée");
+//        }
+//
+//        return "redirect:/filieres";
+//    }
 }

@@ -5,10 +5,7 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import upf.pjt.cahier_de_textes.dao.entities.enumerations.Jour;
 import upf.pjt.cahier_de_textes.dao.entities.validation_annotations.IsValidNiveau;
 import upf.pjt.cahier_de_textes.dao.entities.validation_annotations.IsValidSemestre;
@@ -18,6 +15,7 @@ import java.util.UUID;
 @Table(name = "affectation")
 @IsValidNiveau
 @IsValidSemestre
+@AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
@@ -33,8 +31,6 @@ public class Affectation {
     @Column(name = "niveau", nullable = false)
     private int niveau;
 
-    @Min(1)
-    @Max(5)
     @NotNull
     @Column(name = "semestre", nullable = false)
     private int semestre;
@@ -47,7 +43,7 @@ public class Affectation {
     @Column(name = "heure_fin", nullable = false)
     private int heureFin;
 
-    @NotBlank
+    @NotNull
     @Column(name = "jour", nullable = false)
     @Enumerated(EnumType.STRING)
     private Jour jour;
