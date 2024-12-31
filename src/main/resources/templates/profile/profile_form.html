@@ -1,10 +1,7 @@
 <form th:fragment="profile_form" id="profileForm" th:action="@{/users/{id}(id=${user.id})}"
       th:method="POST" class="grid grid-cols-2 gap-6 px-10 pt-5 pb-10">
 
-    <input type="hidden" name="_method" value="PUT">
-
-    <!-- Role -->
-    <input type="hidden" name="role" id="role" th:value="${user.getRole().getAuthority()}">
+    <input type="hidden" name="_method" value="PATCH">
 
     <!-- Nom -->
     <div>
@@ -20,7 +17,8 @@
     <!-- Prenom -->
     <div>
         <label for="prenom" class="block mb-2 font-medium">Prénom</label>
-        <input type="text" name="prenom" id="prenom" th:value="${user.getPrenom()}" pattern="^[a-zA-Z]+([ \-][a-zA-Z]+)*$"
+        <input type="text" name="prenom" id="prenom" th:value="${user.getPrenom()}"
+               pattern="^[a-zA-Z]+([ \-][a-zA-Z]+)*$"
                class="peer/prenom w-full p-3 rounded bg-gray-300 border border-gray-500 text-gray-700 inputList"
                disabled required>
         <p class="invisible peer-invalid/prenom:visible text-pink-600 font-medium">
@@ -30,7 +28,7 @@
 
     <!-- Gender -->
     <div>
-        <label for="genre" class="block mb-2 font-medium">Sexe</label>
+        <label for="genreSelect" class="block mb-2 font-medium">Sexe</label>
         <select id="genreSelect" name="genre"
                 class="w-full p-3 rounded bg-gray-300 border border-gray-500 text-gray-700 hidden inputList toToggle"
                 required>
@@ -80,7 +78,8 @@
         <input type="email" name="email" id="email" th:value="${user.getEmail()}"
                class="peer/email w-full p-3 rounded bg-gray-300 border border-gray-500 text-gray-700 inputList" disabled
                required>
-        <p id="email_p_msg" class="invisible peer-[db-check]/email:peer-invalid/email:visible text-pink-600 font-medium">
+        <p id="email_p_msg"
+           class="invisible peer-[db-check]/email:peer-invalid/email:visible text-pink-600 font-medium">
             Email invalid
         </p>
     </div>
@@ -89,7 +88,8 @@
     <div>
         <label for="dateNaissance" class="block mb-2 font-medium">Date de Naissance</label>
         <input type="date" name="dateNaissance" id="dateNaissance" th:value="${user.getDateNaissance()}"
-               class="peer/bd w-full p-3 rounded bg-gray-300 border border-gray-500 text-gray-700 inputList" disabled required>
+               class="peer/bd w-full p-3 rounded bg-gray-300 border border-gray-500 text-gray-700 inputList" disabled
+               required>
         <p class="invisible peer-invalid/bd:visible text-pink-600 font-medium">
             Vous devez être agé d'au moins 18 ans
         </p>

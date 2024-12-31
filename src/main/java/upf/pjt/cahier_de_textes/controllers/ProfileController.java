@@ -7,46 +7,43 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import upf.pjt.cahier_de_textes.dao.dtos.UserDTO;
 import upf.pjt.cahier_de_textes.dao.repositories.ProfesseurRepository;
 import upf.pjt.cahier_de_textes.dao.entities.Professeur;
 import upf.pjt.cahier_de_textes.dao.entities.User;
 import upf.pjt.cahier_de_textes.dao.entities.enumerations.RoleEnum;
 import upf.pjt.cahier_de_textes.dao.dtos.CustomUserDetails;
+import upf.pjt.cahier_de_textes.dao.repositories.QualificationRepository;
 
 import java.util.*;
 
 @Controller
 public class ProfileController {
 
+    private final QualificationRepository qualificationRepository;
     private ProfesseurRepository professeurRepository;
 
     @Autowired
-    public ProfileController(ProfesseurRepository professeurRepository) {
+    public ProfileController(ProfesseurRepository professeurRepository, QualificationRepository qualificationRepository) {
         this.professeurRepository = professeurRepository;
+        this.qualificationRepository = qualificationRepository;
     }
 
     @GetMapping("/profile")
-    public String profile(Model model, RedirectAttributes redirectAttributes) {
+    public String profile(Model model) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication.getPrincipal() instanceof CustomUserDetails userDetails) {
-            User user = userDetails.getUser();
+            User loggedUser = userDetails.getUser();
+            UserDTO user = new UserDTO();
 
-            if (Objects.equals(user.getRole().getAuthority(), RoleEnum.ROLE_PROF.name())) {
-                UUID convertedId = UUID.fromString(String.valueOf(user.getId()));
-                Optional<Professeur> prof = professeurRepository.findById(convertedId);
+            user.setUserDTODetails(loggedUser);
 
-                if (prof.isEmpty()) {
-                    redirectAttributes.addFlashAttribute("login_err", true);
-                    return "redirect:/auth/login";
-                }
+            if (loggedUser.getRole().getAuthority().equals("ROLE_PROF"))
+                user.setProfessorDetails(qualificationRepository, professeurRepository);
 
-                model.addAttribute("user", prof.get());
-            }
-            else {
-                model.addAttribute("user", user);
-            }
+            model.addAttribute("user", user);
         }
 
         return "profile/profile";

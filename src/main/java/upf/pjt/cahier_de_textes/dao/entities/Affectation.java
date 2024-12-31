@@ -8,6 +8,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import upf.pjt.cahier_de_textes.dao.entities.enumerations.Jour;
 import upf.pjt.cahier_de_textes.dao.entities.validation_annotations.IsValidNiveau;
 import upf.pjt.cahier_de_textes.dao.entities.validation_annotations.IsValidSemestre;
@@ -20,6 +21,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Getter
 @Setter
+@ToString
 public class Affectation {
 
     @Id
@@ -51,7 +53,7 @@ public class Affectation {
     private Jour jour;
 
     @NotNull
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "filiere", nullable = false)
     private Filiere filiere;
 

@@ -42,6 +42,7 @@
             <label for="reconnaissance" class="flex-1 block mb-2 font-medium">Reconnaissance<br>
                 <select  name="reconnaissance" id="reconnaissance"
                         class="pt-1 py-2 px-3 ml-auto border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600">
+                    <option th:selected="${rec == null}" value="">Reconnaissance</option>
                     <option th:selected="${rec.equalsIgnoreCase('true')}" th:value="true" th:text="'Reconnue'"></option>
                     <option th:selected="${rec.equalsIgnoreCase('false')}" th:value="false" th:text="'Non-reconnue'"></option>
                 </select>

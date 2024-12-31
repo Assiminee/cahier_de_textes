@@ -1,6 +1,6 @@
 package upf.pjt.cahier_de_textes.dao.entities;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -48,19 +48,20 @@ public class Professeur extends User {
     private LocalDate dateEmbauche;
 
     @OneToMany(mappedBy = "responsable")
-    @JsonManagedReference
+    @JsonIgnore
     private List<Module> modules = new ArrayList<>();
 
     @NotNull
 //    @HasAtLeastOneQualification
     @OneToMany(mappedBy = "prof", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
+    @JsonIgnore
     private List<Qualification> qualifications = new ArrayList<>();
 
     @OneToOne(mappedBy = "coordinateur")
-    @JsonManagedReference
+    @JsonIgnore
     private Filiere filiere;
 
     @OneToMany(mappedBy = "prof", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Affectation> affectations;
 }

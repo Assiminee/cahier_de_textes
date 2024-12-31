@@ -8,7 +8,7 @@
                      class="h-10 w-10 rounded-full avatar"/>
                 <div class="text-sm">
                     <p id="nom_complet" class="font-medium text-gray-800" th:text="${user.getFullName()}"></p>
-                    <p class="text-gray-500" th:text="|${user.getRole().getAuthority()}|"></p>
+                    <p class="text-gray-500" sec:authentication="principal.authorities[0]"></p>
                 </div>
             </div>
         </a>
