@@ -1,4 +1,4 @@
-<div th:fragment="professorInputs" th:if="${user.getRole().getAuthority() == 'ROLE_PROF'}"
+<div th:fragment="professorInputs" sec:authorize="hasRole('ROLE_PROF')"
      class="col-span-2 grid grid-cols-2 w-full gap-6">
     <!-- Qualifications -->
     <div>
@@ -9,7 +9,7 @@
                     th:value="${qual.getIntitule()}"
                     th:text="|${qual.getIntitule()}|">
             </option>
-            <option th:if="${#lists.isEmpty(user.getQualifications())}" disabled selected>
+            <option th:if="${#lists.isEmpty(user.getQualifications())}" th:text="Aucune qualification à afficher" disabled selected>
             </option>
         </select>
     </div>

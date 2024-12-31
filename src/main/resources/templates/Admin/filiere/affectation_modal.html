@@ -1,16 +1,23 @@
-<div th:fragment="affectation_modal (modules, profs)"
-     id="affectationModal" tabindex="-1"
-     aria-hidden="true"
-     class="hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-1/2 md:inset-0 h-[calc(100%-1rem)] w-full max-h-[100vh]  overflow-hidden ">
-    <div class="relative p-4 w-1/2 max-w-2xl max-h-full">
+<div th:fragment="affectation_modal (modules, profs, jours)"
+     sec:authorize="hasRole('ROLE_SS')" tabindex="-1"
+     class="hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] w-full max-h-[100vh]  overflow-hidden ">
+    <div class="relative p-4 w-full max-w-2xl max-h-full">
         <!-- Modal content -->
         <div class="relative bg-[#f2eee7] rounded-lg shadow">
             <!-- Modal header -->
-            <div class="flex p-4 md:p-5 border-b rounded-t border-gray-600">
-                <h3 id="affectationModalH3" class="text-3xl text-center font-bold text-gray-900"></h3>
-                <button type="button"
-                        class="bg-transparent hover:bg-[#B10C74] hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center hover:text-white"
-                        data-modal-hide="affectationModal">
+            <div class="flex items-center p-4 border-b rounded-t border-gray-600">
+                <!-- Child container for headings -->
+                <div class="flex-1 flex flex-col items-center">
+                    <h3 id="affectationModalH3" class="text-3xl font-bold text-gray-900">Gestion des affectations</h3>
+                    <h2 id="affectationModalH2" class="text-xl font-medium text-[#B10C74] mt-1"></h2>
+                </div>
+
+                <!-- Button on the right -->
+                <button
+                        type="button"
+                        class="bg-transparent hover:bg-[#B10C74] rounded-lg text-sm w-8 h-8 inline-flex justify-center items-center hover:text-white"
+                        data-modal-hide="affectationModal"
+                >
                     <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
                          viewBox="0 0 14 14">
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -19,70 +26,7 @@
                     <span class="sr-only">Close modal</span>
                 </button>
             </div>
-            <!-- Modal body -->
-            <div class="p-4 md:p-5 max-h-[60vh] space-y-4 overflow-y-auto">
-                <form th:method="POST" id="affectationModalForm">
-                    <!-- Niveau et Semestre -->
-                    <div class="p-3 flex gap-2">
-                        <div class="flex-1">
-                            <label for="niveau" class="block mb-2 font-medium">Niveau</label>
-                            <select id="niveau" name="niveau"
-                                    class="w-full p-3 rounded bg-gray-100 border border-gray-500 text-gray-700">
-                                <option value="-1" selected>Selectionner un Niveau</option>
-                            </select>
-                        </div>
-                        <div class="flex-1">
-                            <label for="semestre" class="block mb-2 font-medium">Semestre</label>
-                            <select id="semestre" name="semestre"
-                                    class="w-full p-3 rounded bg-gray-100 border border-gray-500 text-gray-700">
-                                <option value="-1" selected>Selectionner un Semestre</option>
-                                <option id="SI"></option>
-                                <option id="SI2"></option>
-                            </select>
-                        </div>
-                    </div>
 
-                    <!-- Modules et Professeurs -->
-                    <div th:each="i : ${#numbers.sequence(0, 7)}" class="px-3 pb-3 flex gap-2">
-                        <input type="hidden" th:id="|aff-${i}|" value="">
-                        <div class="flex-1">
-                            <label th:for="|module-${i}|" class="block mb-2 font-medium moduleSelects">Module</label>
-                            <select th:id="|module-${i}|" name="module"
-                                    class="w-full p-3 rounded bg-gray-100 border border-gray-500 text-gray-700">
-                                <option value="" selected>Selectionner un Module</option>
-                                <option th:each="module : ${modules}"
-                                        th:value="${module.getId()}"
-                                        th:text="${module.getIntitule()}">
-                                </option>
-                            </select>
-                        </div>
-                        <div class="flex-1">
-                            <label th:for="|prof-${i}|" class="block mb-2 font-medium profSelects">Professeur</label>
-                            <select th:id="|prof-${i}|" name="professeur"
-                                    class="w-full p-3 rounded bg-gray-100 border border-gray-500 text-gray-700">
-                                <option value="" selected>Selectionner un Professeur
-                                </option>
-                                <option th:each="prof : ${profs}"
-                                        th:value="${prof.getId()}"
-                                        th:text="${prof.getFullName()}">
-                                </option>
-                            </select>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <!-- Modal footer -->
-            <div class="flex items-center justify-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
-                <button type="submit" form="affectationModalForm"
-                        class="w-1/4 bg-[#313863] text-white font-bold py-3 px-6 m-2 rounded hover:bg-[#5663af]">
-                    Confirmer
-                </button>
-                <button type="button" data-modal-hide="affectationModal" data-modal-target="filModal"
-                        data-modal-toggle="filModal"
-                        class="w-1/4 bg-[#B10C74] hover:bg-[#db2777] text-white m-2 font-bold py-3 px-6 rounded">
-                    Annuler
-                </button>
-            </div>
         </div>
     </div>
 </div>

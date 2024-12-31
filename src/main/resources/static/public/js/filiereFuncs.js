@@ -1,25 +1,50 @@
-const dipYears = {
+export const dipYears = {
     "MA": 5,
     "CI": 5,
     "LC": 3,
     "CP": 2
 };
 
+const dipName = {
+    "MA": "Master",
+    "CI": "Cycle d'Ingenieur",
+    "LC": "Licence",
+    "CP": "Classes Préparatoires"
+};
+
+const setSelect = (select, value) => {
+    $(`#${select} option`).removeAttr("selected");
+
+    if (value)
+        $(`#${select} option[value=${value}]`).attr("selected", "selected");
+    else
+        $(`#${select} option:first-child`).attr("selected", "selected");
+}
+
 export const resetFiliereModal = () => {
     hiddenMethodInput(true);
-    const affectationBtn = $("#affectationBtn");
+
+    const intitule = $("#filIntitule");
+    const dateRec = $("#dateReconnaissance");
+    const curProf = $("#curProf");
+
+    if (!curProf.hasClass("hidden"))
+        curProf.addClass("hidden");
+
+    disableInputs("bg-gray-100", "bg-gray-300", false, intitule, dateRec);
+    hideInputs(false, $("#diplomaType"), $("#coordinateur"), $("#confirmBtn"));
+    hideInputs(true, $("#diplomeInp"), $("#coordinateurInp"));
 
     $("#filModalH3").text("Ajouter une Nouvelle Filière");
-    $("#filIntitule").val("");
     $("#filModalForm").attr("action", `/filieres`);
+    intitule.val("");
     $("#years").val("");
-    $("#diplomaType").val("");
-    $("#coordinateur").val("");
+    setSelect("diplomaType");
+    setSelect("coordinateur");
+    dateRec.val("");
     $("#dateExpiration").val("");
-    $("#dateReconnaissance").val("");
 
-    if (!affectationBtn.hasClass("hidden"))
-        affectationBtn.addClass("hidden");
+    updateExpDate();
 }
 
 const hiddenMethodInput = (remove) => {
@@ -43,35 +68,39 @@ const hiddenMethodInput = (remove) => {
 
 export const prefillFiliereForm = () => {
     const btns = $(".modalBtns");
-    const affectationBtn = $("#affectationBtn");
 
     for (const btn of btns) {
         $(btn).on("click", () => {
-            const id = $(btn).data("id");
-            const intitule = $(btn).data("intitule");
-            const dateExp = $(btn).data("dateexp");
-            const dateRec = $(btn).data("daterec");
-            const diplome = $(btn).data("diplome");
-            const coordinateur = $(btn).data("coordinateur");
-            const affectations = $(btn).data("affectations");
-
             hiddenMethodInput(false);
-            $("#filModalH3").text(`Modifier la Filière ${intitule}`);
-            $("#filIntitule").val(intitule);
+
+            const id = $(btn).data("id");
+            const intitule = $("#filIntitule");
+            const dateExp = $("#dateExpiration");
+            const dateRec = $("#dateReconnaissance");
+            const coordinateurId = $(btn).data("coordinateurid");
+            const coordinateurName = $(btn).data("coordinateurname");
+            const curProf = $("#curProf");
+            const diplome = $(btn).data("diplome");
+
+            if (curProf.hasClass("hidden"))
+                curProf.removeClass("hidden");
+
+
+            disableInputs("bg-gray-100", "bg-gray-300", false, intitule, dateExp, dateRec);
+            hideInputs(false, $("#diplomaType"), $("#coordinateur"), $("#confirmBtn"));
+            hideInputs(true, $("#diplomeInp"), $("#coordinateurInp"));
+
+            $("#filModalH3").text(`Modifier la Filière ${$(btn).data("intitule")}`);
+            intitule.val($(btn).data("intitule"));
             $("#filModalForm").attr("action", `/filieres/${id}`);
             $("#years").val(dipYears[`${diplome}`]);
-            $(`#diplomaType option[value=${diplome}]`).attr("selected", "selected");
-            $(`#coordinateur option[value='${coordinateur}']`).attr("selected", "selected");
-            $("#dateExpiration").val(dateExp);
-            $("#dateReconnaissance").val(dateRec);
+            setSelect("diplomaType", diplome);
+            curProf.val(coordinateurId).text(coordinateurName);
+            setSelect("coordinateur", coordinateurId);
+            dateRec.val($(btn).data("daterec"));
+            dateExp.val($(btn).data("dateexp"));
 
-            affectationBtn.data("affectations", affectations);
-            affectationBtn.data("filId", id);
-            affectationBtn.data("intitule", intitule);
-            affectationBtn.data("years", dipYears[`${diplome}`]);
-
-            if (affectationBtn.hasClass("hidden"))
-                affectationBtn.removeClass("hidden");
+            updateExpDate();
         });
     }
 }
@@ -86,97 +115,94 @@ export const updateYears = () => {
     });
 }
 
-export const prefillAffectationsForm = () => {
-    const btn = $("#affectationBtn");
-    const niveauSelect = $("#niveau");
-    const semesterSelect = $("#semestre");
-    const years = $(btn).data("years");
-    const aff = $(btn).data("affectations");
-    const filId = $(btn).data("filId");
-    const filTitle = $(btn).data("intitule");
+export const updateExpDate = () => {
+    const recInput = $("#dateReconnaissance");
+    const rec = Date.parse(recInput.val());
+    const exp = $("#dateExpiration");
 
-    $("#affectationModalH3").text("Gestion des Affectations : " + filTitle);
+    if (!rec) {
+        exp.attr("disabled", "disabled")
+            .removeAttr("required")
+            .addClass("bg-gray-300")
+            .removeClass("bg-gray-100")
+            .val("");
 
-    semesterSelect.val("-1");
-    resetSelects();
-    createOptions(niveauSelect, years);
-    semesterSelect.on("change", (e) => {
-        const semester = Number($(e.target).val());
+        recInput.removeAttr("required").removeAttr("name");
 
-        if (semester === -1) {
-            resetSelects();
-            return;
-        }
+        return;
+    }
 
-        const niveau = Number(niveauSelect.val());
-        const affectations = getAffectationList(aff, niveau, semester);
+    exp.attr("required", "required")
+        .removeAttr("disabled")
+        .addClass("bg-gray-100")
+        .removeClass("bg-gray-300");
 
-        if (affectations === undefined)
-            return;
+    recInput.attr("required", "required").attr("name", "dateReconnaissance");
 
-        for (let i = 0; i < affectations.length; i++) {
-            const affectation = affectations[i];
+    const recDate = new Date(rec);
+    const minExpDate = new Date(recDate.getFullYear() + 5, recDate.getMonth(), recDate.getDate());
+    exp.attr("min", minExpDate.toISOString().split('T')[0]);
+}
 
-            $(`#aff-${i}`).val(affectation.id);
-            $(`#module-${i}`).val(affectation.module.id);
-            $(`#prof-${i}`).val(affectation.professeur.id);
-        }
+export const setDeleteModalContent = () => {
+    $(".filDelBtns").each((index, btn) => {
+        $(btn).on("click", (e) => {
+            const id = $(e.currentTarget).data("filid");
+            const intitule = $(e.currentTarget).data("filint");
+
+            $("#deleteModalP").html(`Êtes vous sûr de vouloir supprimer la filière <span id="deleteModalSpan" class="font-bold text-[#B10C74]">'${intitule}'</span>?`);
+            $("#deleteModalForm").attr("action", `/filieres/${id}`);
+        })
     });
-
-    $("#affectationModalForm").attr("action", `/filieres/${filId}/affectations`);
 }
 
-const createOptions = (select, years) => {
-    select.find("option:not(:first)").remove();
+export const viewFiliereInfo = () => {
+    $(".viewBtns").each((index, btn) => {
+        $(btn).on("click", (e) => {
+            const btn = $(e.currentTarget);
+            const intitule = $("#filIntitule");
+            const dateExp = $("#dateExpiration");
+            const dateRec = $("#dateReconnaissance");
+            const nombreAnnees = $("#years");
+            const diplome = $(btn).data("diplome");
 
-    for (let i = 1; i <= years; i++) {
-        const $option = $('<option>', {
-            value: i,
-            text: "Niveau " + i,
-            id: "N-" + i
-        });
-        select.append($option);
+            $("#filModalH3").text("Filière " + btn.data("intitule"));
 
-        select.on("change", (e) => {
-            const niveau = Number($(e.target).val());
+            disableInputs("bg-gray-300", "bg-gray-100", true, intitule, dateExp, dateRec);
+            hideInputs(true, $("#diplomaType"), $("#coordinateur"), $("#confirmBtn"));
 
-            $("#SI")
-                .text(niveau === -1 ? "" : "S-" + (niveau * 2 - 1))
-                .attr("value", niveau === -1 ? "" : (niveau * 2 - 1));
+            intitule.val(btn.data("intitule"));
+            dateExp.val(btn.data("dateexp"));
+            dateRec.val(btn.data("daterec"));
+            nombreAnnees.val(dipYears[`${diplome}`]);
 
-            $("#SI2")
-                .text(niveau === -1 ? "" : "S-" + niveau * 2)
-                .attr("value", niveau === -1 ? "" : niveau * 2);
+            $("#diplomeInp").removeClass("hidden").val(dipName[`${btn.data("diplome")}`]);
+            $("#coordinateurInp").removeClass("hidden").val(btn.data("coordinateurname"));
+        })
+    })
+}
 
-            $("#semestre").val("-1");
+const disableInputs = (addClass, removeClass, disable, ...inputs) => {
+    for (const input of inputs) {
+        if (disable)
+            input.attr("disabled", "disabled");
+        else
+            input.removeAttr("disabled");
 
-            resetSelects();
-        });
+        if (!input.hasClass(addClass))
+            input.addClass(addClass);
+
+        if (input.hasClass(removeClass))
+            input.removeClass(removeClass)
     }
 }
 
-const resetSelects = () => {
-    for (let i = 0; i < 8; i++) {
-        $(`#aff-${i}`).val("");
-        $(`#module-${i}`).val("");
-        $(`#prof-${i}`).val("");
+const hideInputs = (hide, ...inputs) => {
+    for (const input of inputs) {
+        if (hide && !input.hasClass("hidden"))
+            input.addClass("hidden");
+
+        else if (!hide && input.hasClass("hidden"))
+            input.removeClass("hidden");
     }
 }
-
-const getAffectationList = (affObj, niveau, semester) => {
-    if (!(`N-${niveau}` in affObj)) {
-        resetSelects();
-        return;
-    }
-
-    let affectations = affObj[`N-${niveau}`];
-
-    if (!(`S-${semester}` in affectations)) {
-        resetSelects();
-        return;
-    }
-
-    return affectations[`S-${semester}`];
-}
-
-

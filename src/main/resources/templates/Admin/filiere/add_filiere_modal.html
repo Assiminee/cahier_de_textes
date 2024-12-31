@@ -26,16 +26,15 @@
                     <div class="px-3 pb-3">
                         <label for="filIntitule" class="block mb-2 font-medium">Intitulé</label>
                         <input type="text" name="intitule" id="filIntitule"
-                               placeholder="Saisir un intitulé"
+                               placeholder="Saisir un intitulé" pattern="^[a-zA-Z]+([ \-][a-zA-Z]+)*$" required
                                class="w-full p-3 rounded bg-gray-100 border border-gray-500 text-gray-700"
-                               required
                         />
                     </div>
 
                     <!-- Diplome -->
                     <div class="p-3">
                         <label for="diplomaType" class="block mb-2 font-medium">Type de Diplome</label>
-                        <select id="diplomaType"
+                        <select id="diplomaType" name="diplome" required
                                 class="w-full p-3 rounded bg-gray-100 border border-gray-500 text-gray-700">
                             <option value="" selected>Selectionner le type de diplome
                             </option>
@@ -45,14 +44,16 @@
                             >
                             </option>
                         </select>
+                        <input type="text" name="intitule" id="diplomeInp" disabled
+                               class="w-full p-3 rounded bg-gray-300 border border-gray-500 text-gray-700 hidden"
+                        />
                     </div>
 
                     <!-- Nombre annees -->
                     <div class="p-3">
                         <label for="years" class="block mb-2 font-medium">Nombre d'Années</label>
-                        <input type="text" disabled name="years" id="years"
+                        <input type="text" name="nombreAnnees" id="years" placeholder="Nombre d'années" readonly
                                class="w-full p-3 rounded bg-gray-300 border border-gray-500 text-gray-700"
-                               placeholder="Nombre d'années"
                                required
                         />
                     </div>
@@ -60,49 +61,42 @@
                     <div class="p-3">
                         <label for="dateReconnaissance" class="block mb-2 font-medium">Date d'obtention de la
                             Reconnaissance</label>
-                        <input type="date" name="dateReconnaissance" id="dateReconnaissance"
-                               class="peer/bd w-full p-3 rounded bg-gray-100 border border-gray-500 text-gray-700 inputList"
-                               required>
-                        <!--            <p class="invisible peer-invalid/bd:visible text-pink-600 font-medium">-->
-                        <!--              Vous devez être agé d'au moins 18 ans-->
-                        <!--            </p>-->
+                        <input type="date" id="dateReconnaissance"
+                               class="w-full p-3 rounded bg-gray-100 border border-gray-500 text-gray-700">
                     </div>
 
                     <!-- Date d'expiration de la reconnaissance -->
                     <div class="p-3">
                         <label for="dateExpiration" class="block mb-2 font-medium">Date d'expiration de la
                             Reconnaissance</label>
-                        <input type="date" name="dateExpiration" id="dateExpiration"
-                               class="peer/bd w-full p-3 rounded bg-gray-100 border border-gray-500 text-gray-700 inputList"
-                               required>
-                        <!--            <p class="invisible peer-invalid/bd:visible text-pink-600 font-medium">-->
-                        <!--              Vous devez être agé d'au moins 18 ans-->
-                        <!--            </p>-->
+                        <input type="date" name="dateExpiration" id="dateExpiration" disabled
+                               class="peer/bd w-full p-3 rounded bg-gray-300 border border-gray-500 text-gray-700 inputList"
+                               >
                     </div>
 
                     <!-- Coordinateur -->
                     <div class="p-3">
                         <label for="coordinateur" class="block mb-2 font-medium">Coordinateur de Filière</label>
-                        <select id="coordinateur" name="coordinateur"
+                        <select id="coordinateur" name="coordinateur" required
                                 class="w-full p-3 rounded bg-gray-100 border border-gray-500 text-gray-700">
                             <option selected value="">Selectionner un professeur</option>
+                            <option id="curProf" value="empty"></option>
                             <option th:each="prof : ${profs}"
                                     th:value="${prof.getId()}"
                                     th:text="|${prof.getFullName()}|"
                             >
                             </option>
                         </select>
+                        <input type="text" name="intitule" id="coordinateurInp" disabled
+                               class="w-full p-3 rounded bg-gray-300 border border-gray-500 text-gray-700 hidden"
+                        />
                     </div>
 
                 </form>
             </div>
             <!-- Modal footer -->
             <div class="flex items-center justify-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
-                <button type="button" id="affectationBtn" data-modal-hide="filModal" data-modal-toggle="affectationModal" data-modal-target="affectationModal"
-                        class="w-1/4 bg-[#3575b0] hover:bg-[#4692d6] text-white m-2 font-bold py-3 px-6 rounded">
-                    Affectations
-                </button>
-                <button type="submit"
+                <button type="submit" form="filModalForm" id="confirmBtn"
                         class="w-1/4 bg-[#313863] text-white font-bold py-3 px-6 m-2 rounded hover:bg-[#5663af]">
                     Confirmer
                 </button>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head th:replace="~{fragments/head :: head ('Affectations')}"></head>
+<body class="bg-gray-100 h-screen" th:with="fil = ${filiere}">
+
+<div class="flex h-screen">
+
+    <aside th:replace="~{fragments/side_bar :: aside}"></aside>
+    <main class="bg-white rounded-l-lg shadow-lg w-full col-span-11 flex flex-col h-screen">
+        <nav th:replace="~{fragments/nav :: nav}"></nav>
+        <div class="flex-1 grid h-1/2 grid-rows-[auto, 1fr] bg-white" id="THISISDADIV">
+
+            <div class="flex justify-between px-5 py-1 border-b border-gray-600">
+                <div class="flex flex-col text-start pb-2 pt-2">
+                    <h3 id="affectationHeader" class="text-2xl font-bold text-[#B10C74]" th:text="${fil.getIntitule}"></h3>
+                    <h2 id="filiereName" class="text-xl font-medium mt-1 text-gray-900">Gestion des affectations</h2>
+                </div>
+                <!-- Niveau et Semestre -->
+                <div class="p-3 flex gap-5 justify-center">
+                    <div class="flex-1">
+                        <select id="niveau" name="niveau" required
+                                class="w-full p-3 rounded bg-gray-100 border border-gray-500 text-gray-700">
+                            <option value="" selected>Selectionner un Niveau</option>
+                            <option th:each="i : ${#numbers.sequence(1, fil.getNombreAnnees())}"
+                                    th:value="${i}"
+                                    th:text="|Niveau ${i}|"
+                                    th:id="|N-${i}|"
+                            ></option>
+                        </select>
+                    </div>
+                    <div class="flex-1">
+                        <select id="semestre" name="semestre" required
+                                class="w-full p-3 rounded bg-gray-100 border border-gray-500 text-gray-700">
+                            <option value="" selected>Selectionner un Semestre</option>
+                            <option id="SI" class="hidden"></option>
+                            <option id="SI2" class="hidden"></option>
+                        </select>
+                    </div>
+                    <button class="bg-transparent pb-2 hidden" type="button" id="addAffectation">
+                        <img src="/public/add.png" class="w-8 h-8">
+                    </button>
+                </div>
+            </div>
+
+            <div th:replace="Admin/affectations/affectation_form :: div"></div>
+
+            <div id="affectationDiv" class="hidden"
+                 th:data-affectations="${fil.getAffectations()}"
+                 th:data-diplome="${fil.getDiplome().name()}"
+            ></div>
+        </div>
+    </main>
+</div>
+<script type="module">
+    import {fillAffectationForm, interceptForm} from "/public/js/affectationsFuncs.js"
+
+    fillAffectationForm();
+    interceptForm();
+</script>
+</body>
+</html>

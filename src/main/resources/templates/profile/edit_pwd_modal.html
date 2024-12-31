@@ -27,7 +27,7 @@
                     <div>
                         <label for="oldPasswordInput" class="block mb-2 font-medium">Ancien mot de passe:</label>
                         <input type="password" name="oldPassword" id="oldPasswordInput"
-                               class="w-full p-3 rounded bg-gray-300 border border-gray-500 text-gray-700"
+                               class="w-full p-3 rounded bg-gray-100 border border-gray-500 text-gray-700"
                                required
                         />
                     </div>
@@ -36,7 +36,7 @@
                     <div>
                         <label for="newPasswordInput" class="block mb-2 font-medium">Nouveau mot de passe</label>
                         <input type="password" name="newPassword" id="newPasswordInput"
-                               class="w-full p-3 rounded bg-gray-300 border border-gray-500 text-gray-700"
+                               class="w-full p-3 rounded bg-gray-100 border border-gray-500 text-gray-700"
                                pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
                                title="Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&)"
                                required
@@ -47,7 +47,7 @@
                     <div>
                         <label for="confirmPasswordInput" class="block mb-2 font-medium">Confirmer mot de passe</label>
                         <input type="password" name="confirmPassword" id="confirmPasswordInput"
-                               class="w-full p-3 rounded bg-gray-300 border border-gray-500 text-gray-700"
+                               class="w-full p-3 rounded bg-gray-100 border border-gray-500 text-gray-700"
                                pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
                                title="Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&)"
                                required
@@ -56,20 +56,19 @@
                             Les mots de passe ne correspondent pas
                         </p>
                     </div>
-
-                    <div class="flex items-center justify-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
-                        <button type="submit"
-                                class="w-1/4 bg-[#313863] text-white font-bold py-3 px-6 m-2 rounded hover:bg-[#5663af]">
-                            Confirmer
-                        </button>
-                        <button type="reset"
-                                class="w-1/4 bg-[#B10C74] hover:bg-[#db2777] text-white m-2 font-bold py-3 px-6 rounded">
-                            Annuler
-                        </button>
-                    </div>
                 </form>
             </div>
             <!-- Modal footer -->
+            <div class="flex items-center justify-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
+                <button type="submit" form="editPwdForm"
+                        class="w-1/4 bg-[#313863] text-white font-bold py-3 px-6 m-2 rounded hover:bg-[#5663af]">
+                    Confirmer
+                </button>
+                <button type="reset"
+                        class="w-1/4 bg-[#B10C74] hover:bg-[#db2777] text-white m-2 font-bold py-3 px-6 rounded">
+                    Annuler
+                </button>
+            </div>
         </div>
     </div>
 </div>

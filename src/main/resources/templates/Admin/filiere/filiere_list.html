@@ -1,12 +1,13 @@
 <table th:fragment="filiere_table" class="w-full border-collapse border border-gray-200 shadow-sm rounded-lg overflow-hidden">
   <thead class="bg-[#b10c74] text-white">
   <tr>
-    <th class="py-4 text-left"></th>
+    <th sec:authorize="hasRole('ROLE_ADMIN')" class="py-4 text-left"></th>
     <th class="py-4 text-center">Intitulé</th>
     <th class="py-4 text-center">Expiration de Reconnaisance</th>
     <th class="py-4 text-center">Type de Diplome</th>
     <th class="py-4 text-center">Coordinateur</th>
-    <th class="py-4 px-10 text-center">Action</th>
+    <th class="py-4 px-10 text-center" sec:authorize="hasRole('ROLE_ADMIN')" >Action</th>
+    <th class="py-4 px-10 text-center" sec:authorize="hasRole('ROLE_SS')" >Affectations</th>
   </tr>
   </thead>
   <tbody>
@@ -18,8 +19,14 @@
   <tr th:if="${filieres != null}" th:each="fil : ${filieres}"
       th:with="exp = ${fil.getDateExpiration()}, rec = ${fil.getDateReconnaissance()}"
       class="text-center bg-gray-100 hover:bg-gray-200 transition-all">
-    <td class="p-4">
-      <button class="hover:opacity-80">
+    <td sec:authorize="hasRole('ROLE_ADMIN')" class="p-4">
+      <button class="hover:opacity-80 viewBtns" data-modal-target="filModal" data-modal-toggle="filModal"
+              th:data-intitule="${fil.getIntitule()}"
+              th:data-dateexp="${exp}"
+              th:data-daterec="${rec}"
+              th:data-diplome="${fil.getDiplome().name()}"
+              th:data-coordinateurname="${fil.getCoordinateur() != null ? fil.getCoordinateur().getFullName() : ''}"
+      >
         <img src="/public/eye.png" alt="Voir" class="h-6 w-8">
       </button>
     </td>
@@ -29,25 +36,33 @@
     <td class="p-4" th:if="${fil.getCoordinateur() != null}"
         th:text="${fil.getCoordinateur().getFullName()}"></td>
     <td class="p-4" th:if="${fil.getCoordinateur() == null}">Aucun Coordinateur</td>
-    <td class="p-4 flex items-center justify-center gap-3">
-      <button class="hover:opacity-80 modalBtns" data-modal-target="filModal" data-modal-toggle="filModal" th:id="${fil.getId()}"
+    <td sec:authorize="hasRole('ROLE_ADMIN')" class="p-4 flex items-center justify-center gap-3">
+      <button class="hover:opacity-80 modalBtns" data-modal-target="filModal" data-modal-toggle="filModal"
+              th:id="${fil.getId()}"
               th:data-id="${fil.getId()}"
               th:data-intitule="${fil.getIntitule()}"
               th:data-dateexp="${exp}"
               th:data-daterec="${rec}"
               th:data-diplome="${fil.getDiplome().name()}"
-              th:data-coordinateur="${fil.getCoordinateur() != null ? fil.getCoordinateur().getId() : ''}"
-              th:data-affectations="${fil.getJsonifiedAffectations()}"
+              th:data-coordinateurid="${fil.getCoordinateur() != null ? fil.getCoordinateur().getId() : ''}"
+              th:data-coordinateurname="${fil.getCoordinateur() != null ? fil.getCoordinateur().getFullName() : ''}"
       >
 
         <img src="/public/edit.png" alt="Modifier" class="h-6 w-6">
       </button>
-      <form th:action="@{/users/{id}(id=${user.id})}" method="POST">
-        <input type="hidden" name="_method" value="DELETE">
-        <button type="submit" class="hover:opacity-80">
-          <img src="/public/trash.png" alt="Delete" class="h-6 w-6">
-        </button>
-      </form>
+      <button
+              type="button" class="hover:opacity-80 filDelBtns" data-modal-target="deleteModal"
+              data-modal-toggle="deleteModal" th:data-filid="${fil.getId()}" th:data-filint="${fil.getIntitule()}"
+      >
+        <img src="/public/trash.png" alt="Delete" class="h-6 w-6">
+      </button>
+    </td>
+    <td sec:authorize="hasRole('ROLE_SS')" class="p-4 flex items-center rounded-full justify-center">
+      <a class="bg-[#313863] text-white p-2 hover:opacity-80 flex rounded-full"
+              th:href="@{/filieres/{id}/affectations(id=${fil.id})}"
+      >
+        <img src="/public/pencil.png" alt="Modifier" class="h-5 w-5">
+      </a>
     </td>
   </tr>
   </tbody>

@@ -11,7 +11,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import upf.pjt.cahier_de_textes.dao.dtos.CustomUserDetails;
 import upf.pjt.cahier_de_textes.dao.entities.Module;
 import upf.pjt.cahier_de_textes.dao.repositories.*;
-import upf.pjt.cahier_de_textes.dao.dtos.EditUserDTO;
+import upf.pjt.cahier_de_textes.dao.dtos.UserDTO;
 import upf.pjt.cahier_de_textes.dao.entities.User;
 import upf.pjt.cahier_de_textes.dao.entities.Professeur;
 import java.util.UUID;
@@ -19,77 +19,49 @@ import java.util.UUID;
 @Service
 public class UserService {
     private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
-    private ProfesseurRepository professorRepository;;
-    private AffectationRepository affectationRepository;
-    private QualificationRepository qualificationRepository;
-    private  ModuleRepository moduleRepository;
-    private  FiliereRepository filiereRepository;
+    private final ProfesseurRepository professorRepository;
+    private final ModuleRepository moduleRepository;
+    private final FiliereRepository filiereRepository;
+
     @Getter
-    private PasswordEncoder encoder;
+    private final PasswordEncoder encoder;
 
     @Autowired
     public UserService(
             UserRepository userRepository,
             FiliereRepository filiereRepository,
-            RoleRepository roleRepository,
             ProfesseurRepository professorRepository,
-            AffectationRepository affectationRepository,
-            QualificationRepository qualificationRepository,
             ModuleRepository moduleRepository,
             PasswordEncoder encoder
     ) {
         this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
         this.professorRepository = professorRepository;
-        this.qualificationRepository = qualificationRepository;
-        this.affectationRepository = affectationRepository;
         this.moduleRepository = moduleRepository;
         this.filiereRepository = filiereRepository;
         this.encoder = encoder;
     }
 
-    private boolean hasDuplicateEmail(User user, String email) {
-        if (user.getEmail().equals(email))
-            return false;
+    public boolean hasUniqueAttributes(UUID id, UserDTO user, RedirectAttributes redirectAttributes) {
 
-        return userRepository.existsByEmail(email);
-    }
+        boolean emailExists = userRepository.existsByIdIsNotAndEmail(id, user.getEmail());
+        boolean cinExists = userRepository.existsByIdIsNotAndCin(id, user.getCin());
+        boolean telephoneExists = userRepository.existsByIdIsNotAndTelephone(id, user.getTelephone());
+        boolean hasDuplicateData = emailExists || cinExists || telephoneExists;
 
-    private boolean hasDuplicateCin(User user, String cin) {
-        if (user.getCin().equals(cin))
-            return false;
+        redirectAttributes.addFlashAttribute("error", hasDuplicateData);
+        if (emailExists)
+            redirectAttributes.addFlashAttribute("email", user.getEmail());
 
-        return userRepository.existsByCin(cin);
-    }
+        if (telephoneExists)
+            redirectAttributes.addFlashAttribute("telephone", user.getTelephone());
 
-    private boolean hasDuplicateTelephone(User user, String telephone) {
-        if (user.getTelephone().equals(telephone))
-            return false;
+        if (cinExists)
+            redirectAttributes.addFlashAttribute("cin", user.getCin());
 
-        return userRepository.existsByTelephone(telephone);
-    }
+        if (!hasDuplicateData)
+            redirectAttributes.addFlashAttribute("success", true);
 
-    public boolean hasUniqueAttributes(User user, EditUserDTO incomingUser, RedirectAttributes redirectAttributes) {
-
-        boolean emailExists = hasDuplicateEmail(user, incomingUser.getEmail());
-        boolean cinExists = hasDuplicateCin(user, incomingUser.getCin());
-        boolean telephoneExists = hasDuplicateTelephone(user, incomingUser.getTelephone());
-
-        if (emailExists || telephoneExists || cinExists) {
-            redirectAttributes.addFlashAttribute("error", true);
-            if (emailExists)
-                redirectAttributes.addFlashAttribute("email", incomingUser.getEmail());
-
-            if (telephoneExists)
-                redirectAttributes.addFlashAttribute("telephone", incomingUser.getTelephone());
-
-            if (cinExists)
-                redirectAttributes.addFlashAttribute("cin", incomingUser.getCin());
-
-            return false;
-        }
-        return true;
+        return !hasDuplicateData;
     }
 
     @Transactional
@@ -128,7 +100,7 @@ public class UserService {
         return encoder.matches(incomingPassword, currentPassword);
     }
 
-    public static User getAuthenticatedAdmin() {
+    public static User getAuthenticatedUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (!(authentication.getPrincipal() instanceof CustomUserDetails userDetails))
@@ -136,7 +108,12 @@ public class UserService {
 
         User loggedUser = userDetails.getUser();
 
-        if (loggedUser == null || !loggedUser.getRole().getAuthority().equals("ROLE_ADMIN"))
+        if (loggedUser == null)
+            return null;
+
+        String role = loggedUser.getRole().getAuthority();
+
+        if (!(role.equals("ROLE_ADMIN") || role.equals("ROLE_SS")))
             return null;
 
         return loggedUser;

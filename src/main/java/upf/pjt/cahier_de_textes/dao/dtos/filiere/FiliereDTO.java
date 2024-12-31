@@ -8,7 +8,6 @@ import lombok.Setter;
 import upf.pjt.cahier_de_textes.dao.entities.Affectation;
 import upf.pjt.cahier_de_textes.dao.entities.Filiere;
 import upf.pjt.cahier_de_textes.dao.entities.enumerations.Diplome;
-
 import java.time.LocalDate;
 import java.util.*;
 
@@ -23,10 +22,10 @@ public class FiliereDTO {
     private LocalDate dateExpiration;
     private Diplome diplome;
     private ProfesseurDTO coordinateur;
-    private String jsonifiedAffectations;
+    private String affectations;
 
 
-    public FiliereDTO(Filiere filiere, ObjectMapper objectMapper) throws JsonProcessingException {
+    public FiliereDTO(Filiere filiere) {
         this.id = filiere.getId();
         this.intitule = filiere.getIntitule();
         this.nombreAnnees = filiere.getNombreAnnees();
@@ -34,12 +33,13 @@ public class FiliereDTO {
         this.dateExpiration = filiere.getDateExpiration();
         this.diplome = filiere.getDiplome();
         this.coordinateur = filiere.getCoordinateur() != null ? new ProfesseurDTO(filiere.getCoordinateur()) : null;
-        this.jsonifiedAffectations = jsonifyAffectations(filiere, objectMapper);
-
-        System.out.println(jsonifiedAffectations);
     }
 
-    private String jsonifyAffectations(Filiere filiere, ObjectMapper objectMapper) throws JsonProcessingException {
+    public void setAffectations(Filiere filiere, ObjectMapper objectMapper) throws JsonProcessingException {
+        this.affectations = mapAffectations(filiere, objectMapper);
+    }
+
+    private String mapAffectations(Filiere filiere, ObjectMapper objectMapper) throws JsonProcessingException {
         Map<String, Map<String, List<AffectationDTO>>> affectations = new HashMap<>();
 
         for (Affectation affectation : filiere.getAffectations()) {

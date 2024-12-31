@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import upf.pjt.cahier_de_textes.dao.entities.Filiere;
+import upf.pjt.cahier_de_textes.dao.entities.Professeur;
 import upf.pjt.cahier_de_textes.dao.entities.enumerations.Diplome;
 
 import java.util.UUID;
@@ -18,27 +19,36 @@ public interface FiliereRepository extends JpaRepository<Filiere, UUID> {
             "WHERE f.intitule LIKE CONCAT('%', :intitule, '%') " +
             "AND ((:coordinateur = '' AND c IS NULL) OR CONCAT(c.nom, ' ', c.prenom) LIKE CONCAT('%', :coordinateur, '%')) " +
             "AND (:diplome IS NULL OR f.diplome = :diplome) " +
-            "AND (f.dateExpiration <= CURRENT_DATE)"
+            "AND (:reconnue IS NULL OR ((:reconnue = false AND (f.dateExpiration IS NULL OR f.dateExpiration <= CURRENT_DATE)) " +
+            "OR (:reconnue = true AND f.dateExpiration > CURRENT_DATE)))"
     )
-    Page<Filiere> expiredFilieres(
+    Page<Filiere> getFilieres(
             @Param("intitule") String intitule,
             @Param("coordinateur") String coordinateur,
             @Param("diplome") Diplome diplome,
+            @Param("reconnue") Boolean reconnue,
             Pageable pageable
     );
 
     @Query("SELECT f FROM Filiere f " +
+            "LEFT JOIN FETCH f.affectations a " +
             "LEFT JOIN f.coordinateur c " +
             "WHERE f.intitule LIKE CONCAT('%', :intitule, '%') " +
             "AND ((:coordinateur = '' AND c IS NULL) OR CONCAT(c.nom, ' ', c.prenom) LIKE CONCAT('%', :coordinateur, '%')) " +
             "AND (:diplome IS NULL OR f.diplome = :diplome) " +
-            "AND f.dateExpiration > CURRENT_DATE"
+            "AND (:reconnue IS NULL OR ((:reconnue = false AND (f.dateExpiration IS NULL OR f.dateExpiration <= CURRENT_DATE)) " +
+            "OR (:reconnue = true AND f.dateExpiration > CURRENT_DATE)))"
     )
-    Page<Filiere> recognizedFilieres(
+    Page<Filiere> getFilieresWithAffectations(
             @Param("intitule") String intitule,
             @Param("coordinateur") String coordinateur,
             @Param("diplome") Diplome diplome,
+            @Param("reconnue") Boolean reconnue,
             Pageable pageable
     );
 
+    Boolean existsByIntitule(String intitule);
+    Boolean existsByCoordinateur(Professeur coordinateur);
+    Boolean existsByIdIsNotAndIntitule(UUID id, String intitule);
+    Boolean existsByIdIsNotAndCoordinateur(UUID id, Professeur coordinateur);
 }

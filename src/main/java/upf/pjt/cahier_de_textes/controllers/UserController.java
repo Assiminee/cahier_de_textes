@@ -12,19 +12,19 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import upf.pjt.cahier_de_textes.dao.dtos.CustomUserDetails;
 import upf.pjt.cahier_de_textes.dao.dtos.EditPwdDTO;
 import upf.pjt.cahier_de_textes.dao.dtos.UserRegistrationDto;
-import upf.pjt.cahier_de_textes.dao.entities.Professeur;
 import upf.pjt.cahier_de_textes.dao.entities.User;
-import upf.pjt.cahier_de_textes.dao.dtos.EditUserDTO;
+import upf.pjt.cahier_de_textes.dao.dtos.UserDTO;
 import upf.pjt.cahier_de_textes.dao.entities.enumerations.Genre;
 import upf.pjt.cahier_de_textes.dao.entities.enumerations.Grade;
 import upf.pjt.cahier_de_textes.dao.entities.enumerations.RoleEnum;
 import upf.pjt.cahier_de_textes.dao.repositories.ProfesseurRepository;
+import upf.pjt.cahier_de_textes.dao.repositories.QualificationRepository;
 import upf.pjt.cahier_de_textes.dao.repositories.UserRepository;
+import upf.pjt.cahier_de_textes.services.UserDetailsServiceImpl;
 import upf.pjt.cahier_de_textes.services.UserRegistrationService;
 import upf.pjt.cahier_de_textes.services.UserService;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Slf4j
@@ -32,17 +32,19 @@ import java.util.UUID;
 @RequestMapping(name = "User management endpoints", path = "/users")
 public class UserController {
     private final UserService userService;
+    private final QualificationRepository qualificationRepository;
     private UserRepository userRepository;
     private ProfesseurRepository professeurRepository;
     private UserRegistrationService userRegistrationService;
 
 
     @Autowired
-    public UserController(UserRepository userRepository, ProfesseurRepository professeurRepository, UserRegistrationService userRegistrationService, UserService userService) {
+    public UserController(UserRepository userRepository, ProfesseurRepository professeurRepository, UserRegistrationService userRegistrationService, UserService userService, QualificationRepository qualificationRepository) {
         this.userRepository = userRepository;
         this.professeurRepository = professeurRepository;
         this.userRegistrationService = userRegistrationService;
         this.userService = userService;
+        this.qualificationRepository = qualificationRepository;
     }
 
     @GetMapping
@@ -77,41 +79,35 @@ public class UserController {
         }
     }
 
-    @PutMapping(path = "/{id}")
-    public String editUser(@PathVariable("id") String id, @ModelAttribute EditUserDTO incomingUser, Model model, RedirectAttributes redirectAttributes) {
-        UUID convertedId = UUID.fromString(String.valueOf(id));
-        User user = userRepository.findById(convertedId).orElse(null);
+    @PatchMapping("/{id}")
+    public String editProfileInformation(@PathVariable("id") UUID id, @ModelAttribute UserDTO incomingUser, RedirectAttributes redirectAttributes) {
+        try {
+            boolean userExists = userRepository.existsById(id);
 
-        if (user == null)
-            return "redirect:/auth/login";
+            if (!userExists) {
+                redirectAttributes.addFlashAttribute("error", "User not found");
+                redirectAttributes.addFlashAttribute("success", false);
+                return "redirect:/auth/login?error";
+            }
 
-        if (!userService.hasUniqueAttributes(user, incomingUser, redirectAttributes))
-            return "redirect:/profile";
+            User user = userRepository.findById(id).orElse(null);
 
-        if (incomingUser.getRole().name().equals("ROLE_PROF")) {
-            Optional<Professeur> prof = professeurRepository.findById(convertedId);
+            if (userService.hasUniqueAttributes(id, incomingUser, redirectAttributes)) {
+                assert user != null;
+                incomingUser.setUserDetails(user);
 
-            if (prof.isEmpty())
-                return "redirect:/auth/login";
+                if (user.getRole().getAuthority().equals("ROLE_PROF"))
+                    incomingUser.setProfessorDetails(qualificationRepository, professeurRepository);
 
-            Professeur professeur = prof.get();
-            incomingUser.setUserDetails(professeur);
-            professeurRepository.save(professeur);
-            model.addAttribute("user", professeur);
-            return "profile/profile";
+                userRepository.save(user);
+                UserDetailsServiceImpl.updateCustomUserDetails(user);
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            redirectAttributes.addFlashAttribute("success", false);
         }
 
-        Optional<User> optionalUser = userRepository.findById(convertedId);
-
-        if (optionalUser.isEmpty())
-            return "redirect:/auth/login";
-
-        User loggedUser = optionalUser.get();
-        incomingUser.setUserDetails(loggedUser);
-        userRepository.save(loggedUser);
-        model.addAttribute("user", loggedUser);
-
-        return "profile/profile";
+        return "redirect:/profile";
     }
 
     @DeleteMapping("/{id}")
