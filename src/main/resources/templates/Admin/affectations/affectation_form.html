@@ -3,9 +3,7 @@
       class="row-span-6 overflow-y-auto"
 
 >
-
-    <div th:replace="~{/Admin/affectations/affectation_danger_alert :: div}"></div>
-    <div th:replace="~{/Admin/affectations/affectation_success_alert :: div}"></div>
+    <div th:replace="~{Admin/affectations/delete_affectation_modal :: div}"></div>
     <!-- Modules et Professeurs -->
     <div class="grid grid-cols-2 w-full">
         <form th:each="i : ${#numbers.sequence(1, 8)}"
@@ -18,8 +16,8 @@
                 <div class="flex-1/3">
                     <label th:for="|module-${i}|"
                            class="block mb-2 font-medium moduleSelects">Module</label>
-                    <select th:id="|module-${i}|" name="module"
-                            class="w-full p-3 rounded bg-gray-100 border border-gray-500 text-gray-700">
+                    <select th:id="|module-${i}|" name="module" disabled
+                            class="w-full p-3 rounded bg-gray-300 border border-gray-500 text-gray-700">
                         <option value="" selected>Selectionner un Module</option>
                         <option th:each="module : ${modules}"
                                 th:value="${module.getId()}"
@@ -31,8 +29,8 @@
                 <div class="flex-1/6">
                     <label th:for="|prof-${i}|"
                            class="block mb-2 font-medium profSelects">Professeur</label>
-                    <select th:id="|prof-${i}|" name="professeur"
-                            class="w-full p-3 rounded bg-gray-100 border border-gray-500 text-gray-700">
+                    <select th:id="|prof-${i}|" name="professeur" disabled
+                            class="w-full p-3 rounded bg-gray-300 border border-gray-500 text-gray-700">
                         <option value="" selected>Selectionner un Professeur</option>
                         <option th:each="prof : ${profs}"
                                 th:value="${prof.getId()}"
@@ -43,8 +41,8 @@
                 <div class="flex-1/6">
                     <label th:for="|jour-${i}|"
                            class="block mb-2 font-medium jourSelect">Jour</label>
-                    <select th:id="|jour-${i}|" name="jour"
-                            class="w-full p-3 rounded bg-gray-100 border border-gray-500 text-gray-700">
+                    <select th:id="|jour-${i}|" name="jour" disabled
+                            class="w-full p-3 rounded bg-gray-300 border border-gray-500 text-gray-700">
                         <option value="" selected>Selectionner un jour</option>
                         <option value="LUN">Lundi</option>
                         <option value="MAR">Mardi</option>
@@ -58,8 +56,8 @@
                     <div class="flex-1/6">
                         <label th:for="|start-${i}|"
                                class="block mb-2 font-medium jourSelect">Heure de début</label>
-                        <select th:id="|start-${i}|" name="heureDebut"
-                                class="w-full p-3 rounded bg-gray-100 border border-gray-500 text-gray-700">
+                        <select th:id="|start-${i}|" name="heureDebut" disabled
+                                class="w-full p-3 rounded bg-gray-300 border border-gray-500 text-gray-700">
                             <option value="" selected>Début de la séance</option>
                             <option value="8">08 : 00</option>
                             <option value="14">14 : 00</option>
@@ -81,7 +79,7 @@
                         <img src="/public/modifier.png" class="w-10 h-8">
                     </button>
                     <button class="bg-transparent self-end mb-2 removeBtns"
-                            type="button" th:id="|remove-${i}|">
+                            type="button" th:id="|remove-${i}|" data-modal-toggle="deleteAffectationModal" data-modal-target="deleteAffectationModal" >
                         <img src="/public/minus.png" class="w-10 h-8">
                     </button>
                 </div>

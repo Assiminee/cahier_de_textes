@@ -42,6 +42,8 @@
                     </button>
                 </div>
             </div>
+            <div th:replace="~{/Admin/affectations/affectation_danger_alert :: div}"></div>
+            <div th:replace="~{/Admin/affectations/affectation_success_alert :: div}"></div>
 
             <div th:replace="Admin/affectations/affectation_form :: div"></div>
 
@@ -54,11 +56,12 @@
     </main>
 </div>
 <script type="module">
-    import {fillAffectationForm, interceptForm} from "/public/js/affectationsFuncs.js"
+    import {fillAffectationForm, interceptForm, interceptDeleteForm} from "/public/js/affectationsFuncs.js"
 
     sessionStorage.setItem("affectations", JSON.stringify($("#affectationDiv").data("affectations")));
     fillAffectationForm();
     interceptForm();
+    interceptDeleteForm();
 </script>
 </body>
 </html>
