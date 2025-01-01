@@ -10,6 +10,7 @@ import upf.pjt.cahier_de_textes.dao.dtos.filiere.SaveEditAffectationDTO;
 import upf.pjt.cahier_de_textes.dao.entities.Affectation;
 import upf.pjt.cahier_de_textes.dao.entities.Filiere;
 import upf.pjt.cahier_de_textes.dao.repositories.FiliereRepository;
+import upf.pjt.cahier_de_textes.errors.ErrorResponse;
 import upf.pjt.cahier_de_textes.services.AffectationService;
 
 import java.util.UUID;
@@ -26,17 +27,35 @@ public class AffectationController {
     }
 
     @PostMapping("/filieres/{id}/affectations")
-    public ResponseEntity<AffectationDTO> saveAffecation(@PathVariable("id") UUID id, @RequestBody SaveEditAffectationDTO affectationDTO, RedirectAttributes redAtts) {
+    public ResponseEntity<?> saveAffecation(@PathVariable("id") UUID id, @RequestBody SaveEditAffectationDTO affectationDTO, RedirectAttributes redAtts) {
+        ErrorResponse err = new ErrorResponse();
         Filiere filiere = filiereRepository.findById(id).orElse(null);
 
         if (filiere == null)
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("La filière n'existe pas");
 
-        Affectation affectation = affectationService.saveAffectation(filiere, new AffectationDTO(affectationDTO));
+        Affectation affectation = affectationService.saveAffectation(filiere, new AffectationDTO(affectationDTO), err);
 
-        if (affectation == null)
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        if (affectation == null) {
+            return ResponseEntity.status(err.getHttpStatus())
+                    .body(err.getMessage());
+        }
 
         return ResponseEntity.status(HttpStatus.OK).body(new AffectationDTO(affectation));
+    }
+
+    @DeleteMapping("/filieres/{id}/affectations/{affId}")
+    public ResponseEntity<?> deleteAffection(@PathVariable("id") UUID id, @PathVariable("affId") UUID affId) {
+        Filiere filiere = filiereRepository.findById(id).orElse(null);
+
+        if (filiere == null)
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("La filière n'existe pas");
+
+        ErrorResponse err = affectationService.deleteAffectation(affId);
+
+        if (err == null)
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("");
+
+        return ResponseEntity.status(err.getHttpStatus()).body(err.getMessage());
     }
 }

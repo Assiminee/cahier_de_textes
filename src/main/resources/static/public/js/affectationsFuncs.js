@@ -1,10 +1,10 @@
 export const fillAffectationForm = () => {
     niveauSelectOnChange();
-    semesterSelectOnChange();
+    $("#semestre").on("change", () => loadData());
     affectationDivSelectsOnChange();
     addAffectationButtonOnClick();
+    deleteButtonsOnClick();
 }
-
 
 export const interceptForm = () => {
     const filiereId = $("#affectationDiv").data("filid");
@@ -30,7 +30,10 @@ export const interceptForm = () => {
             }
 
             const response = await fetch(url, params);
-            handleResponse(response.status);
+            const success = await handleResponse(response, 200,"L'affectation a été sauvegardée avec succès");
+
+            if (!success)
+                return;
 
             form.attr("method", "PUT");
 
@@ -42,9 +45,34 @@ export const interceptForm = () => {
 
             $(`#save-${index}`).addClass("hidden");
             $(`#modify-${index}`).removeClass("hidden");
-
+            setDisabled(index);
         })
     });
+}
+
+export const interceptDeleteForm = () => {
+    $("#deleteAffectationModalForm").on("submit", async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const form = $(e.target);
+        const action = form.attr("action");
+        const affId = action.slice(action.lastIndexOf("/") + 1);
+
+        const response = await fetch(action, {method: "DELETE"});
+
+        const success = await handleResponse(response, 204, "L'affectation a été suprimée avec succès.");
+
+        if (!success)
+            return;
+
+        const removed = removeAffectation(affId);
+
+        if (!removed)
+            console.log("Couldn't remove affectation from SessionStorage item");
+
+        loadData();
+    })
 }
 
 /**
@@ -70,83 +98,6 @@ const niveauSelectOnChange = () => {
         // niveau is
         setSemesterOptions(val, niveau);
     });
-}
-
-/**
- * Defines the behavior of the semester select
- */
-const semesterSelectOnChange = () => {
-    $("#semestre").on("change", (e) => {
-        // Resets all the forms
-        resetAffectationForms();
-
-        const filiereId = $("#affectationDiv").data("filid");
-        const niveau = $("#niveau").find("option[selected=selected]").val();
-        const semester = $(e.target).val();
-
-        // Gets the list of affectations associated with a "niveau" and a "semestre"
-        const affs = getAffectations(`N-${niveau}`, `S-${semester}`);
-
-        // Sets "semestre" and "niveau" in the hidden inputs of all the forms
-        // Reason: these values are required to properly store the data in the
-        // database
-        $(".semestreInputs").val(semester);
-        $(".niveauInputs").val(niveau);
-
-        // Adds the "selected" attribute to the option whose value matches
-        // the selected semester
-        selectOption($(e.target), semester);
-
-        // If no affectations exist for a niveau/semestre, an add button is
-        // revealed to allow the user to add a new affectation
-        if (affs.length === 0) {
-            $("#addAffectation").removeClass("hidden");
-            return;
-        }
-
-        let i = 1;
-
-        // Loops over the affectation list and sets all the select
-        // options necessary to match the data in the array
-        for (const aff of affs) {
-            if (i > 8)
-                break;
-
-            const currMod = $(`#module-${i}`);
-            const currProf = $(`#prof-${i}`);
-            const currDay = $(`#jour-${i}`);
-            const currStart = $(`#start-${i}`);
-            const form = $(`#affForm-${i}`);
-
-            // Reveals the hidden form, sets the action and the method
-            form.removeClass("hidden")
-                .attr("action", `/filieres/${filiereId}/affectations/${aff.id}`)
-                .attr("method", "PUT");
-
-            // Removes the "selected" attribute from the default option
-            // of all the selects in the form
-            unselectDefaultOption(currMod, currProf, currDay, currStart);
-
-            // Sets the values of the selects (module, professeur, jour, heureDebut)
-            // and adds the attribute "selected" to the option whose value is the same
-            // as the one in the current affectation instance
-            setSelectedData(currMod, aff.module.id);
-            setSelectedData(currProf, aff.professeur.id);
-            setSelectedData(currDay, aff.jour);
-            setSelectedData(currStart, aff.heureDebut);
-
-            // Sets heureFin based on what the value of heureDebut is
-            $(`#end-${i}`).attr("required", "required").val(aff.heureFin + " : 00");
-            i++;
-        }
-
-        // Hides or reveals the add button depending on whether the maximum
-        // number of visible forms (max 8) has been reached or not
-        if (i < 8)
-            $("#addAffectation").removeClass("hidden");
-        else
-            $("#addAffectation").addClass("hidden");
-    })
 }
 
 /**
@@ -176,20 +127,7 @@ const resetAffectationForms = () => {
     const filiereId = $("#affectationDiv").data("filid");
 
     for (let i = 1; i < 9; i++) {
-        const currMod = $(`#module-${i}`);
-        const currProf = $(`#prof-${i}`);
-        const currDay = $(`#jour-${i}`);
-        const currStart = $(`#start-${i}`);
-        const form = $(`#affForm-${i}`);
-
-        // Hide the div containing the affectation inputs
-        form.addClass("hidden").attr("action", `/filieres/${filiereId}/affectations`).attr("method", "POST");
-
-        // Reset current affectation div dropdowns
-        resetSelects(currMod, currProf, currDay, currStart);
-
-        // set the value of each heureFin to an empty string
-        $(`#end-${i}`).val("");
+        resetAffectationForm(i, filiereId);
     }
 }
 
@@ -251,12 +189,11 @@ const affectationDivSelectsOnChange = () => {
 }
 
 const addAffectationButtonOnClick = () => {
-    $("#addAffectation").on("click", (e) => {
+    $("#addAffectation:button").on("click", (e) => {
         const res = $(".saveButtons:not(.hidden)");
 
         if (res.length > 0) {
-            $("#alertMessage").text("Veuillez sauvegarder vos données avant de créer une nouvelle affectation.");
-            $("#dangerAlert").removeClass("transition-opacity duration-300 ease-out opacity-0 hidden");
+            forbidAddition();
             return;
         }
 
@@ -280,23 +217,29 @@ const addAffectationButtonOnClick = () => {
     })
 }
 
-const handleResponse = (status) => {
+const forbidAddition = () => {
+    $("#alertMessage").text("Veuillez sauvegarder vos données avant de créer une nouvelle affectation.");
+    $("#dangerAlert").removeClass("transition-opacity duration-300 ease-out opacity-0 hidden");
+}
+
+const handleResponse = async (response, code, msg) => {
     const alertMessage = $("#alertMessage");
     const dangerAlertDiv = $("#dangerAlert");
+    const cls = "transition-opacity duration-300 ease-out opacity-0 hidden";
 
-    if (status === 200) {
-        $("#successMessage").text("L'affectation a été sauvegarder avec succès");
-        $("#successAlert").removeClass("transition-opacity duration-300 ease-out opacity-0 hidden");
+    if (response.status === code) {
+        $("#successMessage").text(msg);
+        $("#successAlert").removeClass(cls);
 
-        return;
+        return true;
     }
 
-    if (status === 404)
-        alertMessage.text("La filière que vous cherchez n'existe pas");
-    else
-        alertMessage.text("Une erreur s'est produite lors de la création de l'affectation. Veuillez réessayer plus tard.");
+    const err = await response.text();
 
-    dangerAlertDiv.removeClass("transition-opacity duration-300 ease-out opacity-0 hidden");
+    alertMessage.text(err);
+    dangerAlertDiv.removeClass(cls);
+
+    return false;
 }
 
 const setAffectation = (affectation) => {
@@ -325,7 +268,18 @@ const setSelectedData = (select, value) => {
 
 const setRequired = (...selects) => {
     for (const select of selects)
-        select.attr("required", "required");
+        select.attr("required", "required")
+            .removeAttr("disabled")
+            .removeClass("bg-gray-300")
+            .addClass("bg-gray-100");
+}
+
+const setDisabled = (index) => {
+    const selects = [$(`#module-${index}`), $(`#prof-${index}`), $(`#start-${index}`), $(`#jour-${index}`)]
+    for (const select of selects)
+        select.prop("disabled", true)
+            .removeClass("bg-gray-100")
+            .addClass("bg-gray-300");
 }
 
 const setSemesterOptions = (val, niveau) => {
@@ -346,4 +300,161 @@ const setSemesterOptions = (val, niveau) => {
     SI2.removeClass("hidden")
         .attr("value", niveau * 2)
         .text("S" + niveau * 2);
+}
+
+const deleteButtonsOnClick = () => {
+    const filiereId = $("#affectationDiv").data("filid");
+
+    $(".removeBtns").each((index, btn) => {
+        $(btn).on("click", (e) => {
+            const deleteModal = document.getElementById("deleteAffectationModal");
+            const modal = new Modal(deleteModal);
+            const index = $(e.currentTarget).attr("id").slice(-1);
+            const form = $(`#affForm-${index}`);
+            const delAffForm = $("#deleteAffectationModalForm");
+
+            if (form.attr("method") === "POST") {
+                resetAffectationForm(index, filiereId);
+                $("#addAffectation:button").removeClass("hidden");
+                $("#addAffectation img").removeClass("hidden");
+                return;
+            }
+
+            modal.show();
+            $(".dismissModal").on("click", () => modal.hide());
+
+            delAffForm.attr("action", form.attr("action"));
+            delAffForm.data("index", index);
+
+            $("#moduleTD").text(getSelectedOptionText("module", index));
+            $("#profTH").text(getSelectedOptionText("prof", index));
+            $("#jourTD").text(getSelectedOptionText("jour", index));
+            $("#hoursTD").text(getSelectedOptionText("start", index) + " - " + $(`#end-${index}`).val());
+        })
+    })
+}
+
+const getSelectedOptionText = (element, index) => {
+    return $(`#${element}-${index}`).find("option[selected=selected]").text()
+}
+
+const resetAffectationForm = (index, filiereId) => {
+    const currMod = $(`#module-${index}`);
+    const currProf = $(`#prof-${index}`);
+    const currDay = $(`#jour-${index}`);
+    const currStart = $(`#start-${index}`);
+    const form = $(`#affForm-${index}`);
+
+    // Hide the div containing the affectation inputs
+    form.addClass("hidden").attr("action", `/filieres/${filiereId}/affectations`).attr("method", "POST");
+
+    // Reset current affectation div dropdowns
+    resetSelects(currMod, currProf, currDay, currStart);
+
+    // Hide all the submit buttons
+    $(".saveButtons").addClass("hidden");
+    $(".modifyBtns").removeClass("hidden");
+
+    // set the value of each heureFin to an empty string
+    $(`#end-${index}`).val("");
+}
+
+const removeAffectation = (affId) => {
+    let affectations = JSON.parse(sessionStorage.getItem("affectations")) || {};
+
+    if (Object.keys(affectations).length === 0) return false;
+
+    const niveau = "N-" + $("#niveau").val();
+    const semestre = "S-" + $("#semestre").val();
+
+    if (!(niveau in affectations)) return false;
+
+    if (!(semestre in affectations[`${niveau}`])) return false;
+
+    let curAffList = affectations[niveau][semestre];
+    const newList = curAffList.filter(item => item.id !== affId);
+
+    if (curAffList.length === newList.length) return false;
+
+    affectations[`${niveau}`][`${semestre}`] = newList;
+
+    sessionStorage.setItem("affectations", JSON.stringify(affectations));
+
+    return true;
+}
+
+const loadData = () => {
+    // Resets all the forms
+    resetAffectationForms();
+
+    const filiereId = $("#affectationDiv").data("filid");
+    const niveau = $("#niveau").find("option[selected=selected]").val();
+    const semester = $("#semestre").val();
+
+    // Gets the list of affectations associated with a "niveau" and a "semestre"
+    const affs = getAffectations(`N-${niveau}`, `S-${semester}`);
+
+    // Sets "semestre" and "niveau" in the hidden inputs of all the forms
+    // Reason: these values are required to properly store the data in the
+    // database
+    $(".semestreInputs").val(semester);
+    $(".niveauInputs").val(niveau);
+
+    // Adds the "selected" attribute to the option whose value matches
+    // the selected semester
+    selectOption($("#semestre"), semester);
+
+    // If no affectations exist for a niveau/semestre, an add button is
+    // revealed to allow the user to add a new affectation
+    if (affs.length === 0) {
+        $("#addAffectation:button").removeClass("hidden");
+        $("#addAffectation img").removeClass("hidden");
+        return;
+    }
+
+    let i = 1;
+
+    // Loops over the affectation list and sets all the select
+    // options necessary to match the data in the array
+    for (const aff of affs) {
+        if (i > 8)
+            break;
+
+        const currMod = $(`#module-${i}`);
+        const currProf = $(`#prof-${i}`);
+        const currDay = $(`#jour-${i}`);
+        const currStart = $(`#start-${i}`);
+        const form = $(`#affForm-${i}`);
+
+        // Reveals the hidden form, sets the action and the method
+        form.removeClass("hidden")
+            .attr("action", `/filieres/${filiereId}/affectations/${aff.id}`)
+            .attr("method", "PUT");
+
+        // Removes the "selected" attribute from the default option
+        // of all the selects in the form
+        unselectDefaultOption(currMod, currProf, currDay, currStart);
+
+        // Sets the values of the selects (module, professeur, jour, heureDebut)
+        // and adds the attribute "selected" to the option whose value is the same
+        // as the one in the current affectation instance
+        setSelectedData(currMod, aff.module.id);
+        setSelectedData(currProf, aff.professeur.id);
+        setSelectedData(currDay, aff.jour);
+        setSelectedData(currStart, aff.heureDebut);
+
+        // Sets heureFin based on what the value of heureDebut is
+        $(`#end-${i}`).attr("required", "required").val(aff.heureFin + " : 00");
+        i++;
+    }
+
+    // Hides or reveals the add button depending on whether the maximum
+    // number of visible forms (max 8) has been reached or not
+    if (i > 8) {
+        $("#addAffectation:button").addClass("hidden");
+        $("#addAffectation img").addClass("hidden");
+    } else {
+        $("#addAffectation:button").removeClass("hidden");
+        $("#addAffectation img").removeClass("hidden");
+    }
 }

@@ -202,29 +202,8 @@ public class FiliereController {
         model.addAttribute("user", userDTO);
         model.addAttribute("filiere", filiereDTO);
         model.addAttribute("modules", moduleRepository.findAll());
-        model.addAttribute("profs", professeurRepository.getAvailableProfesseurs());
+        model.addAttribute("profs", professeurRepository.findAll());
 
         return "Admin/affectations/affectations";
     }
-
-//    @PostMapping("/{id}/affectations")
-//    public String saveAffecation(@PathVariable("id") UUID id, @ModelAttribute SaveEditAffectationDTO affectationDTO, RedirectAttributes redAtts) {
-//        Filiere filiere = filiereRepository.findById(id).orElse(null);
-//
-//        if (filiere == null) {
-//            redAtts.addFlashAttribute("error", true);
-//            redAtts.addFlashAttribute("msg", "L'opération a echouée");
-//
-//            return "redirect:/filieres";
-//        }
-//
-//        Affectation affectation = affectationService.saveAffectation(filiere, new AffectationDTO(affectationDTO));
-//
-//        if (affectation == null) {
-//            redAtts.addFlashAttribute("error", true);
-//            redAtts.addFlashAttribute("msg", "L'opération a echouée");
-//        }
-//
-//        return "redirect:/filieres";
-//    }
 }
