@@ -3,7 +3,11 @@ package upf.pjt.cahier_de_textes.dao.repositories;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import upf.pjt.cahier_de_textes.dao.entities.Affectation;
 import upf.pjt.cahier_de_textes.dao.entities.Filiere;
@@ -33,5 +37,21 @@ public interface AffectationRepository extends  JpaRepository<Affectation, UUID>
     // Use case: Making sure that the
     Integer countAffectationByFiliereAndNiveauAndSemestreAndProf(
             Filiere filiere, int niveau, int semestre, Professeur professeur
+    );
+
+    @Query("SELECT a FROM Affectation a " +
+            "JOIN FETCH a.filiere f " +
+            "JOIN a.prof p " +
+            "JOIN a.module m " +
+            "WHERE f.intitule LIKE CONCAT('%', :filiere, '%') " +
+            "AND CONCAT(p.nom, ' ', p.prenom) LIKE CONCAT('%', :prof, '%') " +
+            "AND m.intitule LIKE CONCAT('%', :module, '%')"
+
+    )
+    Page<Affectation> getAffectations(
+            @Param("filiere") String filiere,
+            @Param("module") String module,
+            @Param("prof") String prof,
+            Pageable pageable
     );
 }

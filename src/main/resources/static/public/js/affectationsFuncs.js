@@ -510,3 +510,14 @@ const editButtonsOnClick = () => {
         })
     })
 }
+
+export const selectFromUrlParams = () => {
+    const queryString = window.location.search;
+    const params = new URLSearchParams(queryString);
+
+    const niveau = params.get("niveau");
+    const semestre = params.get("semestre");
+
+    $("#niveau").val(niveau).trigger("change");
+    $("#semestre").val(semestre).trigger("change");
+}

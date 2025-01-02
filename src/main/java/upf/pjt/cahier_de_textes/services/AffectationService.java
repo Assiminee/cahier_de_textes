@@ -2,6 +2,8 @@ package upf.pjt.cahier_de_textes.services;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -185,6 +187,12 @@ public class AffectationService {
         return affectation;
     }
 
+    public Page<AffectationDTO> getAffectationDTOPage(String filiere, String module, String professeur, Pageable pageable) {
+        Page<Affectation> affectations = affectationRepository.getAffectations(filiere, module, professeur, pageable);
+
+        return affectations.map(AffectationDTO::new);
+    }
+
     private Boolean duplicateData(Filiere filiere, Module module, AffectationDTO affDTO) {
         Integer count = affectationRepository.countAffectationByFiliereAndModuleAndNiveauAndSemestre(
                 filiere, module, affDTO.getNiveau(), affDTO.getSemestre()
@@ -219,5 +227,4 @@ public class AffectationService {
 
         return count >= 3;
     }
-
 }

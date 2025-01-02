@@ -1,67 +1,29 @@
 <table th:fragment="filiere_table" class="w-full border-collapse border border-gray-200 shadow-sm rounded-lg overflow-hidden">
   <thead class="bg-[#b10c74] text-white">
   <tr>
-    <th sec:authorize="hasRole('ROLE_ADMIN')" class="py-4 text-left"></th>
-    <th class="py-4 text-center">Intitulé</th>
-    <th class="py-4 text-center">Expiration de Reconnaisance</th>
-    <th class="py-4 text-center">Type de Diplome</th>
-    <th class="py-4 text-center">Coordinateur</th>
-    <th class="py-4 px-10 text-center" sec:authorize="hasRole('ROLE_ADMIN')" >Action</th>
-    <th class="py-4 px-10 text-center" sec:authorize="hasRole('ROLE_SS')" >Affectations</th>
+    <th class="py-4 text-center">Filière</th>
+    <th class="py-4 text-center">Module</th>
+    <th class="py-4 text-center">Professeur</th>
+    <th class="py-4 text-left"></th>
   </tr>
   </thead>
   <tbody>
-  <tr th:if="${filieres == null || filieres.getNumberOfElements() == 0}"
+  <tr th:if="${affs == null || affs.getNumberOfElements() == 0}"
       class="text-center bg-gray-100 hover:bg-gray-200 transition-all"
   >
-    <td colspan="6" class="p-4 font-medium" th:text="'Aucune filière à afficher'"></td>
+    <td colspan="6" class="p-4 font-medium" th:text="'Aucune affectation à afficher'"></td>
   </tr>
-  <tr th:if="${filieres != null}" th:each="fil : ${filieres}"
-      th:with="exp = ${fil.getDateExpiration()}, rec = ${fil.getDateReconnaissance()}"
+  <tr th:if="${affs != null}" th:each="aff : ${affs}"
       class="text-center bg-gray-100 hover:bg-gray-200 transition-all">
-    <td sec:authorize="hasRole('ROLE_ADMIN')" class="p-4">
-      <button class="hover:opacity-80 viewBtns" data-modal-target="filModal" data-modal-toggle="filModal"
-              th:data-intitule="${fil.getIntitule()}"
-              th:data-dateexp="${exp}"
-              th:data-daterec="${rec}"
-              th:data-diplome="${fil.getDiplome().name()}"
-              th:data-coordinateurname="${fil.getCoordinateur() != null ? fil.getCoordinateur().getFullName() : ''}"
-      >
-        <img src="/public/eye.png" alt="Voir" class="h-6 w-8">
-      </button>
-    </td>
-    <td class="p-4" th:text="${fil.getIntitule()}"></td>
-    <td class="p-4" th:text="${fil.getDateExpiration()}"></td>
-    <td class="p-4" th:text="${fil.getDiplome().getFullName()}"></td>
-    <td class="p-4" th:if="${fil.getCoordinateur() != null}"
-        th:text="${fil.getCoordinateur().getFullName()}"></td>
-    <td class="p-4" th:if="${fil.getCoordinateur() == null}">Aucun Coordinateur</td>
-    <td sec:authorize="hasRole('ROLE_ADMIN')" class="p-4 flex items-center justify-center gap-3">
-      <button class="hover:opacity-80 modalBtns" data-modal-target="filModal" data-modal-toggle="filModal"
-              th:id="${fil.getId()}"
-              th:data-id="${fil.getId()}"
-              th:data-intitule="${fil.getIntitule()}"
-              th:data-dateexp="${exp}"
-              th:data-daterec="${rec}"
-              th:data-diplome="${fil.getDiplome().name()}"
-              th:data-coordinateurid="${fil.getCoordinateur() != null ? fil.getCoordinateur().getId() : ''}"
-              th:data-coordinateurname="${fil.getCoordinateur() != null ? fil.getCoordinateur().getFullName() : ''}"
-      >
 
-        <img src="/public/edit.png" alt="Modifier" class="h-6 w-6">
-      </button>
-      <button
-              type="button" class="hover:opacity-80 filDelBtns" data-modal-target="deleteModal"
-              data-modal-toggle="deleteModal" th:data-filid="${fil.getId()}" th:data-filint="${fil.getIntitule()}"
-      >
-        <img src="/public/trash.png" alt="Delete" class="h-6 w-6">
-      </button>
-    </td>
-    <td sec:authorize="hasRole('ROLE_SS')" class="p-4 flex items-center rounded-full justify-center">
-      <a class="bg-[#313863] text-white p-2 hover:opacity-80 flex rounded-full"
-              th:href="@{/filieres/{id}/affectations(id=${fil.id})}"
-      >
-        <img src="/public/pencil.png" alt="Modifier" class="h-5 w-5">
+    <td class="p-4" th:text="${aff.getFiliereIntitule()}"></td>
+    <td class="p-4" th:text="${aff.getModule().getIntitule()}"></td>
+    <td class="p-4" th:text="${aff.getProfesseur().getFullName()}"></td>
+    <td class="p-4">
+      <a class="hover:opacity-80"
+         th:with="url = ${'/filieres/' + aff.getFiliereId() + '/affectations'}"
+         th:href="@{${url}(niveau=${aff.getNiveau()}, semestre=${aff.getSemestre()})}">
+        <img src="/public/eye.png" alt="Voir" class="h-6 w-8">
       </a>
     </td>
   </tr>

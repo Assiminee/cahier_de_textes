@@ -14,6 +14,8 @@ import upf.pjt.cahier_de_textes.dao.repositories.*;
 import upf.pjt.cahier_de_textes.dao.dtos.UserDTO;
 import upf.pjt.cahier_de_textes.dao.entities.User;
 import upf.pjt.cahier_de_textes.dao.entities.Professeur;
+
+import java.util.Arrays;
 import java.util.UUID;
 
 @Service
@@ -100,7 +102,7 @@ public class UserService {
         return encoder.matches(incomingPassword, currentPassword);
     }
 
-    public static User getAuthenticatedUser() {
+    public static UserDTO getAuthenticatedUser(String[] authorizedRoles) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (!(authentication.getPrincipal() instanceof CustomUserDetails userDetails))
@@ -113,9 +115,14 @@ public class UserService {
 
         String role = loggedUser.getRole().getAuthority();
 
-        if (!(role.equals("ROLE_ADMIN") || role.equals("ROLE_SS")))
+        boolean authorized = Arrays.asList(authorizedRoles).contains(role);
+
+        if (!authorized)
             return null;
 
-        return loggedUser;
+        UserDTO userDTO = new UserDTO();
+        userDTO.setUserDTODetails(loggedUser);
+
+        return userDTO;
     }
 }
