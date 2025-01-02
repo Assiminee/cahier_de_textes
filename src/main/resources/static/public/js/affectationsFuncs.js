@@ -4,6 +4,7 @@ export const fillAffectationForm = () => {
     affectationDivSelectsOnChange();
     addAffectationButtonOnClick();
     deleteButtonsOnClick();
+    editButtonsOnClick();
 }
 
 export const interceptForm = () => {
@@ -30,21 +31,23 @@ export const interceptForm = () => {
             }
 
             const response = await fetch(url, params);
-            const success = await handleResponse(response, 200,"L'affectation a été sauvegardée avec succès");
+            const success = await handleResponse(response, 200, "L'affectation a été sauvegardée avec succès");
 
             if (!success)
                 return;
 
-            form.attr("method", "PUT");
-
             const affectation = await response.json();
 
+            if (method === "POST")
+                setAffectation(affectation);
+            else if (method === "PUT")
+                modifyAffectation(affectation);
+
+            form.attr("method", "PUT");
             form.attr("action", `/filieres/${filiereId}/affectations/${affectation.id}`);
 
-            setAffectation(affectation);
-
-            $(`#save-${index}`).addClass("hidden");
-            $(`#modify-${index}`).removeClass("hidden");
+            $(`#save-${index}`).addClass("hidden").find("img").addClass("hidden");
+            $(`#modify-${index}`).removeClass("hidden").find("img").removeClass("hidden");
             setDisabled(index);
         })
     });
@@ -190,12 +193,8 @@ const affectationDivSelectsOnChange = () => {
 
 const addAffectationButtonOnClick = () => {
     $("#addAffectation:button").on("click", (e) => {
-        const res = $(".saveButtons:not(.hidden)");
-
-        if (res.length > 0) {
-            forbidAddition();
+        if (forbidAddition())
             return;
-        }
 
         for (let i = 0; i < 9; i++) {
             const affForm = $(`#affForm-${i}`);
@@ -218,8 +217,13 @@ const addAffectationButtonOnClick = () => {
 }
 
 const forbidAddition = () => {
-    $("#alertMessage").text("Veuillez sauvegarder vos données avant de créer une nouvelle affectation.");
+    const res = $(".saveButtons:not(.hidden)");
+
+    if (res.length === 0) return false;
+
+    $("#alertMessage").text("Veuillez sauvegarder vos données avant de modifier ou créer une nouvelle affectation.");
     $("#dangerAlert").removeClass("transition-opacity duration-300 ease-out opacity-0 hidden");
+    return true;
 }
 
 const handleResponse = async (response, code, msg) => {
@@ -240,6 +244,26 @@ const handleResponse = async (response, code, msg) => {
     dangerAlertDiv.removeClass(cls);
 
     return false;
+}
+
+const modifyAffectation = (affectation) => {
+    let affectations = JSON.parse(sessionStorage.getItem("affectations")) || {};
+    const niveau = "N-" + $("#niveau").val();
+    const semestre = "S-" + $("#semestre").val();
+
+    if (!(niveau in affectations))
+        return false;
+
+    if (!(semestre in affectations[niveau]))
+        return false;
+
+    affectations[niveau][semestre] = affectations[niveau][semestre].filter(
+        (aff) => aff.id !== affectation.id
+    );
+
+    affectations[niveau][semestre].push(affectation);
+
+    sessionStorage.setItem("affectations", JSON.stringify(affectations));
 }
 
 const setAffectation = (affectation) => {
@@ -275,11 +299,27 @@ const setRequired = (...selects) => {
 }
 
 const setDisabled = (index) => {
-    const selects = [$(`#module-${index}`), $(`#prof-${index}`), $(`#start-${index}`), $(`#jour-${index}`)]
+    const selects = [
+        $(`#module-${index}`), $(`#prof-${index}`),
+        $(`#start-${index}`), $(`#jour-${index}`)
+    ];
+
     for (const select of selects)
         select.prop("disabled", true)
             .removeClass("bg-gray-100")
             .addClass("bg-gray-300");
+}
+
+const enableSelects = (index) => {
+    const selects = [
+        $(`#module-${index}`), $(`#prof-${index}`),
+        $(`#start-${index}`), $(`#jour-${index}`)
+    ];
+
+    for (const select of selects)
+        select.prop("disabled", false)
+            .removeClass("bg-gray-300")
+            .addClass("bg-gray-100");
 }
 
 const setSemesterOptions = (val, niveau) => {
@@ -350,10 +390,11 @@ const resetAffectationForm = (index, filiereId) => {
 
     // Reset current affectation div dropdowns
     resetSelects(currMod, currProf, currDay, currStart);
+    setDisabled(index);
 
     // Hide all the submit buttons
-    $(".saveButtons").addClass("hidden");
-    $(".modifyBtns").removeClass("hidden");
+    $(".saveButtons").addClass("hidden").find("img").addClass("hidden");
+    $(".modifyBtns").removeClass("hidden").find("img").removeClass("hidden");
 
     // set the value of each heureFin to an empty string
     $(`#end-${index}`).val("");
@@ -450,11 +491,22 @@ const loadData = () => {
 
     // Hides or reveals the add button depending on whether the maximum
     // number of visible forms (max 8) has been reached or not
-    if (i > 8) {
-        $("#addAffectation:button").addClass("hidden");
-        $("#addAffectation img").addClass("hidden");
-    } else {
-        $("#addAffectation:button").removeClass("hidden");
-        $("#addAffectation img").removeClass("hidden");
-    }
+    if (i > 8)
+        $("#addAffectation").addClass("hidden").find("img").addClass("hidden");
+    else
+        $("#addAffectation").removeClass("hidden").find("img").removeClass("hidden");
+}
+
+const editButtonsOnClick = () => {
+    $(".modifyBtns").each((index, btn) => {
+        $(btn).on("click", (e) => {
+            if (forbidAddition())
+                return;
+
+            $(e.target).addClass("hidden").find("img").addClass("hidden");
+            $(`#save-${index + 1}`).removeClass("hidden").find("img").removeClass("hidden");
+
+            enableSelects(index + 1);
+        })
+    })
 }

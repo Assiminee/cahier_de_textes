@@ -92,6 +92,99 @@ public class AffectationService {
         return affectation;
     }
 
+    public ErrorResponse deleteAffectation(UUID affId) {
+        ErrorResponse err = new ErrorResponse();
+
+        try {
+            boolean exists = affectationRepository.existsById(affId);
+
+            if (!exists) {
+                err.affectationNotFound();
+                return err;
+            }
+
+            affectationRepository.deleteById(affId);
+            exists = affectationRepository.existsById(affId);
+
+            if (exists) {
+                err.internalServerError();
+                return err;
+            }
+
+        } catch (Exception e) {
+            log.error(String.valueOf(e.getCause()));
+            err.internalServerError();
+            return err;
+        }
+
+        return null;
+    }
+
+    public Affectation modifyAffectation(UUID affId, Filiere filiere, AffectationDTO affDTO, ErrorResponse err) {
+        Affectation affectation = null;
+
+        try {
+            affectation = affectationRepository.findById(affId).orElse(null);
+
+            if (affectation == null) {
+                err.affectationNotFound();
+                return null;
+            }
+
+            Professeur prof = professeurRepository.findById(affDTO.getProfesseur().getId()).orElse(null);
+
+            if (prof == null) {
+                err.profNotFound();
+                return null;
+            }
+
+            Module module = moduleRepository.findById(affDTO.getModule().getId()).orElse(null);
+
+            if (module == null) {
+                err.moduleNotFound();
+                return null;
+            }
+
+            if (affectation.getProf().getId() != prof.getId()) {
+                if (hoursSurpassed(prof, module)) {
+                    err.hoursSurpassed();
+                    return null;
+                }
+
+                if (maxAffectationsReached(filiere, prof, affDTO)) {
+                    err.maxAffectationsReached();
+                    return null;
+                }
+                affectation.setProf(prof);
+            }
+
+            if (affectation.getModule().getId() != module.getId()) {
+                if (duplicateData(filiere, module, affDTO)) {
+                    err.duplicateAffectation();
+                    return null;
+                }
+                affectation.setModule(module);
+            }
+
+            if (affectation.getJour() != affDTO.getJour() || affectation.getHeureDebut() != affDTO.getHeureDebut()) {
+                if (scheduleConflict(filiere, affDTO)) {
+                    err.scheduleConflict();
+                    return null;
+                }
+                affectation.setJour(affDTO.getJour());
+                affectation.setHeureDebut(affDTO.getHeureDebut());
+                affectation.setHeureFin(affDTO.getHeureFin());
+            }
+
+            affectation = affectationRepository.save(affectation);
+        } catch (Exception e) {
+            log.error(String.valueOf(e.getCause()));
+            err.internalServerError();
+        }
+
+        return affectation;
+    }
+
     private Boolean duplicateData(Filiere filiere, Module module, AffectationDTO affDTO) {
         Integer count = affectationRepository.countAffectationByFiliereAndModuleAndNiveauAndSemestre(
                 filiere, module, affDTO.getNiveau(), affDTO.getSemestre()
@@ -127,31 +220,4 @@ public class AffectationService {
         return count >= 3;
     }
 
-    public ErrorResponse deleteAffectation(UUID affId) {
-        ErrorResponse err = new ErrorResponse();
-
-        try {
-            Boolean exists = affectationRepository.existsById(affId);
-
-            if (!exists) {
-                err.affectationNotFound();
-                return err;
-            }
-
-            affectationRepository.deleteById(affId);
-            exists = affectationRepository.existsById(affId);
-
-            if (exists) {
-                err.internalServerError();
-                return err;
-            }
-
-        } catch (Exception e) {
-            log.error(String.valueOf(e.getCause()));
-            err.internalServerError();
-            return err;
-        }
-
-        return null;
-    }
 }

@@ -42,6 +42,14 @@
                     </a>
                 </li>
 
+                <!-- SS specific routes -->
+                <li sec:authorize="hasRole('ROLE_SS')" class="group/affectations hover:bg-[#B10C74] flex justify-center group-hover:justify-start px-5 py-2 text-gray-700 hover:text-white transition-all duration-100">
+                    <a th:href="@{/affectations}" class="flex">
+                        <svg th:replace="fragments/icons/affectation_icon :: svg"></svg>
+                        <span class="ml-4 text-sm hidden group-hover:block">Affectations</span>
+                    </a>
+                </li>
+
                 <!-- Professor specific routes -->
                 <li sec:authorize="hasRole('ROLE_PROF')">
                     <ul class="space-y-4">

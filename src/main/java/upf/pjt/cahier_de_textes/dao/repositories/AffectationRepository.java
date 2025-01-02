@@ -25,8 +25,7 @@ public interface AffectationRepository extends  JpaRepository<Affectation, UUID>
     // Checks if any affectations take place on the same day and start/end time
     // Use case: Making sure that no classes are scheduled at the same time
     Integer countAffectationByFiliereAndNiveauAndSemestreAndJourAndHeureDebutAndHeureFin(
-            Filiere filiere, int niveau, int semestre,
-            Jour jour, int heureDebut, int heureFin
+            Filiere filiere, int niveau, int semestre, Jour jour, int heureDebut, int heureFin
     );
 
     // Counts the number of affectations per professor in a specific
