@@ -1,79 +1,67 @@
 package upf.pjt.cahier_de_textes.controllers;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import upf.pjt.cahier_de_textes.dao.dtos.UserDTO;
 import upf.pjt.cahier_de_textes.dao.dtos.filiere.AffectationDTO;
-import upf.pjt.cahier_de_textes.dao.dtos.filiere.SaveEditAffectationDTO;
 import upf.pjt.cahier_de_textes.dao.entities.Affectation;
-import upf.pjt.cahier_de_textes.dao.entities.Filiere;
-import upf.pjt.cahier_de_textes.dao.repositories.FiliereRepository;
-import upf.pjt.cahier_de_textes.errors.ErrorResponse;
+import upf.pjt.cahier_de_textes.dao.entities.User;
+import upf.pjt.cahier_de_textes.dao.repositories.AffectationRepository;
 import upf.pjt.cahier_de_textes.services.AffectationService;
+import upf.pjt.cahier_de_textes.services.UserService;
 
-import java.util.UUID;
-
-@RestController
+@Controller
+@RequestMapping("/affectations")
 public class AffectationController {
-    private final FiliereRepository filiereRepository;
+    private final int SIZE = 10;
+    private final AffectationRepository affectationRepository;
     private final AffectationService affectationService;
 
-    @Autowired
-    public AffectationController(FiliereRepository filiereRepository, AffectationService affectationService) {
-        this.filiereRepository = filiereRepository;
+    public AffectationController(AffectationRepository affectationRepository, AffectationService affectationService) {
+        this.affectationRepository = affectationRepository;
         this.affectationService = affectationService;
     }
 
-    @PostMapping("/filieres/{id}/affectations")
-    public ResponseEntity<?> saveAffecation(@PathVariable("id") UUID id, @RequestBody SaveEditAffectationDTO affectationDTO, RedirectAttributes redAtts) {
-        ErrorResponse err = new ErrorResponse();
-        Filiere filiere = filiereRepository.findById(id).orElse(null);
+    @GetMapping
+    public String getAffectations(
+            Model model,
+            @RequestParam(required = false, defaultValue = "") String filiere,
+            @RequestParam(required = false, defaultValue = "") String module,
+            @RequestParam(required = false, defaultValue = "") String professeur,
+            @RequestParam(defaultValue = "0") int page
+    ) {
+        System.out.println(module);
+        System.out.println(professeur);
+        System.out.println(filiere);
+        UserDTO user = UserService.getAuthenticatedUser(new String[] {"ROLE_SS"});
 
-        if (filiere == null)
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("La filière n'existe pas");
+        if (user == null)
+            return "redirect:/auth/login";
 
-        Affectation affectation = affectationService.saveAffectation(filiere, new AffectationDTO(affectationDTO), err);
+        Pageable pageable = PageRequest.of(page, SIZE);
+        Page<AffectationDTO> affectations = affectationService
+                .getAffectationDTOPage(filiere, module, professeur, pageable);
 
-        if (affectation == null) {
-            return ResponseEntity.status(err.getHttpStatus())
-                    .body(err.getMessage());
+        model.addAttribute("user", user);
+        model.addAttribute("affs", affectations);
+        model.addAttribute("filiere", filiere);
+        model.addAttribute("module", module);
+        model.addAttribute("professeur", professeur);
+
+        for (AffectationDTO aff : affectations) {
+            System.out.println(aff.getModule().getIntitule());
+            System.out.println(aff.getFiliereIntitule());
+            System.out.println(aff.getProfesseur().getFullName());
         }
 
-        return ResponseEntity.status(HttpStatus.OK).body(new AffectationDTO(affectation));
-    }
-
-    @PutMapping("/filieres/{id}/affectations/{affId}")
-    public ResponseEntity<?> modifyAffecation(@PathVariable("id") UUID id, @PathVariable("affId") UUID affId, @RequestBody SaveEditAffectationDTO affectationDTO, RedirectAttributes redAtts) {
-        ErrorResponse err = new ErrorResponse();
-        Filiere filiere = filiereRepository.findById(id).orElse(null);
-
-        if (filiere == null)
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("La filière n'existe pas");
-
-        Affectation affectation = affectationService.modifyAffectation(affId, filiere, new AffectationDTO(affectationDTO), err);
-
-        if (affectation == null) {
-            return ResponseEntity.status(err.getHttpStatus())
-                    .body(err.getMessage());
-        }
-
-        return ResponseEntity.status(HttpStatus.OK).body(new AffectationDTO(affectation));
-    }
-
-    @DeleteMapping("/filieres/{id}/affectations/{affId}")
-    public ResponseEntity<?> deleteAffection(@PathVariable("id") UUID id, @PathVariable("affId") UUID affId) {
-        Filiere filiere = filiereRepository.findById(id).orElse(null);
-
-        if (filiere == null)
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("La filière n'existe pas");
-
-        ErrorResponse err = affectationService.deleteAffectation(affId);
-
-        if (err == null)
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("");
-
-        return ResponseEntity.status(err.getHttpStatus()).body(err.getMessage());
+        return "Admin/affectations/list/all_affectations";
     }
 }

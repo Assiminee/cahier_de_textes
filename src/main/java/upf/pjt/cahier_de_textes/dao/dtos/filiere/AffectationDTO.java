@@ -8,6 +8,8 @@ import java.util.UUID;
 @Getter @Setter @NoArgsConstructor @ToString
 public class AffectationDTO {
     private UUID id;
+    private UUID filiereId;
+    private String filiereIntitule;
     private int niveau;
     private int semestre;
     private int heureDebut;
@@ -18,18 +20,18 @@ public class AffectationDTO {
 
     public AffectationDTO(Affectation affectation) {
         this.id = affectation.getId();
+        this.filiereId = affectation.getFiliere().getId();
+        this.filiereIntitule = affectation.getFiliere().getIntitule();
         this.niveau = affectation.getNiveau();
         this.semestre = affectation.getSemestre();
         this.heureDebut = affectation.getHeureDebut();
         this.heureFin = affectation.getHeureFin();
         this.jour = affectation.getJour();
-
         this.professeur = new ProfesseurDTO(affectation.getProf());
         this.module = new ModuleDTO(affectation.getModule());
     }
 
     public AffectationDTO(SaveEditAffectationDTO affectationDTO) {
-        System.out.println("Used this constructor");
         this.id = affectationDTO.getId();
         this.niveau = affectationDTO.getNiveau();
         this.semestre = affectationDTO.getSemestre();

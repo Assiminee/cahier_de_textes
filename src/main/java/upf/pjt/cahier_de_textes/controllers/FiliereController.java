@@ -45,7 +45,6 @@ public class FiliereController {
     private final ModuleRepository moduleRepository;
     private final FilieresService filieresService;
     private final ObjectMapper objectMapper;
-    private final AffectationService affectationService;
     private final int SIZE = 10;
 
     public FiliereController(
@@ -53,14 +52,13 @@ public class FiliereController {
             ProfesseurRepository professeurRepository,
             ModuleRepository moduleRepository,
             FilieresService filieresService,
-            ObjectMapper objectMapper, AffectationService affectationService
+            ObjectMapper objectMapper
     ) {
         this.filiereRepository = filiereRepository;
         this.professeurRepository = professeurRepository;
         this.moduleRepository = moduleRepository;
         this.filieresService = filieresService;
         this.objectMapper = objectMapper;
-        this.affectationService = affectationService;
     }
 
     @GetMapping
@@ -72,7 +70,7 @@ public class FiliereController {
             @RequestParam(required = false) Boolean reconnaissance,
             @RequestParam(defaultValue = "0") int page
     ) {
-        User user = UserService.getAuthenticatedUser();
+        UserDTO user = UserService.getAuthenticatedUser(new String[] {"ROLE_ADMIN", "ROLE_SS"});
 
         if (user == null)
             return "redirect:/auth/login";
@@ -82,11 +80,8 @@ public class FiliereController {
         Page<FiliereDTO> filieres = filieresService.mapFilieres(reconnaissance, intitule, coordinateur, d, pageable);
         Map<String, String> packagedParams = FilieresService.packageParams(intitule, coordinateur, diplome, reconnaissance);
 
-        UserDTO userDTO = new UserDTO();
-        userDTO.setUserDTODetails(user);
-
         model.addAttribute("params", packagedParams);
-        model.addAttribute("user", userDTO);
+        model.addAttribute("user", user);
         model.addAttribute("filieres", filieres);
         model.addAttribute("diplomes", List.of(Diplome.values()));
         model.addAttribute("profs", professeurRepository.findAllByFiliereIsNull());
@@ -171,12 +166,12 @@ public class FiliereController {
     }
 
     @GetMapping("/{id}/affectations")
-    public String getAffectations(
+    public String getFiliereAffectations(
             @PathVariable("id") UUID id,
             Model model,
             RedirectAttributes redAtts
     ) {
-        User user = UserService.getAuthenticatedUser();
+        UserDTO user = UserService.getAuthenticatedUser(new String[] {"ROLE_SS"});
 
         if (user == null)
             return "redirect:/auth/login";
@@ -196,10 +191,7 @@ public class FiliereController {
             return "redirect:/filieres";
         }
 
-        UserDTO userDTO = new UserDTO();
-        userDTO.setUserDTODetails(user);
-
-        model.addAttribute("user", userDTO);
+        model.addAttribute("user", user);
         model.addAttribute("filiere", filiereDTO);
         model.addAttribute("modules", moduleRepository.findAll());
         model.addAttribute("profs", professeurRepository.findAll());

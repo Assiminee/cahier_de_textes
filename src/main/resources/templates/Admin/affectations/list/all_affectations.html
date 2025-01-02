@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
-<head th:replace="~{fragments/head :: head ('Gestion Filières')}"></head>
+<head th:replace="~{fragments/head :: head ('Gestion des Affectations')}"></head>
 <body class="bg-gray-100 h-screen">
 
 <div class="flex h-screen">
@@ -12,49 +12,17 @@
             <section class="p-6 overflow-auto">
                 <div class="col-span-2 flex  justify-between">
                     <div class="flex flex-col">
-                        <h1 class="text-4xl font-semibold">Filières</h1>
-                        <div th:replace="~{Admin/filiere/filiere_errs :: div}"></div>
-                    </div>
-                    <div sec:authorize="hasRole('ROLE_ADMIN')">
-                        <button data-modal-target="filModal" data-modal-toggle="filModal" type="button"
-                                class="bg-[#313863] hover:bg-[#5663af] text-white font-bold py-3 px-6 rounded"
-                                id="addFiliereBtn">
-                            + Ajouter une filière
-                        </button>
-                        <div th:if="${filieres != null}">
-                            <div th:replace="~{fragments/delete_modal :: div }"></div>
-                            <div th:replace="~{Admin/filiere/add_filiere_modal :: div (${diplomes}, ${profs})}"></div>
-                        </div>
+                        <h1 class="text-4xl font-semibold">Affectations</h1>
                     </div>
                 </div>
                 <div class="mt-5 mb-6 flex justify-between">
-                    <form th:replace="~{Admin/filiere/search_bar :: form}"></form>
+                    <form th:replace="~{Admin/affectations/list/search_bar :: form}"></form>
                 </div>
-                <table th:replace="~{Admin/filiere/filiere_list}"></table>
-                <div th:replace="~{Admin/filiere/filiere_pagination :: div}"></div>
+                <table th:replace="~{Admin/affectations/list/affectation_list}"></table>
+                <div th:replace="~{Admin/affectations/list/affectation_pagination :: div}"></div>
             </section>
         </div>
     </main>
 </div>
-<script sec:authorize="hasRole('ROLE_ADMIN')" type="module">
-    import {
-        updateYears,
-        prefillFiliereForm,
-        resetFiliereModal,
-        updateExpDate,
-        setDeleteModalContent,
-        viewFiliereInfo
-    } from '/public/js/filiereFuncs.js'
-
-    const rec = $("#dateReconnaissance");
-
-    updateYears();
-    prefillFiliereForm();
-    $("#addFiliereBtn").click(resetFiliereModal);
-    rec.attr("max", (new Date()).toISOString().split('T')[0]);
-    rec.on("change", updateExpDate);
-    setDeleteModalContent();
-    viewFiliereInfo();
-</script>
 </body>
 </html>

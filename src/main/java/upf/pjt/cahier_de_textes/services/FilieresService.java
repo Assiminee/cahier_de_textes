@@ -1,6 +1,5 @@
 package upf.pjt.cahier_de_textes.services;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,20 +9,16 @@ import upf.pjt.cahier_de_textes.dao.dtos.filiere.FiliereDTO;
 import upf.pjt.cahier_de_textes.dao.entities.Filiere;
 import upf.pjt.cahier_de_textes.dao.entities.enumerations.Diplome;
 import upf.pjt.cahier_de_textes.dao.repositories.FiliereRepository;
-
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 @Slf4j
 @Service
 public class FilieresService {
     private final FiliereRepository filiereRepository;
-    private final ObjectMapper objectMapper;
 
-    public FilieresService(FiliereRepository filiereRepository, ObjectMapper objectMapper) {
+    public FilieresService(FiliereRepository filiereRepository) {
         this.filiereRepository = filiereRepository;
-        this.objectMapper = objectMapper;
     }
 
     public static Map<String, String> packageParams(
@@ -44,13 +39,11 @@ public class FilieresService {
     ) {
         Page<Filiere> rawFilieres = filiereRepository.getFilieres(intitule, coordinateur, diplome, reconnaissance, pageable);
 
-        Page<FiliereDTO> filieres = rawFilieres.map(FiliereDTO::new);
-
-        return filieres;
+        return rawFilieres.map(FiliereDTO::new);
     }
 
     public Boolean duplicateData(Filiere filiere, String method, RedirectAttributes redAtts) {
-        Boolean error;
+        boolean error;
 
         try {
             Boolean duplicateIntitule = false;
