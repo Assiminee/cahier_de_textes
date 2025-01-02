@@ -1,0 +1,22 @@
+<div th:fragment="filiere_pagination"
+     class="py-6 pagination-container"
+     th:with="page = ${filieres.getPageable().getPageNumber()}, pages = ${filieres.getTotalPages()}, intitule = ${params.get('intitule')}, diplome = ${params.get('diplome')}"
+>
+  <ul th:if="${pages > 0}" class="pagination flex justify-center gap-4">
+    <!-- Previous Page -->
+    <li th:if="${page > 0}">
+      <a th:href="@{/filieres(page=${page - 1}, intitule=${intitule}, coordinateur=${params.get('coordinateur')}, diplome=${diplome}, reconnaissance=${params.get('reconnaissance')})}"
+         class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">Précédent</a>
+    </li>
+    <li th:each="i : ${#numbers.sequence(1, pages)}"
+        th:classappend="${(i + 1) == page} ? 'font-bold text-blue-600'">
+      <a th:href="@{/filieres(page=${i - 1}, intitule=${intitule}, coordinateur=${params.get('coordinateur')}, diplome=${diplome}, reconnaissance=${params.get('reconnaissance')})}"
+         class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+         th:text="${i}"></a>
+    </li>
+    <li th:if="${page < pages - 1}">
+      <a th:href="@{/filieres(page=${page + 1}, intitule=${intitule}, coordinateur=${params.get('coordinateur')}, diplome=${diplome}, reconnaissance=${params.get('reconnaissance')})}"
+         class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">Suivant</a>
+    </li>
+  </ul>
+</div>

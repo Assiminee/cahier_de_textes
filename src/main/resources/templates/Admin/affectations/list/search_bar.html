@@ -1,0 +1,52 @@
+<form th:fragment="search_bar" method="GET" class="flex justify-between gap-4 w-full">
+    <div class="flex rounded-md shadow-sm">
+        <label for="intitule" class="flex-1 block mb-2 font-medium">Intitulé
+            <input
+                    type="text"
+                    name="intitule"
+                    id="intitule"
+                    th:value="${params.get('intitule')}"
+                    placeholder="Chercher par Intitulé"
+                    class="block w-full rounded-l-md py-2 px-3 text-sm placeholder-gray-400 focus:ring-indigo-500 focus:border-indigo-500"
+            />
+        </label>
+        <label for="coordinateur" class="flex-1 block mb-2 font-medium">Coordinateur
+            <input
+                    type="text"
+                    name="coordinateur"
+                    id="coordinateur"
+                    th:value="${params.get('coordinateur')}"
+                    placeholder="Chercher par Coordinateur"
+                    class="block w-full rounded-r-md py-2 px-3 text-sm placeholder-gray-400 focus:ring-indigo-500 focus:border-indigo-500"
+            />
+        </label>
+        <button type="submit" class="pt-4 pl-2 hover:opacity-80">
+            <img src="/public/seach.png" alt="Rechercher" class="h-6 w-6">
+        </button>
+    </div>
+    <div class="flex gap-4">
+        <div class="flex flex-col rounded-md shadow-sm">
+            <label for="diplome" class="flex-1 h-full block mb-2 font-medium">Type de Diplome<br>
+                <select name="diplome" id="diplome"
+                        class="pt-1 py-2 px-3 ml-auto border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600">
+                    <option th:selected="${params.get('diplome').isEmpty()}" th:value="''" th:text="'Diplome'"></option>
+                    <option th:each="diplome : ${diplomes}"
+                            th:value="${diplome.name()}"
+                            th:text="${diplome.getFullName()}"
+                            th:selected="${diplome.name().equalsIgnoreCase(params.get('diplome'))}"
+                    ></option>
+                </select>
+            </label>
+        </div>
+        <div th:with="rec = ${params.get('reconnaissance')}" class="flex flex-col rounded-md shadow-sm">
+            <label for="reconnaissance" class="flex-1 block mb-2 font-medium">Reconnaissance<br>
+                <select  name="reconnaissance" id="reconnaissance"
+                        class="pt-1 py-2 px-3 ml-auto border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600">
+                    <option th:selected="${rec == null}" value="">Reconnaissance</option>
+                    <option th:selected="${rec.equalsIgnoreCase('true')}" th:value="true" th:text="'Reconnue'"></option>
+                    <option th:selected="${rec.equalsIgnoreCase('false')}" th:value="false" th:text="'Non-reconnue'"></option>
+                </select>
+            </label>
+        </div>
+    </div>
+</form>

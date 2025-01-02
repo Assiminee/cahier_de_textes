@@ -44,6 +44,24 @@ public class AffectationController {
         return ResponseEntity.status(HttpStatus.OK).body(new AffectationDTO(affectation));
     }
 
+    @PutMapping("/filieres/{id}/affectations/{affId}")
+    public ResponseEntity<?> modifyAffecation(@PathVariable("id") UUID id, @PathVariable("affId") UUID affId, @RequestBody SaveEditAffectationDTO affectationDTO, RedirectAttributes redAtts) {
+        ErrorResponse err = new ErrorResponse();
+        Filiere filiere = filiereRepository.findById(id).orElse(null);
+
+        if (filiere == null)
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("La filière n'existe pas");
+
+        Affectation affectation = affectationService.modifyAffectation(affId, filiere, new AffectationDTO(affectationDTO), err);
+
+        if (affectation == null) {
+            return ResponseEntity.status(err.getHttpStatus())
+                    .body(err.getMessage());
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(new AffectationDTO(affectation));
+    }
+
     @DeleteMapping("/filieres/{id}/affectations/{affId}")
     public ResponseEntity<?> deleteAffection(@PathVariable("id") UUID id, @PathVariable("affId") UUID affId) {
         Filiere filiere = filiereRepository.findById(id).orElse(null);
