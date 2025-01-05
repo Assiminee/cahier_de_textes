@@ -1,0 +1,33 @@
+<table th:fragment="entry_table" class="w-full border-collapse border border-gray-200 shadow-sm rounded-lg overflow-hidden">
+  <thead class="bg-[#b10c74] text-white">
+  <tr>
+    <th class="py-4 text-center"></th>
+    <th class="py-4 text-center">Date</th>
+    <th class="py-4 text-center">Crénaux Horaire</th>
+    <th class="py-4 text-center">Nature</th>
+    <th class="py-4 text-left"></th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:if="${entries == null || entries.getNumberOfElements() == 0}"
+      class="text-center justify-center bg-gray-100 hover:bg-gray-200 transition-all"
+  >
+    <td colspan="6" class="p-4 font-medium" th:text="'Aucune entrée à afficher'"></td>
+  </tr>
+  <tr th:if="${entries != null}" th:each="entry : ${entries}"
+      class="text-center bg-gray-100 hover:bg-gray-200 transition-all">
+
+    <td class="p-4" th:text="|Semaine ${entry.seance}|"></td>
+    <td class="p-4" th:text="${entry.date}"></td>
+    <td class="p-4" th:text="|De ${entry.heureDebut} à ${entry.heureFin}|"></td>
+    <td class="p-4" th:text="${entry.nature}"></td>
+    <td class="p-4 flex justify-center content-center">
+      <a class="hover:opacity-80"
+         th:with="url = ${'/cahiers/' + cahier.id + '/entries/' + entry.id}"
+         th:href="@{${url}}">
+        <img src="/public/eye.png" alt="Voir" class="h-6 w-8">
+      </a>
+    </td>
+  </tr>
+  </tbody>
+</table>

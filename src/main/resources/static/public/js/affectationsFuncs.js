@@ -90,11 +90,17 @@ const niveauSelectOnChange = () => {
         const niveau = Number(val);
 
         // Sets the niveau select
-        selectOption($(e.target), niveau);
+        selectOption($(e.target), val);
 
         // Sets the semester select to the default option
         // (empty string for no selected option)
+        // $("#semestre").val("")
+        //     .find("option")
+        //     .removeAttr("selected")
+        //     .first()
+        //     .attr("selected", "selected");
         selectOption($("#semestre"), "");
+        $("#addAffectation").addClass("hidden").find("img").addClass("hidden");
 
         // removes the hidden class from the semester options
         // and sets their values based on what the value of
@@ -203,8 +209,8 @@ const addAffectationButtonOnClick = () => {
                 continue;
 
             affForm.removeClass("hidden").attr("method", "POST");
-            $(`#modify-${i}`).addClass("hidden");
-            $(`#save-${i}`).removeClass("hidden");
+            $(`#modify-${i}`).addClass("hidden").find("img").addClass("hidden");
+            $(`#save-${i}`).removeClass("hidden").find("img").removeClass("hidden");
 
             setRequired($(`#module-${i}`), $(`#prof-${i}`), $(`#jour-${i}`), $(`#start-${i}`));
 
@@ -517,6 +523,9 @@ export const selectFromUrlParams = () => {
 
     const niveau = params.get("niveau");
     const semestre = params.get("semestre");
+
+    if (!niveau || !semestre)
+        return;
 
     $("#niveau").val(niveau).trigger("change");
     $("#semestre").val(semestre).trigger("change");

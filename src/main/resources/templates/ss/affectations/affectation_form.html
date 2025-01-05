@@ -3,7 +3,7 @@
       class="row-span-6 overflow-y-auto"
 
 >
-    <div th:replace="~{Admin/affectations/delete_affectation_modal :: div}"></div>
+    <div th:replace="~{ss/affectations/delete_affectation_modal :: div}"></div>
     <!-- Modules et Professeurs -->
     <div class="grid grid-cols-2 w-full">
         <form th:each="i : ${#numbers.sequence(1, 8)}"

@@ -1,8 +1,5 @@
 package upf.pjt.cahier_de_textes.dao.repositories;
 
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,6 +12,7 @@ import upf.pjt.cahier_de_textes.dao.entities.Module;
 import upf.pjt.cahier_de_textes.dao.entities.Professeur;
 import upf.pjt.cahier_de_textes.dao.entities.enumerations.Jour;
 
+import java.util.List;
 import java.util.UUID;
 
 @Repository
@@ -45,6 +43,8 @@ public interface AffectationRepository extends  JpaRepository<Affectation, UUID>
             "JOIN a.module m " +
             "WHERE f.intitule LIKE CONCAT('%', :filiere, '%') " +
             "AND CONCAT(p.nom, ' ', p.prenom) LIKE CONCAT('%', :prof, '%') " +
+            "AND (:heure = 0 OR a.heureDebut = :heure) " +
+            "AND (:jour IS NULL OR a.jour = :jour) " +
             "AND m.intitule LIKE CONCAT('%', :module, '%')"
 
     )
@@ -52,6 +52,23 @@ public interface AffectationRepository extends  JpaRepository<Affectation, UUID>
             @Param("filiere") String filiere,
             @Param("module") String module,
             @Param("prof") String prof,
+            @Param("heure") int heure,
+            @Param("jour") Jour jour,
             Pageable pageable
     );
+
+    @Query("SELECT a FROM Affectation a " +
+            "JOIN FETCH a.filiere f " +
+            "JOIN a.prof p " +
+            "JOIN a.module m " +
+            "WHERE f.intitule LIKE CONCAT('%', :filiere, '%') " +
+            "AND p.id = :id " +
+            "AND m.intitule LIKE CONCAT('%', :module, '%') " +
+            "AND (:heure = 0 OR a.heureDebut = :heure) " +
+            "AND (:jour IS NULL OR a.jour = :jour) "
+
+    )
+    Page<Affectation> getProfesseurAffectations(UUID id, String filiere, String module, int heure, Jour jour, Pageable pageable);
+
+    List<Affectation> findAllByFiliere_Id(UUID id);
 }

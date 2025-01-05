@@ -42,10 +42,10 @@
                     </button>
                 </div>
             </div>
-            <div th:replace="~{/Admin/affectations/affectation_danger_alert :: div}"></div>
-            <div th:replace="~{/Admin/affectations/affectation_success_alert :: div}"></div>
+            <div th:replace="~{ss/affectations/affectation_danger_alert :: div}"></div>
+            <div th:replace="~{ss/affectations/affectation_success_alert :: div}"></div>
 
-            <div th:replace="Admin/affectations/affectation_form :: div"></div>
+            <div th:replace="~{ss/affectations/affectation_form :: div}"></div>
 
             <div id="affectationDiv" class="hidden"
                  th:data-affectations="${fil.getAffectations()}"

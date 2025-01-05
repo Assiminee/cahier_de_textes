@@ -9,6 +9,7 @@ import java.util.UUID;
 public class AffectationDTO {
     private UUID id;
     private UUID filiereId;
+    private UUID cahierId;
     private String filiereIntitule;
     private int niveau;
     private int semestre;
@@ -21,6 +22,7 @@ public class AffectationDTO {
     public AffectationDTO(Affectation affectation) {
         this.id = affectation.getId();
         this.filiereId = affectation.getFiliere().getId();
+        this.cahierId = affectation.getCahier().getId();
         this.filiereIntitule = affectation.getFiliere().getIntitule();
         this.niveau = affectation.getNiveau();
         this.semestre = affectation.getSemestre();

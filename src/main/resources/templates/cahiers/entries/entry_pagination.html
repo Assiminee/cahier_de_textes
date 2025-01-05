@@ -1,0 +1,22 @@
+<div th:fragment="entry_pagination"
+     class="py-6 pagination-container"
+     th:with="page = ${entries.getPageable().getPageNumber()}, pages = ${entries.getTotalPages()}, url = ${'/cahiers/' + cahier.id + '/entries'}"
+>
+  <ul th:if="${pages > 1}" class="pagination flex justify-center gap-4">
+    <!-- Previous Page -->
+    <li th:if="${page > 0}">
+      <a th:href="@{${url}(page=${page - 1})}"
+         class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">Précédent</a>
+    </li>
+    <li th:each="i : ${#numbers.sequence(1, pages)}">
+      <a th:href="@{${url}(page=${i - 1})}"
+         class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+         th:classappend="${(i - 1) == page ? 'font-bold text-[#B10C74]' : ''}"
+         th:text="${i}"></a>
+    </li>
+    <li th:if="${page < pages - 1}">
+      <a th:href="@{${url}(page=${page + 1})}"
+         class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">Suivant</a>
+    </li>
+  </ul>
+</div>

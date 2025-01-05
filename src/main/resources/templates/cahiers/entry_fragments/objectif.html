@@ -1,0 +1,23 @@
+<div th:fragment="objectif" class="flex gap-5 pt-5" id="objectifDiv-0">
+    <button class="bg-transparent self-end mb-2 addBtns"
+            type="button" id="add-0">
+        <img src="/public/add.png" alt="add" class="w-8 h-8">
+    </button>
+    <div class="flex-1 flex gap-5 justify-between">
+        <div class="flex-1">
+            <label for="objectifs[0].contenue" class="block font-semibold text-gray-700">Objectifs</label>
+            <input type="text" name="objectifs[0].contenue" id="objectifs[0].contenue" required placeholder="Saisir un objectif"
+                   class="w-full mt-1 p-3 border rounded-md">
+        </div>
+
+        <!-- Atteint -->
+        <div class="flex items-center me-4 mt-6">
+            <input id="objectifs-0-atteint" type="checkbox" value="true"
+                   class="w-7 h-7 text-2xl text-[#B10C74] bg-gray-700 border-gray-600 rounded focus:ring-[#B10C74] focus:ring-2 atteintCheckbox">
+            <label for="objectifs-0-atteint"
+                   class="ms-2 text-2xl font-medium text-[#313863]">Atteint</label>
+
+            <input type="hidden" id="atteint-0-hidden" name="objectifs[0].atteint" value="false">
+        </div>
+    </div>
+</div>

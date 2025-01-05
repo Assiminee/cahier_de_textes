@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head th:replace="~{fragments/head :: head ('401 UNAUTHORIZED')}"></head>
+<body>
+<div class="grid h-screen place-content-center bg-white px-4">
+    <div class="text-center">
+        <h1 class="text-9xl font-black text-[#B10C74]">401</h1>
+        <p class="text-2xl font-bold tracking-tight text-gray-900 sm:text-4xl">Uh-oh!</p>
+        <p class="mt-4 font-medium text-gray-500">Vous devez être authentifié pour accèder à la plateform</p>
+        <a
+            href="/auth/login"
+            class="mt-6 inline-block rounded bg-[#313863] px-5 py-3 text-sm font-bold text-white hover:bg-[#5663af] focus:outline-none focus:ring"
+        >
+            Revenir vers la page de connexion
+        </a>
+    </div>
+</div>
+</body>
+</html>
+

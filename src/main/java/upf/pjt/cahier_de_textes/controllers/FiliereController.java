@@ -1,28 +1,24 @@
 package upf.pjt.cahier_de_textes.controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import upf.pjt.cahier_de_textes.dao.dtos.UserDTO;
-import upf.pjt.cahier_de_textes.dao.dtos.filiere.AffectationDTO;
 import upf.pjt.cahier_de_textes.dao.dtos.filiere.FiliereDTO;
-import upf.pjt.cahier_de_textes.dao.dtos.filiere.SaveEditAffectationDTO;
 import upf.pjt.cahier_de_textes.dao.entities.Affectation;
 import upf.pjt.cahier_de_textes.dao.entities.Filiere;
 import upf.pjt.cahier_de_textes.dao.entities.Professeur;
-import upf.pjt.cahier_de_textes.dao.entities.User;
 import upf.pjt.cahier_de_textes.dao.entities.enumerations.Diplome;
-import upf.pjt.cahier_de_textes.dao.entities.enumerations.Jour;
+import upf.pjt.cahier_de_textes.dao.repositories.AffectationRepository;
 import upf.pjt.cahier_de_textes.dao.repositories.FiliereRepository;
 import org.springframework.data.domain.Pageable;
 import upf.pjt.cahier_de_textes.dao.repositories.ModuleRepository;
@@ -30,8 +26,6 @@ import upf.pjt.cahier_de_textes.dao.repositories.ProfesseurRepository;
 import upf.pjt.cahier_de_textes.services.AffectationService;
 import upf.pjt.cahier_de_textes.services.FilieresService;
 import upf.pjt.cahier_de_textes.services.UserService;
-
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -45,20 +39,24 @@ public class FiliereController {
     private final ModuleRepository moduleRepository;
     private final FilieresService filieresService;
     private final ObjectMapper objectMapper;
+    private final AffectationRepository affectationRepository;
     private final int SIZE = 10;
+    private final AffectationService affectationService;
 
     public FiliereController(
             FiliereRepository filiereRepository,
             ProfesseurRepository professeurRepository,
             ModuleRepository moduleRepository,
             FilieresService filieresService,
-            ObjectMapper objectMapper
-    ) {
+            ObjectMapper objectMapper,
+            AffectationRepository affectationRepository, AffectationService affectationService) {
         this.filiereRepository = filiereRepository;
         this.professeurRepository = professeurRepository;
         this.moduleRepository = moduleRepository;
         this.filieresService = filieresService;
         this.objectMapper = objectMapper;
+        this.affectationRepository = affectationRepository;
+        this.affectationService = affectationService;
     }
 
     @GetMapping
@@ -70,10 +68,10 @@ public class FiliereController {
             @RequestParam(required = false) Boolean reconnaissance,
             @RequestParam(defaultValue = "0") int page
     ) {
-        UserDTO user = UserService.getAuthenticatedUser(new String[] {"ROLE_ADMIN", "ROLE_SS"});
+        UserDTO user = UserService.getAuthenticatedUser();
 
         if (user == null)
-            return "redirect:/auth/login";
+            return "redirect:/error/401";
 
         Pageable pageable = PageRequest.of(page, SIZE, Sort.by("intitule").ascending());
         Diplome d = Diplome.getDiplome(diplome);
@@ -90,6 +88,7 @@ public class FiliereController {
         return "Admin/filiere/filiere";
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping
     public String saveFiliere(@ModelAttribute Filiere filiere, RedirectAttributes redAtts) {
         redAtts.addFlashAttribute("post", true);
@@ -111,6 +110,7 @@ public class FiliereController {
         return "redirect:/filieres";
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/{id}")
     @Transactional
     public String deleteFiliere(@PathVariable("id") UUID id, RedirectAttributes redAtts) {
@@ -131,6 +131,7 @@ public class FiliereController {
             professeurRepository.save(coordinateur);
 
             filiere.setCoordinateur(null);
+            deleteAffectationsAndCahiers(filiere);
             filiereRepository.delete(filiere);
 
             redAtts.addFlashAttribute("error", false);
@@ -144,6 +145,7 @@ public class FiliereController {
         return "redirect:/filieres";
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/{id}")
     @Transactional
     public String modifyFiliere(@PathVariable("id") UUID id, @ModelAttribute Filiere filiere, RedirectAttributes redAtts) {
@@ -171,10 +173,10 @@ public class FiliereController {
             Model model,
             RedirectAttributes redAtts
     ) {
-        UserDTO user = UserService.getAuthenticatedUser(new String[] {"ROLE_SS"});
+        UserDTO user = UserService.getAuthenticatedUser();
 
         if (user == null)
-            return "redirect:/auth/login";
+            return "redirect:/error/401";
 
         Filiere filiere = filiereRepository.findById(id).orElse(null);
 
@@ -196,6 +198,14 @@ public class FiliereController {
         model.addAttribute("modules", moduleRepository.findAll());
         model.addAttribute("profs", professeurRepository.findAll());
 
-        return "Admin/affectations/affectations";
+        return "ss/affectations/index";
+    }
+
+    private void deleteAffectationsAndCahiers(Filiere filiere) {
+        List<Affectation> affectations = affectationRepository.findAllByFiliere_Id(filiere.getId());
+
+        for (Affectation affectation : affectations) {
+            affectationService.deleteAffectation(affectation);
+        }
     }
 }

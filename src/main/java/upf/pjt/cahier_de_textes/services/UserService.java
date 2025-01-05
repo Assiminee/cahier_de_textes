@@ -102,7 +102,7 @@ public class UserService {
         return encoder.matches(incomingPassword, currentPassword);
     }
 
-    public static UserDTO getAuthenticatedUser(String[] authorizedRoles) {
+    public static UserDTO getAuthenticatedUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (!(authentication.getPrincipal() instanceof CustomUserDetails userDetails))
@@ -111,13 +111,6 @@ public class UserService {
         User loggedUser = userDetails.getUser();
 
         if (loggedUser == null)
-            return null;
-
-        String role = loggedUser.getRole().getAuthority();
-
-        boolean authorized = Arrays.asList(authorizedRoles).contains(role);
-
-        if (!authorized)
             return null;
 
         UserDTO userDTO = new UserDTO();

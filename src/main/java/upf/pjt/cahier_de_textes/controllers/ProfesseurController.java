@@ -1,46 +1,64 @@
 package upf.pjt.cahier_de_textes.controllers;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import upf.pjt.cahier_de_textes.dao.dtos.CustomUserDetails;
+import org.springframework.web.bind.annotation.RequestParam;
+import upf.pjt.cahier_de_textes.dao.dtos.UserDTO;
+import upf.pjt.cahier_de_textes.dao.dtos.filiere.AffectationDTO;
 import upf.pjt.cahier_de_textes.dao.entities.Professeur;
 import upf.pjt.cahier_de_textes.dao.repositories.ProfesseurRepository;
+import upf.pjt.cahier_de_textes.services.AffectationService;
+import upf.pjt.cahier_de_textes.services.UserService;
+
 import java.util.UUID;
 
 @Slf4j
 @Controller
-@RequestMapping("/professeur")
+@RequestMapping("/professeurs")
 public class ProfesseurController {
-    private final ProfesseurRepository professeurRepository;
+    private final int SIZE = 10;
+    private final AffectationService affectationService;
 
-    public ProfesseurController(ProfesseurRepository professeurRepository) {
-        this.professeurRepository = professeurRepository;
+    public ProfesseurController(AffectationService affectationService) {
+        this.affectationService = affectationService;
     }
 
-    @GetMapping("/qualifications")
-    public String qualifications(HttpServletRequest request, HttpServletResponse response, Model model) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    @GetMapping("/{id}/affectations")
+    public String getProfesseurAffectations(
+            @PathVariable("id") UUID id,
+            Model model,
+            @RequestParam(required = false, defaultValue = "") String filiere,
+            @RequestParam(required = false, defaultValue = "") String module,
+            @RequestParam(required = false, defaultValue = "") String jour,
+            @RequestParam(required = false, defaultValue = "0") int heure,
+            @RequestParam(defaultValue = "0") int page
+    ) {
+        UserDTO user = UserService.getAuthenticatedUser();
 
-        if (auth.getPrincipal() instanceof CustomUserDetails cud) {
-            UUID id = cud.getUser().getId();
-            Professeur prof = professeurRepository.findById(id).orElse(null);
+        if (user == null)
+            return "redirect:/error/401";
 
-            if (prof != null) {
-                model.addAttribute("user", prof);
-                return "Professeur/qualifications";
-            }
-        }
+        if (!user.getId().equals(id))
+            return "redirect:/error/403";
 
-        SecurityContextLogoutHandler logoutHandler = new SecurityContextLogoutHandler();
-        logoutHandler.logout(request, response, auth);
-        return "redirect:/auth/login";
+        Pageable pageable = PageRequest.of(page, SIZE);
+        Page<AffectationDTO> affectations = affectationService
+                .getProfesseurAffectationDTOPage(id, filiere, module, heure, jour, pageable);
+
+        model.addAttribute("user", user);
+        model.addAttribute("affs", affectations);
+        model.addAttribute("filiere", filiere);
+        model.addAttribute("module", module);
+        model.addAttribute("jour", jour);
+        model.addAttribute("heure", heure);
+
+        return "affectations/index";
     }
 }
