@@ -8,16 +8,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import upf.pjt.cahier_de_textes.dao.dtos.filiere.AffectationDTO;
-import upf.pjt.cahier_de_textes.dao.entities.Affectation;
-import upf.pjt.cahier_de_textes.dao.entities.Filiere;
-import upf.pjt.cahier_de_textes.dao.entities.Professeur;
+import upf.pjt.cahier_de_textes.dao.entities.*;
 import upf.pjt.cahier_de_textes.dao.entities.Module;
 import upf.pjt.cahier_de_textes.dao.entities.enumerations.Grade;
+import upf.pjt.cahier_de_textes.dao.entities.enumerations.Jour;
 import upf.pjt.cahier_de_textes.dao.repositories.AffectationRepository;
+import upf.pjt.cahier_de_textes.dao.repositories.CahierRepository;
 import upf.pjt.cahier_de_textes.dao.repositories.ModuleRepository;
 import upf.pjt.cahier_de_textes.dao.repositories.ProfesseurRepository;
 import upf.pjt.cahier_de_textes.errors.ErrorResponse;
 
+import java.util.Arrays;
 import java.util.UUID;
 
 @Slf4j
@@ -26,12 +27,14 @@ public class AffectationService {
     private final ModuleRepository moduleRepository;
     private final ProfesseurRepository professeurRepository;
     private final AffectationRepository affectationRepository;
+    private final CahierRepository cahierRepository;
 
     @Autowired
-    public AffectationService(ModuleRepository moduleRepository, ProfesseurRepository professeurRepository, AffectationRepository affectationRepository) {
+    public AffectationService(ModuleRepository moduleRepository, ProfesseurRepository professeurRepository, AffectationRepository affectationRepository, CahierRepository cahierRepository) {
         this.moduleRepository = moduleRepository;
         this.professeurRepository = professeurRepository;
         this.affectationRepository = affectationRepository;
+        this.cahierRepository = cahierRepository;
     }
 
     @Transactional
@@ -73,18 +76,12 @@ public class AffectationService {
                 return null;
             }
 
-            affectation = new Affectation(
-                    affDTO.getId(),
-                    affDTO.getNiveau(),
-                    affDTO.getSemestre(),
-                    affDTO.getHeureDebut(),
-                    affDTO.getHeureFin(),
-                    affDTO.getJour(),
-                    filiere,
-                    prof,
-                    module
-            );
+            affectation = getSavedAffectation(affDTO, filiere, prof, module);
 
+            Cahier cahier = new Cahier(affectation);
+            cahierRepository.save(cahier);
+
+            affectation.setCahier(cahier);
             affectation = affectationRepository.save(affectation);
         } catch (Exception e) {
             log.error(String.valueOf(e.getCause()));
@@ -94,19 +91,36 @@ public class AffectationService {
         return affectation;
     }
 
+    private Affectation getSavedAffectation(AffectationDTO affDTO, Filiere filiere, Professeur prof, Module module) {
+        Affectation affectation = new Affectation(
+                affDTO.getId(),
+                affDTO.getNiveau(),
+                affDTO.getSemestre(),
+                affDTO.getHeureDebut(),
+                affDTO.getHeureFin(),
+                affDTO.getJour(),
+                filiere,
+                prof,
+                module
+        );
+
+        return affectationRepository.save(affectation);
+    }
+
     public ErrorResponse deleteAffectation(UUID affId) {
         ErrorResponse err = new ErrorResponse();
 
         try {
-            boolean exists = affectationRepository.existsById(affId);
+            Affectation affectation = affectationRepository.findById(affId).orElse(null);
 
-            if (!exists) {
+            if (affectation == null) {
                 err.affectationNotFound();
                 return err;
             }
 
-            affectationRepository.deleteById(affId);
-            exists = affectationRepository.existsById(affId);
+            deleteAffectation(affectation);
+
+            boolean exists = affectationRepository.existsById(affId);
 
             if (exists) {
                 err.internalServerError();
@@ -114,12 +128,30 @@ public class AffectationService {
             }
 
         } catch (Exception e) {
-            log.error(String.valueOf(e.getCause()));
+            log.error(String.valueOf(e.getMessage()));
             err.internalServerError();
             return err;
         }
 
         return null;
+    }
+
+    public void deleteAffectation(Affectation affectation) {
+        Cahier cahier = affectation.getCahier();
+        affectation.setCahier(null);
+
+        if (cahier != null) {
+            if (cahier.getEntrees() != null && !cahier.getEntrees().isEmpty()) {
+                cahier.setAffectation(null);
+                cahier.setArchived(true);
+
+                cahierRepository.save(cahier);
+            } else {
+                cahierRepository.delete(cahier);
+            }
+        }
+
+        affectationRepository.delete(affectation);
     }
 
     public Affectation modifyAffectation(UUID affId, Filiere filiere, AffectationDTO affDTO, ErrorResponse err) {
@@ -187,8 +219,27 @@ public class AffectationService {
         return affectation;
     }
 
-    public Page<AffectationDTO> getAffectationDTOPage(String filiere, String module, String professeur, Pageable pageable) {
-        Page<Affectation> affectations = affectationRepository.getAffectations(filiere, module, professeur, pageable);
+    public Page<AffectationDTO> getAffectationDTOPage(String filiere, String module, String professeur, int heure, String jour, Pageable pageable) {
+        Jour parsedJour;
+
+        try { parsedJour = Jour.valueOf(jour); }
+        catch (Exception e) { parsedJour = null; }
+
+        Page<Affectation> affectations = affectationRepository.getAffectations(filiere, module, professeur, heure, parsedJour, pageable);
+
+        return affectations.map(AffectationDTO::new);
+    }
+
+    public Page<AffectationDTO> getProfesseurAffectationDTOPage(UUID id, String filiere, String module, int heure, String jour, Pageable pageable) {
+        Jour searchJour;
+
+        try {
+            searchJour = Jour.valueOf(jour);
+        } catch (Exception e) {
+            searchJour = null;
+        }
+
+        Page<Affectation> affectations = affectationRepository.getProfesseurAffectations(id, filiere, module, heure, searchJour, pageable);
 
         return affectations.map(AffectationDTO::new);
     }

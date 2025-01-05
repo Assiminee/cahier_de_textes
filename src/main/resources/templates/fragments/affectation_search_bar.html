@@ -1,0 +1,64 @@
+<form th:fragment="affectations_search_bar" method="GET" class="flex justify-between gap-4 w-full">
+  <div class="flex rounded-md shadow-sm">
+    <label for="fil" class="flex-1 block mb-2 font-medium">Filière
+      <input
+              type="text"
+              name="filiere"
+              id="fil"
+              th:value="${filiere}"
+              placeholder="Chercher par Filière"
+              class="block w-full rounded-l-md py-2 px-3 text-sm placeholder-gray-400 focus:ring-indigo-500 focus:border-indigo-500"
+      />
+    </label>
+    <label for="mod" class="flex-1 block mb-2 font-medium">Module
+      <input
+              type="text"
+              name="module"
+              id="mod"
+              th:value="${module}"
+              placeholder="Chercher par Module"
+              class="block w-full py-2 px-3 text-sm placeholder-gray-400 focus:ring-indigo-500 focus:border-indigo-500"
+              th:classappend="${professeur == null ? 'rounded-r-mg' : ''}"
+      />
+    </label>
+    <label th:if="${professeur != null}" for="prof" class="flex-1 block mb-2 font-medium">Professeur
+      <input
+              type="text"
+              name="professeur"
+              id="prof"
+              th:value="${professeur}"
+              placeholder="Chercher par Professeur"
+              class="block w-full py-2 rounded-r-md px-3 text-sm placeholder-gray-400 focus:ring-indigo-500 focus:border-indigo-500"
+      />
+    </label>
+    <button type="submit" class="pt-4 pl-2 hover:opacity-80">
+      <img src="/public/seach.png" alt="Rechercher" class="h-6 w-6">
+    </button>
+  </div>
+  <div class="flex gap-4">
+    <div class="flex flex-col rounded-md shadow-sm">
+      <label for="jour" class="flex-1 h-full block mb-2 font-medium">Jour<br>
+        <select name="jour" id="jour"
+                class="pt-1 py-2 px-3 ml-auto border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600">
+          <option th:selected="${jour.isEmpty()}" th:value="''" th:text="'Jour'"></option>
+          <option value="LUN" th:selected="${jour.equals('LUN')}">Lundi</option>
+          <option value="MAR" th:selected="${jour.equals('MAR')}">Mardi</option>
+          <option value="MER" th:selected="${jour.equals('MER')}">Mercredi</option>
+          <option value="JEU" th:selected="${jour.equals('JEU')}">Jeudi</option>
+          <option value="VEN" th:selected="${jour.equals('VEN')}">Vendredi</option>
+          <option value="SAM" th:selected="${jour.equals('SAM')}">Samedi</option>
+        </select>
+      </label>
+    </div>
+    <div class="flex flex-col rounded-md shadow-sm">
+      <label for="heure" class="flex-1 block mb-2 font-medium">Crénaux Horaire<br>
+        <select  name="heure" id="heure"
+                 class="pt-1 py-2 px-3 ml-auto border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600">
+          <option th:selected="${heure == 0}" value="0">Horaire</option>
+          <option th:selected="${heure == 8}" value="8">8h - 12h</option>
+          <option th:selected="${heure == 14}" value="14">14h - 18h</option>
+        </select>
+      </label>
+    </div>
+  </div>
+</form>

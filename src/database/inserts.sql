@@ -85,7 +85,7 @@ VALUES ('1980-07-14', 4, 0x0e123456781234567812345678123456, '1001 Ivy Lane', 'R
         '+212755555556', 'F'),
        ('1985-05-12', 1, 0x12345678123456781234567812345678, '123 Admin Street', 'R123456', 'admin@example.com',
         'Admin', 'User', '$2a$10$uIjP4uT5qSo8VkCECpdrWeROqSWtyU8IB7qS0S8yJPIX9ERTJU7yS', '+212600000000', 'M'),
-       ('1992-03-22', 3, 0x22345678123456781234567812345678, '45 Service Lane', 'R654321', 'sp@example.com', 'Service',
+       ('1992-03-22', 3, 0x22345678123456781234567812345678, '45 Service Lane', 'R654321', 'ss@example.com', 'Service',
         'Scolarite', '$2a$10$pcbXJYQ0qEZO69uLZiL64O6GoC3SlR7FvkzNn7eG8/m9K0gcnXvlC', '+212611111111', 'F'),
        ('1989-08-15', 4, 0x32345678123456781234567812345678, '78 Support Ave', 'R789012', 'Professorson@example.com',
         'Professorson', 'Professor', '$2a$10$DkAl1ydPGi/WUYwOwm57ve72OMqGZHCGY3CgSwqcJLE8RAlcKmy5S', '+212622222222',

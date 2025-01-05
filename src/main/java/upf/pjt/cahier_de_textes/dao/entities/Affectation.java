@@ -3,7 +3,6 @@ package upf.pjt.cahier_de_textes.dao.entities;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import upf.pjt.cahier_de_textes.dao.entities.enumerations.Jour;
@@ -19,8 +18,19 @@ import java.util.UUID;
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString
 public class Affectation {
+
+    public Affectation(UUID id, int niveau, int semestre, int heureDebut, int heureFin, Jour jour, Filiere filiere, Professeur prof, Module module) {
+        this.id = id;
+        this.niveau = niveau;
+        this.semestre = semestre;
+        this.heureDebut = heureDebut;
+        this.heureFin = heureFin;
+        this.jour = jour;
+        this.filiere = filiere;
+        this.prof = prof;
+        this.module = module;
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -62,4 +72,24 @@ public class Affectation {
     @ManyToOne(optional = false)
     @JoinColumn(name = "module", nullable = false)
     private Module module;
+
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "cahier", unique = true)
+    private Cahier cahier;
+
+    @Override
+    public String toString() {
+        return "Affectation{" +
+                "id=" + id +
+                ", niveau=" + niveau +
+                ", semestre=" + semestre +
+                ", heureDebut=" + heureDebut +
+                ", heureFin=" + heureFin +
+                ", jour=" + jour +
+                ", filiere=" + filiere.getIntitule() +
+                ", prof=" + prof.getFullName() +
+                ", module=" + module.getIntitule() +
+                ", cahier=" + cahier +
+                '}';
+    }
 }

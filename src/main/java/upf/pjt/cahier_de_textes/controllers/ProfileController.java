@@ -6,22 +6,17 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import upf.pjt.cahier_de_textes.dao.dtos.UserDTO;
 import upf.pjt.cahier_de_textes.dao.repositories.ProfesseurRepository;
-import upf.pjt.cahier_de_textes.dao.entities.Professeur;
 import upf.pjt.cahier_de_textes.dao.entities.User;
-import upf.pjt.cahier_de_textes.dao.entities.enumerations.RoleEnum;
 import upf.pjt.cahier_de_textes.dao.dtos.CustomUserDetails;
 import upf.pjt.cahier_de_textes.dao.repositories.QualificationRepository;
-
-import java.util.*;
 
 @Controller
 public class ProfileController {
 
     private final QualificationRepository qualificationRepository;
-    private ProfesseurRepository professeurRepository;
+    private final ProfesseurRepository professeurRepository;
 
     @Autowired
     public ProfileController(ProfesseurRepository professeurRepository, QualificationRepository qualificationRepository) {
@@ -31,7 +26,6 @@ public class ProfileController {
 
     @GetMapping("/profile")
     public String profile(Model model) {
-
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication.getPrincipal() instanceof CustomUserDetails userDetails) {

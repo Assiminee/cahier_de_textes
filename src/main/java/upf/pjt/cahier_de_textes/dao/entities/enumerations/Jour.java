@@ -11,7 +11,7 @@ public enum Jour {
     SAM("Samedi");
 
     @Getter
-    private String jourComplet;
+    private final String jourComplet;
 
     Jour(String jourComplet) {
         this.jourComplet = jourComplet;
