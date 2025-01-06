@@ -12,7 +12,6 @@ import upf.pjt.cahier_de_textes.dao.entities.Filiere;
 import upf.pjt.cahier_de_textes.dao.repositories.FiliereRepository;
 import upf.pjt.cahier_de_textes.errors.ErrorResponse;
 import upf.pjt.cahier_de_textes.services.AffectationService;
-
 import java.util.UUID;
 
 @RestController

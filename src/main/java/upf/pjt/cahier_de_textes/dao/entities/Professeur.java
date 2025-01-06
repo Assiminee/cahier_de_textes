@@ -52,7 +52,7 @@ public class Professeur extends User {
     private List<Module> modules = new ArrayList<>();
 
     @NotNull
-  @HasAtLeastOneQualification
+    @HasAtLeastOneQualification
     @OneToMany(mappedBy = "prof", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<Qualification> qualifications = new ArrayList<>();
@@ -61,7 +61,20 @@ public class Professeur extends User {
     @JsonIgnore
     private Filiere filiere;
 
-    @OneToMany(mappedBy = "prof", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "prof", fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JsonIgnore
     private List<Affectation> affectations;
+
+    @Override
+    public String toString() {
+        return "Professeur{" +
+                "grade=" + grade +
+                ", dateDernierDiplome=" + dateDernierDiplome +
+                ", dateEmbauche=" + dateEmbauche +
+                ", modules=" + modules +
+                ", qualifications=" + qualifications +
+                ", filiere=" + (filiere == null ? "null" : filiere.getIntitule()) +
+                ", affectations=" + affectations +
+                '}';
+    }
 }

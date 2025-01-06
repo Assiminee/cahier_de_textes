@@ -19,7 +19,7 @@
         </tr>
         <tr th:each="prof, iterStat : ${professors}" class="bg-gray-100 hover:bg-gray-200 transition-all">
             <td class="p-3">
-                <a  th:href="@{/professeur/{id}(id=${prof.id}, view=true)}">
+                <a  th:href="@{/professeurs/{id}(id=${prof.id}, view=true)}">
                     <img  class="h-6 w-6" src="/public/eye.png" alt="Voir" />
                 </a>
             </td>
@@ -33,7 +33,7 @@
             </td>
             <td class="p-4 flex items-center justify-center gap-3 ">
                 <!-- Edit button -->
-                <form th:action="@{/professeur/{id}(id=${prof.id},view=false)}" method="get">
+                <form th:action="@{/professeurs/{id}(id=${prof.id},view=false)}" method="get">
                     <button type="submit" th:id="|mod-${iterStat}|">
                         <img src="/public/edit.png" alt="Modifier" class="h-6 w-6">
                     </button>
