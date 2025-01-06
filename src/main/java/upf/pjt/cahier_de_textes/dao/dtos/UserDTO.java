@@ -31,6 +31,7 @@ public class UserDTO {
     private LocalDate dateNaissance;
     private List<Qualification> qualifications;
     private Grade grade;
+    private String role;
 
 
     public UserDTO(String nom, String prenom, String genre, String cin, String adresse, String telephone, String email, String dateNaissance) {
@@ -65,6 +66,7 @@ public class UserDTO {
         this.telephone = user.getTelephone();
         this.email = user.getEmail();
         this.dateNaissance = user.getDateNaissance();
+        this.role = user.getRole().getAuthority();
     }
 
     public void setProfessorDetails(QualificationRepository quaRep, ProfesseurRepository profRep) {

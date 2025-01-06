@@ -59,8 +59,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/professeurs/**").hasRole("PROF")
                         .requestMatchers(HttpMethod.GET, "/professeurs/*/affectations").hasRole("PROF")
                         .requestMatchers(HttpMethod.GET, "/profile/**").hasAnyRole("SS", "ADMIN", "SP", "PROF")
+                        .requestMatchers(HttpMethod.GET, "/cahiers/**").hasAnyRole("SS", "SP", "PROF")
                         .requestMatchers("/cahiers/**").hasRole("PROF")
-                        .requestMatchers(HttpMethod.GET, "/cahiers/**").hasAnyRole("SS", "SP")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form

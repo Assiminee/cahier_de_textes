@@ -1,19 +1,19 @@
 <div th:fragment="nature" class="flex flex-col gap-3 px-4 ms-4 mt-4 justify-center">
     <div class="flex items-center">
         <input id="td" type="radio" value="TD" name="nature" th:checked="${entry != null && entry.nature.name().equals('TD')}"
-               class="w-4 h-4 text-[#B10C74] bg-gray-700 border-gray-600 focus:ring-[#B10C74] focus:ring-2">
+               class="w-4 h-4 text-[#B10C74] bg-gray-700 border-gray-600 focus:ring-[#B10C74] focus:ring-2" th:disabled="${!enabled}">
         <label for="td"
                class="ms-2 text-2xl font-medium text-gray-700">Travaux Dirigés</label>
     </div>
     <div class="flex items-center">
         <input id="tp" type="radio" value="TP" name="nature" th:checked="${entry != null && entry.nature.name().equals('TP')}"
-               class="w-4 h-4 text-[#B10C74] bg-gray-700 border-gray-600 focus:ring-[#B10C74] focus:ring-2">
+               class="w-4 h-4 text-[#B10C74] bg-gray-700 border-gray-600 focus:ring-[#B10C74] focus:ring-2" th:disabled="${!enabled}">
         <label for="tp"
                class="ms-2 text-2xl font-medium text-gray-700">Travaux Pratiques</label>
     </div>
     <div class="flex items-center">
         <input id="cours" type="radio" value="COURS" name="nature" th:checked="${entry != null && entry.nature.name().equals('COURS')}"
-               class="w-4 h-4 text-[#B10C74] bg-gray-700 border-gray-600 focus:ring-[#B10C74] focus:ring-2">
+               class="w-4 h-4 text-[#B10C74] bg-gray-700 border-gray-600 focus:ring-[#B10C74] focus:ring-2" th:disabled="${!enabled}">
         <label for="cours"
                class="ms-2 text-2xl font-medium text-gray-700">Séance de Cours</label>
     </div>

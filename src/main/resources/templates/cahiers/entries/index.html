@@ -10,18 +10,7 @@
         <nav th:replace="~{fragments/nav :: nav}"></nav>
         <div class="flex-1 overflow-y-auto " id="THISISDADIV">
             <section class="p-6 overflow-auto">
-                <div class="flex justify-between text-[#313863]">
-                    <div class="flex flex-col text-start">
-                        <h1 class="text-lg font-sm"
-                            th:text="|Module - ${cahier.module}|"></h1>
-                        <h1 class="text-lg font-sm pb-2" th:text="|Professeur - ${cahier.professeur}|"></h1>
-                    </div>
-                    <div class="flex flex-col text-end">
-                        <h1 class="text-lg font-sm"
-                            th:text="|Niveau ${cahier.niveau}|"></h1>
-                        <h1 class="text-lg font-sm pb-2" th:text="|Semestre ${cahier.semestre}|"></h1>
-                    </div>
-                </div>
+                <div th:replace="~{cahiers/entry_fragments/general_information :: div}"></div>
                 <div class="flex pb-5"
                      th:classappend="${role[0].getAuthority().equals('ROLE_PROF') ? 'justify-between' : 'justify-center'}"
                 >

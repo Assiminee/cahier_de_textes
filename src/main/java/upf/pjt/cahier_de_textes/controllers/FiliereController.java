@@ -151,11 +151,27 @@ public class FiliereController {
     public String modifyFiliere(@PathVariable("id") UUID id, @ModelAttribute Filiere filiere, RedirectAttributes redAtts) {
         redAtts.addFlashAttribute("put", true);
         try {
+            Filiere fil = filiereRepository.findById(id).orElse(null);
+
+            if (fil == null) {
+                redAtts.addFlashAttribute("error", true);
+                redAtts.addFlashAttribute("msg", "La filière que vous avez tenté de supprimer n'existe pas");
+
+                return "redirect:/filieres";
+            }
+
             Boolean dupData = filieresService.duplicateData(filiere, "put", redAtts);
 
             if (!dupData) {
-                filiere = filiereRepository.save(filiere);
-                redAtts.addFlashAttribute("msg", filiere.getIntitule());
+                fil.setCoordinateur(filiere.getCoordinateur());
+                fil.setDiplome(filiere.getDiplome());
+                fil.setIntitule(filiere.getIntitule());
+                fil.setDateExpiration(filiere.getDateExpiration());
+                fil.setDateReconnaissance(filiere.getDateReconnaissance());
+                fil.setNombreAnnees(filiere.getNombreAnnees());
+
+                fil = filiereRepository.save(fil);
+                redAtts.addFlashAttribute("msg", fil.getIntitule());
             }
         } catch (Exception e) {
             log.error(String.valueOf(e.getCause()));

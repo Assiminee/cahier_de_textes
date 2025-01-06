@@ -5,27 +5,30 @@
     <th class="py-4 text-center">Date</th>
     <th class="py-4 text-center">Crénaux Horaire</th>
     <th class="py-4 text-center">Nature</th>
-    <th class="py-4 text-left"></th>
+    <th sec:authorize="hasAnyRole('SS', 'SP')" class="py-4 text-center">Visualiser</th>
+    <th sec:authorize="hasRole('PROF')" class="py-4 text-center">Modifier</th>
   </tr>
   </thead>
   <tbody>
   <tr th:if="${entries == null || entries.getNumberOfElements() == 0}"
       class="text-center justify-center bg-gray-100 hover:bg-gray-200 transition-all"
   >
-    <td colspan="6" class="p-4 font-medium" th:text="'Aucune entrée à afficher'"></td>
+    <td colspan="5" class="p-4 font-medium" th:text="'Aucune entrée à afficher'"></td>
   </tr>
   <tr th:if="${entries != null}" th:each="entry : ${entries}"
       class="text-center bg-gray-100 hover:bg-gray-200 transition-all">
 
-    <td class="p-4" th:text="|Semaine ${entry.seance}|"></td>
-    <td class="p-4" th:text="${entry.date}"></td>
-    <td class="p-4" th:text="|De ${entry.heureDebut} à ${entry.heureFin}|"></td>
-    <td class="p-4" th:text="${entry.nature}"></td>
-    <td class="p-4 flex justify-center content-center">
+    <td class="py-4" th:text="|Semaine ${entry.seance}|"></td>
+    <td class="py-4" th:text="${entry.date}"></td>
+    <td class="py-4" th:text="|De ${entry.heureDebut} à ${entry.heureFin}|"></td>
+    <td class="py-4" th:text="${entry.nature}"></td>
+    <td th:with="url = ${'/cahiers/' + cahier.id + '/entries/' + entry.id}"
+        class="py-4 flex justify-center content-center">
       <a class="hover:opacity-80"
-         th:with="url = ${'/cahiers/' + cahier.id + '/entries/' + entry.id}"
+         th:classappend="${user.role.equals('ROLE_PROF') ? 'rounded-full bg-[#313863] p-2 flex' : ''}"
          th:href="@{${url}}">
-        <img src="/public/eye.png" alt="Voir" class="h-6 w-8">
+        <img sec:authorize="hasRole('PROF')" src="/public/pencil.png" alt="Modifier" class="h-5 w-5">
+        <img sec:authorize="hasAnyRole('SS', 'SP')" src="/public/eye.png" alt="Voir" class="h-6 w-8">
       </a>
     </td>
   </tr>
