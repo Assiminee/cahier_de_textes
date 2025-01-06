@@ -20,18 +20,4 @@ public class WebConfig implements WebMvcConfigurer {
     public HiddenHttpMethodFilter hiddenHttpMethodFilter() {
         return new HiddenHttpMethodFilter();
     }
-
-    @Autowired
-    private SpringTemplateEngine templateEngine;
-
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    @Override
-    public void configureViewResolvers(ViewResolverRegistry registry) {
-        ThymeleafViewResolver resolver = new ThymeleafViewResolver();
-        resolver.setTemplateEngine(templateEngine);
-        resolver.setStaticVariables(Map.of("objectMapper", objectMapper));
-        registry.viewResolver(resolver);
-    }
 }

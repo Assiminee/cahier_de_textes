@@ -21,10 +21,6 @@ import java.util.Map;
 @RequestMapping("/dashboard")
 public class DashboardController {
 
-    @Autowired
-    private UserRepository userRepository;
-
-
     @GetMapping
     public String getDashboardPage(Model model) {
 
@@ -38,45 +34,5 @@ public class DashboardController {
     }
         model.addAttribute("pageTitle", "Statistiques de l'application");
         return "Admin/dashboard/dash"; // Name of the Thymeleaf HTML file (without .html)
-    }
-}
-
-@RestController
-@RequestMapping("/api")
-class DashboardApiController {
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private ProfesseurRepository professeurRepository;
-
-    // Method to return JSON data for the dashboard
-    @GetMapping("/dashboard-stats")
-    public Map<String, Object> getDashboardStats() {
-        Map<String, Object> stats = new HashMap<>();
-
-        stats.put("totalUsers", userRepository.countAllUsers());
-        stats.put("femaleUsers", userRepository.countUsersByGender(Genre.F));
-        stats.put("maleUsers", userRepository.countUsersByGender(Genre.M));
-
-        // Role distribution
-        List<Object[]> roleCounts = userRepository.countUsersByRole();
-        Map<String, Integer> roleData = new HashMap<>();
-        for (Object[] roleCount : roleCounts) {
-            roleData.put(roleCount[0].toString(), ((Number) roleCount[1]).intValue());
-        }
-
-        stats.put("roleData", roleData);
-
-        List<Object[]> gradeCounts = professeurRepository.countProfessorsByGrade();
-        Map<String, Integer> gradeData = new HashMap<>();
-        for (Object[] gradeCount : gradeCounts) {
-            gradeData.put(gradeCount[0].toString(), ((Number) gradeCount[1]).intValue());
-        }
-        stats.put("gradeData", gradeData);
-
-
-        return stats;
     }
 }
