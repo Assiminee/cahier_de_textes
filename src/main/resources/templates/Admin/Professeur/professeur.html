@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head th:replace="~{fragments/head :: head ('Profsseur')}"></head>
+<body class="bg-gray-100 font-sans">
+<div class="flex h-screen">
+    <div th:replace="~{fragments/side_bar :: aside}"></div>
+    <main class="bg-white rounded-l-lg shadow-lg w-full flex flex-col h-screen">
+        <header th:replace="~{fragments/nav.html :: nav}"></header>
+
+        <section class="px-7 py-6 pr-8  flex justify-between items-center">
+            <h2 class="text-3xl font-medium ">Liste des Professeur</h2>
+
+            <a href="/professeur/viewprof">
+            <button  id="addProfBtn" class="bg-[#313863] text-white py-2 px-6 rounded-lg hover:bg-blue-950 shadow-md cursor-pointer"
+            >
+                + Ajouter Professeur
+            </button>
+            </a>
+        </section>
+        <div th:replace="~{Admin/Professeur/ErrorProfHandeling :: div}"></div>
+        <div th:replace="~{Admin/Professeur/ProfSearchForm :: form}"></div>
+        <div th:replace="~{Admin/Professeur/ProfessorList.html:: div}"></div>
+        <div th:replace="~{Admin/Professeur/deleteProfModal.html:: div}"></div>
+        <div th:replace="~{Admin/Professeur/ProfessorPagination :: div}"></div>
+    </main>
+</div>
+<script >
+
+
+    $("#reset_button").click(function () {
+        $('input').val('');
+        $('select').val('');
+        $('#filterForm').submit();
+    });
+</script>
+</body>
+</html>

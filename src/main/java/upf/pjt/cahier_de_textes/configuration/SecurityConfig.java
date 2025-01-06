@@ -43,6 +43,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/public/**").permitAll()
                         .anyRequest().authenticated()
+
                 )
                 .formLogin(form -> form
                         .loginPage("/auth/login")
@@ -58,6 +59,10 @@ public class SecurityConfig {
                         .logoutSuccessUrl("/auth/login")
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")
+
+                )
+                .exceptionHandling(exceptions -> exceptions
+                        .accessDeniedPage("/error")
                 );
         return http.build();
     }

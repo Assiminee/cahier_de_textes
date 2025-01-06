@@ -1,0 +1,77 @@
+<div class="px-7 pt-5 overflow-auto">
+  <table class="px-7 pt-5 w-full border-collapse border border-gray-200 shadow-sm rounded-lg overflow-hidden">
+    <thead class="bg-[#b10c74] text-white">
+    <tr>
+      <th class="p-4 text-left"></th>
+      <th class="p-4 text-left">Nom</th>
+      <th class="p-4 text-left">Date de Naissance</th>
+      <th class="p-4 text-left">Rôle</th>
+      <th class="p-4 text-left">Email</th>
+      <th class="p-4 text-center">Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="user, iterStat : ${users}" class="bg-gray-100 hover:bg-gray-200 transition-all">
+      <td class="p-4 text-left">
+        <button th:id="|view-${iterStat}|" class="hover:opacity-80 viewBtns" type="button"
+                data-modal-target="userModal" data-modal-toggle="userModal"
+                th:data-id="${user.id}"
+                th:data-nom="${user.nom}"
+                th:data-prenom="${user.prenom}"
+                th:data-email="${user.email}"
+                th:data-role="${user.getRole().getAuthority()}"
+                th:data-genre="${user.genre}"
+                th:data-date="${user.dateNaissance}"
+                th:data-tel="${user.telephone}"
+                th:data-cin="${user.cin}"
+                th:data-add="${user.adresse}"
+        >
+          <img src="/public/eye.png" alt="Voir" class="h-6 w-6">
+        </button>
+      </td>
+      <td class="p-4" th:text="${user.nom + ' ' + user.prenom}"></td>
+      <td class="p-4" th:text="${user.dateNaissance}"></td>
+      <td class="p-4" th:switch="${user.role.getAuthority()}">
+        <span class="bg-yellow-100 rounded px-2 py-1" th:case="'ROLE_SS'">Service de Scolarité</span>
+        <span class="bg-red-100 rounded px-2 py-1" th:case="'ROLE_SP'">Service Pédagogique</span>
+        <span class="bg-green-100 rounded px-2 py-1" th:case="'ROLE_ADMIN'">Administrateur</span>
+        <span class="bg-red-500 rounded px-2 py-1" th:case="*">Unknown</span>
+      </td>
+      <td class="p-4" th:text="${user.email}"></td>
+      <td class="p-4 flex items-center justify-center gap-3">
+        <!-- Edit Button -->
+        <button th:id="|mod-${iterStat}|" class="hover:opacity-80 modBtns" type="button"
+                data-modal-target="userModal" data-modal-toggle="userModal"
+                th:data-id="${user.id}"
+                th:data-nom="${user.nom}"
+                th:data-prenom="${user.prenom}"
+                th:data-email="${user.email}"
+                th:data-role="${user.getRole().getAuthority()}"
+                th:data-date="${user.dateNaissance}"
+                th:data-tel="${user.telephone}"
+                th:data-cin="${user.cin}"
+                th:data-genre="${user.genre}"
+                th:data-add="${user.adresse}"
+                th:data-pwd="${user.pwd}"
+        >
+          <img src="/public/edit.png" alt="Modifier" class="h-6 w-6">
+        </button>
+
+        <!-- Delete Button -->
+        <label th:id="|delete-${iterStat}|" class="hover:opacity-80 deleteBtns"
+               data-modal-target="deleteUserModal" data-modal-toggle="deleteUserModal"
+               th:data-id="${user.id}"
+               th:data-nom="${user.nom}"
+               th:data-prenom="${user.prenom}"
+               th:data-email="${user.email}"
+               th:data-cin="${user.cin}">
+          <img src = "/public/trash.png" alt="Supprimer" class="h-6 w-6">
+        </label>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+
+
+

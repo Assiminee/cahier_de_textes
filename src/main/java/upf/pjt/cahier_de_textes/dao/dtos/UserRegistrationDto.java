@@ -3,12 +3,13 @@ package upf.pjt.cahier_de_textes.dao.dtos;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
+import upf.pjt.cahier_de_textes.dao.entities.Role;
+import upf.pjt.cahier_de_textes.dao.entities.User;
 import upf.pjt.cahier_de_textes.dao.entities.enumerations.Genre;
 import upf.pjt.cahier_de_textes.dao.entities.enumerations.Grade;
 import upf.pjt.cahier_de_textes.dao.entities.validation_annotations.IsAdult;
 
 import java.time.LocalDate;
-import java.util.UUID;
 
 @Getter
 @Setter
@@ -23,7 +24,7 @@ public class UserRegistrationDto {
     private String prenom;
 
     @NotBlank(message = "Telephone is required")
-    @Pattern(regexp = "\\+212[6-7][0-9]{8}", message = "Must be a valid Moroccan phone number")
+    @Pattern(regexp = "(\\+212|0)[6-7][0-9]{8}", message = "Must be a valid Moroccan phone number")
     private String telephone;
 
     @NotBlank(message = "Email is required")
@@ -56,7 +57,46 @@ public class UserRegistrationDto {
 
     private String role;
 
-    @NotNull(message = "Grade is required", groups = ProfessorValidationGroup.class)
+    public UserRegistrationDto(
+     String nom
+    , String prenom
+    , String telephone
+    , String email
+    , LocalDate dateNaissance
+    , String adresse
+    , Genre genre
+    , String cin
+    , String password
+    , String confirmPassword
+    , String role) {
+        this.nom = nom;
+        this.prenom = prenom;
+        this.telephone = telephone;
+        this.email = email;
+        this.dateNaissance = dateNaissance;
+        this.adresse = adresse;
+        this.genre = genre;
+        this.cin = cin;
+        this.password = password;
+        this.confirmPassword = confirmPassword;
+        this.role = role;
+    }
+    public void RegisterUser(User user) {
+        user.setNom(nom);
+        user.setPrenom(prenom);
+        user.setGenre(genre);
+        user.setCin(cin);
+        user.setAdresse(adresse);
+        user.setTelephone(telephone);
+        user.setEmail(email);
+        user.setDateNaissance(dateNaissance);
+    /*    user.setRole();*/
+
+    }
+
+
+
+  /*  @NotNull(message = "Grade is required", groups = ProfessorValidationGroup.class)
     private Grade grade;
 
     @NotNull(message = "Date Dernier Diplôme is required for professors", groups = ProfessorValidationGroup.class)
@@ -65,7 +105,10 @@ public class UserRegistrationDto {
     @NotNull(message = "Date d'Embauche is required for professors", groups = ProfessorValidationGroup.class)
     private LocalDate dateEmbauche;
 
+    // Prof-specific qualifications
+    private List<QualificationDto> qualifications;
+
     @Null(message = "ID should be null", groups = CommonValidationGroup.class)
-    private UUID id;
+    private UUID id;*/
 
 }

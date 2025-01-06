@@ -34,11 +34,9 @@ public class ModuleController {
     ) {
         this.moduleRepository = moduleRepository;
         this.professorRepository = professorRepository;
-    }
-    @GetMapping()
+    }@GetMapping()
     public String showModules(
-            @RequestParam(required = false) String intitule,
-            @RequestParam(required = false) String responsable,
+            @RequestParam(required = false) String intitule, @RequestParam(required = false) String responsable,
             @RequestParam(required = false) String modeEvaluation,
             @RequestParam(required = false) Integer min,
             @RequestParam(required = false) Integer max,
@@ -53,29 +51,19 @@ public class ModuleController {
         }
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("intitule").ascending());
-        Page<Module> modulesPage = Page.empty();
 
-        // Convert modeEvaluation from String to Enum
         ModeEval modeEvalEnum = null;
         if (modeEvaluation != null && !modeEvaluation.isBlank()) {
             try {
                 modeEvalEnum = ModeEval.valueOf(modeEvaluation.toUpperCase());
             } catch (IllegalArgumentException e) {
                 model.addAttribute("error", "Invalid mode d'évaluation");
+                return "Admin/Module/module";
             }
         }
 
-        if ((intitule == null || intitule.isBlank()) &&
-                (responsable == null || responsable.isBlank()) &&
-                modeEvalEnum == null && min == null && max == null) {
-            modulesPage = moduleRepository.findAll(pageable);
-        } else if (intitule != null && !intitule.isBlank() &&
-                (responsable == null || responsable.isBlank()) &&
-                modeEvalEnum == null && min == null && max == null) {
-            modulesPage = moduleRepository.findByIntituleContainingIgnoreCase(intitule, pageable);
-        } else {
-            modulesPage = moduleRepository.filterModules(intitule, responsable, modeEvalEnum, min, max, pageable);
-        }
+        Page<Module> modulesPage = moduleRepository.filterModules(intitule, responsable, modeEvalEnum, min, max, pageable);
+
         List<Professeur> professors = professorRepository.findAll();
 
         model.addAttribute("professors", professors);
@@ -88,6 +76,7 @@ public class ModuleController {
         model.addAttribute("modeEvaluation", modeEvaluation);
         model.addAttribute("min", min);
         model.addAttribute("max", max);
+
         return "Admin/Module/module";
     }
 
@@ -95,6 +84,7 @@ public class ModuleController {
     @PostMapping()
     public String addModule(@ModelAttribute Module module, Model model, RedirectAttributes redAtt) {
         try {
+
             try {
                 User currentUser = AuthUtils.getAuthenticatedUser();
                 model.addAttribute("user", currentUser);
@@ -102,15 +92,24 @@ public class ModuleController {
                 return "redirect:/login";
             }
 
-            moduleRepository.save(module);
-            System.out.println("Module: " + module);
-            redAtt.addFlashAttribute("addSucessModule", "Module\t" + module.getIntitule() + "\ta été ajouté avec succès");
+            if (moduleRepository.existsByIntituleIgnoreCase(module.getIntitule())) {
+                redAtt.addFlashAttribute("errorAddModule", "Erreur : Un module avec cet intitulé existe déjà.");
+                return "redirect:/modules";
+            }
+            if ( module.getNombre_heures() < 1 || module.getNombre_heures() > 48) {
+                redAtt.addFlashAttribute("errorAddModule", "Erreur : Le nombre d'heures doit être compris entre 1 et 48.");
+                return "redirect:/modules";
+            }
 
+            moduleRepository.save(module);
+            redAtt.addFlashAttribute("addSucessModule", module.getIntitule());
         } catch (IllegalArgumentException e) {
             redAtt.addFlashAttribute("errorAddModule", "Erreur : " + e.getMessage());
         }
         return "redirect:/modules";
     }
+
+
 
     @DeleteMapping("/{id}")
     public String deleteModules(@PathVariable UUID id, RedirectAttributes redirectAttributes) {
@@ -124,7 +123,7 @@ public class ModuleController {
             }
             moduleRepository.deleteById(id);
             redirectAttributes.addFlashAttribute("action", true);
-            redirectAttributes.addFlashAttribute("deleteSuccess", "Le module '" + module.getIntitule() + "' a été supprimé avec succès.");
+            redirectAttributes.addFlashAttribute("deleteSuccess",  module.getIntitule() );
         } catch (Exception e) {
             System.err.println("Error deleting module: " + e.getMessage());
             redirectAttributes.addFlashAttribute("error", "Erreur lors de la suppression du module : " + e.getMessage());
@@ -163,7 +162,7 @@ public class ModuleController {
             }
 
             moduleRepository.save(existingModule);
-            redirectAttributes.addFlashAttribute("editSucessModule", "Module'" + existingModule.getIntitule()+ "' Modifier avec succès");
+            redirectAttributes.addFlashAttribute("editSucessModule", existingModule.getIntitule());
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("erroreditModule", "Erreur Modification du Module , veuillez essayer plut tard  " + e.getMessage());
         }
