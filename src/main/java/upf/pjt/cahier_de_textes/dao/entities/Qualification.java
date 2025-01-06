@@ -42,4 +42,5 @@ public class Qualification {
     @JoinColumn(name = "prof")
     @JsonBackReference
     private Professeur prof;
+    
 }

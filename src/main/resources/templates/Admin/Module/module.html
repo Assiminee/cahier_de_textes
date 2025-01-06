@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head th:replace="~{fragments/head :: head ('module')}"></head>
+<body class="bg-gray-100 font-sans">
+<div class="flex h-screen">
+  <div th:replace="~{fragments/side_bar :: aside}"></div>
+  <main class="bg-white rounded-l-lg shadow-lg w-full flex flex-col h-screen">
+    <header th:replace="~{fragments/nav.html :: nav}"></header>
+
+    <section class="px-7 py-6 pr-8  flex justify-between items-center">
+      <h2 class="text-3xl font-medium text-gray-800">Liste des Modules</h2>
+      <button id="addBtns" type="button"
+              data-modal-target="moduleModal" data-modal-toggle="moduleModal"
+             class="bg-[#313863] text-white py-2 px-6 rounded-lg hover:bg-blue-950 shadow-md cursor-pointer">
+        + Ajouter Module
+      </button>
+      <section th:replace="~{Admin/Module/moduleModal.html :: div}"></section>
+    </section>
+
+    <section th:replace="~{Admin/Module/ErrorHandeling :: section}"></section>
+    <section th:replace="~{Admin/Module/SearchFormModule.html :: form}"></section>
+
+    <section th:replace="~{Admin/Module/ModuleList.html :: div}"></section>
+    <section th:replace="~{Admin/Module/deleteModuleModal.html :: deleteModuleModal}"></section>
+    <section th:replace="~{Admin/Module/Modulepagination.html :: div}"></section>
+  </main>
+</div>
+<script type="module">
+  import { addModule, modifyModule,viewModuleInfo, deleteModule } from '/public/js/module/module.js'
+
+  addModule();
+  modifyModule();
+  viewModuleInfo();
+  deleteModule();
+  $("#resetButton").click(function () {
+    $('input').val('');
+    $('select').val('');
+    $('#filterForm').submit();
+  });
+
+
+</script>
+</body>
+</html>

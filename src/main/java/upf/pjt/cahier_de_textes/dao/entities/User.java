@@ -94,6 +94,9 @@ public class User {
     @JsonManagedReference
     protected Role role;
 
+    public String getAuthority(){
+        return role.getAuthority();
+    }
     public String getFullName() {
         return nom + " " + prenom;
     }

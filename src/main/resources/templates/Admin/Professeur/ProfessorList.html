@@ -1,0 +1,63 @@
+<div class="px-7 pt-5 overflow-auto">
+    <table class="w-full border-collapse border border-gray-200 shadow-sm rounded-lg overflow-hidden">
+        <thead class="bg-[#b10c74] text-white">
+        <tr>
+            <th class="p-4 text-left"></th>
+            <th class="p-4 text-left">Nom</th>
+            <th class="p-4 text-left">Date de Naissance</th>
+            <th class="p-4 text-left">Email</th>
+            <th class="p-4 text-left">Téléphone</th>
+            <th class="p-4 text-left">Grade</th>
+            <th class="p-4 text-center">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:if="${#lists.isEmpty(professors)}">
+            <td colspan="7" class="text-center p-4 text-gray-500">
+                Aucun professeur trouvé
+            </td>
+        </tr>
+        <tr th:each="prof, iterStat : ${professors}" class="bg-gray-100 hover:bg-gray-200 transition-all">
+            <td class="p-3">
+                <a  th:href="@{/professeur/{id}(id=${prof.id}, view=true)}">
+                    <img  class="h-6 w-6" src="/public/eye.png" alt="Voir" />
+                </a>
+            </td>
+            <td class="p-4" th:text="${prof.nom + ' ' + prof.prenom}"></td>
+            <td class="p-4" th:text="${prof.dateNaissance}"></td>
+            <td class="p-4" th:text="${prof.email}"></td>
+            <td class="p-4" th:text="${prof.telephone}"></td>
+            <td class="p-4" th:switch="${prof.grade.name}">
+                <span class="bg-yellow-100 rounded px-2 py-1" th:case="'MA'">Master</span>
+                <span class="bg-red-100 rounded px-2 py-1" th:case="'PHD'">Doctorat</span>
+            </td>
+            <td class="p-4 flex items-center justify-center gap-3 ">
+                <!-- Edit button -->
+                <form th:action="@{/professeur/{id}(id=${prof.id},view=false)}" method="get">
+                    <button type="submit" th:id="|mod-${iterStat}|">
+                        <img src="/public/edit.png" alt="Modifier" class="h-6 w-6">
+                    </button>
+                </form>
+
+
+
+                <label th:id="|delete-${iterStat}|" class="hover:opacity-80 deleteBtns"
+                       data-modal-target="deleteProfModal" data-modal-toggle="deleteProfModal"
+                       th:data-id="${prof.id}"
+                       th:data-nom="${prof.nom}"
+                       th:data-prenom="${prof.prenom}"
+                       th:data-email="${prof.email}"
+                       th:data-cin="${prof.cin}">
+                    <img src = "/public/trash.png" alt="Supprimer" class="h-6 w-6">
+                </label>
+           </td>
+        </tr>
+
+        <script type="module">
+            import { deleteProf } from '/public/js/profs/prof.js';
+            $(document).ready(() => {
+                deleteProf();
+            });</script>
+        </tbody>
+    </table>
+</div>

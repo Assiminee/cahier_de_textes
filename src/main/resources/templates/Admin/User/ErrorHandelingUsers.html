@@ -1,0 +1,40 @@
+<div th:fragment="ErrorHandelingUsers" class="px-7 w-[430px]">
+
+  <!-- Success Messages -->
+  <div th:if="${action == true}" class="p-4 text-sm text-green-800 rounded-lg bg-[#c9e8b9]" role="alert">
+    <p th:if="${added != null}">
+      Utilisateur <span class="font-bold" th:text="${added}"></span>
+      ajouté avec succès
+    </p>
+    <p th:if="${deleted != null}">
+      Utilisateur <span class="font-bold" th:text="${deleted}"></span>
+      supprimé avec succès
+    </p>
+    <p th:if="${editSucessUser != null}">
+      Utilisateur <span class="font-bold" th:text="${editSucessUser}"></span>
+      édité avec succès
+    </p>
+  </div>
+
+  <!-- Error Messages -->
+  <div th:if="${actionAttributesExists == true}" class="p-4 text-sm text-[#B10C74] rounded-lg bg-red-100" role="alert">
+    <span>garbageeeeee</span>
+    <div th:if="${emailerror != null}">
+      <p>
+        Attention ! L'email <span class="font-bold" th:text="${emailerror}"></span>
+        existe déjà
+      </p>
+    </div>
+    <div th:if="${telephone != null}">
+      <p>
+        Le numéro de téléphone existe déjà !
+      </p>
+    </div>
+    <div th:if="${cin != null}">
+      <p>
+        Le numéro de la CIN existe déjà !
+      </p>
+    </div>
+  </div>
+
+</div>

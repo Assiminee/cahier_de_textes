@@ -14,8 +14,6 @@ import upf.pjt.cahier_de_textes.dao.repositories.*;
 import upf.pjt.cahier_de_textes.dao.dtos.UserDTO;
 import upf.pjt.cahier_de_textes.dao.entities.User;
 import upf.pjt.cahier_de_textes.dao.entities.Professeur;
-
-import java.util.Arrays;
 import java.util.UUID;
 
 @Service

@@ -45,23 +45,27 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/public/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/dashboard").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/filieres").hasAnyRole("ADMIN", "SS")
                         .requestMatchers(HttpMethod.POST, "/filieres").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/filieres/*").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/users/*").hasAnyRole("SS", "ADMIN", "SP", "PROF")
                         .requestMatchers(HttpMethod.POST, "/users/*/password").hasAnyRole("SS", "ADMIN", "SP", "PROF")
+                        .requestMatchers(HttpMethod.GET, "/professeurs/*/affectations").hasRole("PROF")
                         .requestMatchers("/users/**").hasRole("ADMIN")
+                        .requestMatchers("/modules/**").hasRole("ADMIN")
+                        .requestMatchers("/professeurs/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/filieres/*/affectations").hasRole("SS")
                         .requestMatchers(HttpMethod.PUT, "/filieres/*/affectations/**").hasRole("SS")
                         .requestMatchers(HttpMethod.DELETE, "/filieres/*/affectations/**").hasRole("SS")
                         .requestMatchers(HttpMethod.GET, "/filieres/*/affectations").hasRole("SS")
                         .requestMatchers(HttpMethod.GET, "/affectations").hasAnyRole("SS", "SP")
                         .requestMatchers(HttpMethod.GET, "/professeurs/**").hasRole("PROF")
-                        .requestMatchers(HttpMethod.GET, "/professeurs/*/affectations").hasRole("PROF")
                         .requestMatchers(HttpMethod.GET, "/profile/**").hasAnyRole("SS", "ADMIN", "SP", "PROF")
                         .requestMatchers(HttpMethod.GET, "/cahiers/**").hasAnyRole("SS", "SP", "PROF")
                         .requestMatchers("/cahiers/**").hasRole("PROF")
                         .anyRequest().authenticated()
+
                 )
                 .formLogin(form -> form
                         .loginPage("/auth/login")
@@ -78,8 +82,8 @@ public class SecurityConfig {
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")
                 )
-                .exceptionHandling(e -> e.accessDeniedHandler(accessDeniedHandler))
-        ;
+                .exceptionHandling(e -> e.accessDeniedHandler(accessDeniedHandler));
+
         return http.build();
     }
 }

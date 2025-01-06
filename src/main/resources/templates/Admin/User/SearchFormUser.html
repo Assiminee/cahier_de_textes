@@ -1,0 +1,27 @@
+<form th:action="@{/users}" method="GET" class="px-7 pt-4 pr-8 flex gap-4 w-full items-center" id="filterForm">
+  <div class="flex border border-gray-300 rounded-md shadow-sm">
+    <input type="text" name="nomComplet" placeholder="Chercher par Nom ou prénom" th:value="${nomComplet}"
+           class="block w-1/2 rounded-l-md py-2 px-3 text-sm placeholder-gray-400 focus:ring-indigo-500 focus:border-indigo-500"/>
+
+    <input type="text" name="email" placeholder="Chercher par e-mail" th:value="${email}"
+           class="block w-1/2 rounded-r-md py-2 px-3 text-sm placeholder-gray-400 focus:ring-indigo-500 focus:border-indigo-500"/>
+  </div>
+
+  <div class="flex flex-col ml-auto">
+    <select name="role" id="role"
+            class="pr-6 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600">
+      <option value="" th:selected="${role == null}">Tous les roles</option>
+      <option th:value="ROLE_SP" th:selected="${role == 'ROLE_SP'}">Service Pédagogique</option>
+      <option th:value="ROLE_ADMIN" th:selected="${role == 'ROLE_ADMIN'}">Administrateurs</option>
+      <option th:value="ROLE_SS" th:selected="${role == 'ROLE_SS'}">Service De Scolarité</option>
+    </select>
+  </div>
+
+  <button type="submit" class="px-2 hover:opacity-80">
+    <img src="/public/seach.png" alt="Rechercher" class="h-6 w-6">
+  </button>
+
+  <button type="button" class="px-2 hover:opacity-80" id="reset_button">
+    <img src="/public/reset.png" alt="reset" class="h-6 w-6">
+  </button>
+</form>

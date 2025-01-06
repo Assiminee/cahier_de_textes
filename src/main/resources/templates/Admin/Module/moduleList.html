@@ -1,0 +1,63 @@
+<div th:fragment="moduleList" class="px-7 pt-5 overflow-auto">
+    <table class="w-full border-collapse border border-gray-200 shadow-sm rounded-lg overflow-hidden">
+        <thead class="bg-[#b10c74] text-white">
+        <tr>
+            <th class="p-4 text-left"></th>
+            <th class="p-4 text-left">Intitulé</th>
+            <th class="p-4 text-left">Enseignant Responsable</th>
+            <th class="p-4 text-left">Nombre d'heures</th>
+            <th class="p-4 text-left">Mode d'Évaluation</th>
+            <th class="p-4 text-center">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- Show message if the list is empty -->
+        <tr th:if="${#lists.isEmpty(modules)}">
+            <td colspan="5" class="text-center p-4 text-gray-500">
+                Aucun module trouvé
+            </td>
+        </tr>
+        <!-- Loop through each module -->
+        <tr th:each="module, iterStat : ${modules}" th:with="resp = ${module.getResponsable()}" class="bg-gray-100 hover:bg-gray-200 transition-all">
+            <td class="p-4 text-left">
+                <button th:id="|view-${iterStat}|" class="hover:opacity-80 viewBtns" type="button"
+                        data-modal-target="moduleModal" data-modal-toggle="moduleModal"
+                        th:data-id="${module.id}"
+                        th:data-intitule="${module.intitule}"
+                        th:data-responsable="${resp== null ? '' : resp.id}"
+                        th:data-nombreHeures="${module.nombre_heures}"
+                        th:data-modeEvaluation="${module.modeEvaluation}"
+                 >
+                    <img src="/public/eye.png" alt="Voir" class="h-6 w-6">
+                </button>
+            <td th:text="${module.intitule}" class="p-4"></td>
+            <td th:text="${module.responsable != null ? module.responsable.nom + ' ' + module.responsable.prenom : 'Pas de prof responsable attribué'}" class="p-4"></td>
+            <td th:text="${module.nombre_heures}" class="p-4"></td>
+            <td class="p-4">
+                <span th:if="${module.modeEvaluation == 'EXAM'}" class="bg-yellow-100 rounded px-2 py-1">Examen Final</span>
+                <span th:if="${module.modeEvaluation == 'PROJECT'}" class="bg-green-100 rounded px-2 py-1">Projet</span>
+            </td>
+            <td class="p-4 flex items-center justify-center gap-3" th:with="resp = ${module.getResponsable()}" >
+                <!-- Edit Button -->
+                <button  th:id="|mod-${iterStat}|" class="hover:opacity-80 modBtns" type="button"
+                        data-modal-target="moduleModal" data-modal-toggle="moduleModal"
+                        th:data-id="${module.id}"
+                        th:data-intitule="${module.intitule}"
+                        th:data-responsable="${resp == null ? '' : resp.id}"
+                        th:data-nombreHeures="${module.nombre_heures}"
+                        th:data-modeEvaluation="${module.modeEvaluation}">
+                    <img src="/public/edit.png" alt="Modifier" class="h-6 w-6">
+                </button>
+
+                <!-- Delete Button -->
+                <button th:id="|delete-${iterStat}|" class="hover:opacity-80 deleteBtns"
+                       data-modal-target="deleteModuleModal" data-modal-toggle="deleteModuleModal"
+                       th:data-id="${module.id}"
+                       th:data-intitule="${module.intitule}">
+                    <img src = "/public/trash.png" alt="Supprimer" class="h-6 w-6">
+                </button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
