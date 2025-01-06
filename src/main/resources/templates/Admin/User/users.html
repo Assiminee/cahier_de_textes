@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head ('Gestion d\'utilisateurs')}"></head>
+<body class="bg-gray-100 font-sans">
+<div class="flex h-screen">
+  <aside th:replace="~{fragments/side_bar :: aside}"></aside>
+  <main class="bg-white rounded-l-lg shadow-lg w-full col-span-11 flex flex-col h-screen">
+    <nav th:replace="~{fragments/nav :: nav}"></nav>
+
+    <section class="px-7 py-6 pr-8  flex justify-between items-center">
+      <h2 class="text-3xl font-medium text-gray-800">Liste des Utilsateurs</h2>
+      <button class="bg-[#313863] text-white py-2 px-6 rounded-lg hover:bg-blue-950 shadow-md cursor-pointer"
+              id="addUserBtn" type="button"
+              data-modal-target="userModal" data-modal-toggle="userModal"
+      >
+        + Ajouter Utilisateur
+      </button>
+      <div th:replace="~{Admin/User/UserModal :: UserModal}"></div>
+      <div th:replace="~{Admin/User/DeleteUserModal :: deleteUserModal}"></div>
+    </section>
+
+    <div th:replace="~{Admin/User/ErrorHandelingUsers.html:: div}">
+    </div>
+    <form th:replace="~{Admin/User/SearchFormUser :: form}"></form>
+    <div th:replace="~{Admin/User/UsersList.html:: div}"></div>
+    <div th:replace="~{Admin/User/UserPagination :: div}"></div>
+  </main>
+</div>
+<script type="module">
+  import { addUser, modifyUser,viewUserInfo, deleteUser } from '/public/js/users/addUser.js'
+
+  addUser();
+  modifyUser();
+  viewUserInfo();
+  deleteUser();
+    $("#reset_button").click(function () {
+    $('input').val('');
+    $('select').val('');
+    $('#filterForm').submit();
+  });
+</script>
+</body>
+</html>

@@ -2,68 +2,91 @@ package upf.pjt.cahier_de_textes.services;
 
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import upf.pjt.cahier_de_textes.dao.dtos.CustomUserDetails;
 import upf.pjt.cahier_de_textes.dao.entities.Module;
 import upf.pjt.cahier_de_textes.dao.repositories.*;
-import upf.pjt.cahier_de_textes.dao.dtos.UserDTO;
+import upf.pjt.cahier_de_textes.dao.dtos.EditUserDTO;
 import upf.pjt.cahier_de_textes.dao.entities.User;
 import upf.pjt.cahier_de_textes.dao.entities.Professeur;
-
-import java.util.Arrays;
 import java.util.UUID;
 
 @Service
 public class UserService {
     private final UserRepository userRepository;
-    private final ProfesseurRepository professorRepository;
-    private final ModuleRepository moduleRepository;
-    private final FiliereRepository filiereRepository;
-
+    private final RoleRepository roleRepository;
+    private ProfesseurRepository professorRepository;;
+    private AffectationRepository affectationRepository;
+    private QualificationRepository qualificationRepository;
+    private  ModuleRepository moduleRepository;
+    private  FiliereRepository filiereRepository;
     @Getter
-    private final PasswordEncoder encoder;
+    private PasswordEncoder encoder;
 
     @Autowired
     public UserService(
             UserRepository userRepository,
             FiliereRepository filiereRepository,
+            RoleRepository roleRepository,
             ProfesseurRepository professorRepository,
+            AffectationRepository affectationRepository,
+            QualificationRepository qualificationRepository,
             ModuleRepository moduleRepository,
             PasswordEncoder encoder
     ) {
         this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
         this.professorRepository = professorRepository;
+        this.qualificationRepository = qualificationRepository;
+        this.affectationRepository = affectationRepository;
         this.moduleRepository = moduleRepository;
         this.filiereRepository = filiereRepository;
         this.encoder = encoder;
     }
 
-    public boolean hasUniqueAttributes(UUID id, UserDTO user, RedirectAttributes redirectAttributes) {
+    private boolean hasDuplicateEmail(User user, String email) {
+        if (user.getEmail().equals(email))
+            return false;
 
-        boolean emailExists = userRepository.existsByIdIsNotAndEmail(id, user.getEmail());
-        boolean cinExists = userRepository.existsByIdIsNotAndCin(id, user.getCin());
-        boolean telephoneExists = userRepository.existsByIdIsNotAndTelephone(id, user.getTelephone());
-        boolean hasDuplicateData = emailExists || cinExists || telephoneExists;
+        return userRepository.existsByEmail(email);
+    }
 
-        redirectAttributes.addFlashAttribute("error", hasDuplicateData);
-        if (emailExists)
-            redirectAttributes.addFlashAttribute("email", user.getEmail());
+    private boolean hasDuplicateCin(User user, String cin) {
+        if (user.getCin().equals(cin))
+            return false;
 
-        if (telephoneExists)
-            redirectAttributes.addFlashAttribute("telephone", user.getTelephone());
+        return userRepository.existsByCin(cin);
+    }
 
-        if (cinExists)
-            redirectAttributes.addFlashAttribute("cin", user.getCin());
+    private boolean hasDuplicateTelephone(User user, String telephone) {
+        if (user.getTelephone().equals(telephone))
+            return false;
 
-        if (!hasDuplicateData)
-            redirectAttributes.addFlashAttribute("success", true);
+        return userRepository.existsByTelephone(telephone);
+    }
 
-        return !hasDuplicateData;
+    public boolean hasUniqueAttributes(User user, EditUserDTO incomingUser, RedirectAttributes redirectAttributes) {
+
+        boolean emailExists = hasDuplicateEmail(user, incomingUser.getEmail());
+        boolean cinExists = hasDuplicateCin(user, incomingUser.getCin());
+        boolean telephoneExists = hasDuplicateTelephone(user, incomingUser.getTelephone());
+
+        if (emailExists || telephoneExists || cinExists) {
+            redirectAttributes.addFlashAttribute("error", true);
+            if (emailExists)
+                redirectAttributes.addFlashAttribute("email", incomingUser.getEmail());
+
+            if (telephoneExists)
+                redirectAttributes.addFlashAttribute("telephone", incomingUser.getTelephone());
+
+            if (cinExists)
+                redirectAttributes.addFlashAttribute("cin", incomingUser.getCin());
+
+            return false;
+        }
+        return true;
     }
 
     @Transactional
@@ -102,20 +125,5 @@ public class UserService {
         return encoder.matches(incomingPassword, currentPassword);
     }
 
-    public static UserDTO getAuthenticatedUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if (!(authentication.getPrincipal() instanceof CustomUserDetails userDetails))
-            return null;
-
-        User loggedUser = userDetails.getUser();
-
-        if (loggedUser == null)
-            return null;
-
-        UserDTO userDTO = new UserDTO();
-        userDTO.setUserDTODetails(loggedUser);
-
-        return userDTO;
-    }
 }
