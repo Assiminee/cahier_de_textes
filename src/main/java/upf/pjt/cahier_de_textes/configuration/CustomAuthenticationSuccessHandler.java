@@ -7,7 +7,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 import upf.pjt.cahier_de_textes.dao.entities.enumerations.RoleEnum;
-
 import java.io.IOException;
 
 @Component

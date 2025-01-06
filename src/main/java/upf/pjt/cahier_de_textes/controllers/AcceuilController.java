@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import upf.pjt.cahier_de_textes.dao.dtos.CustomUserDetails;
 import upf.pjt.cahier_de_textes.dao.entities.User;
 
-
 @Controller
 @RequestMapping("/acceuil")
 public class AcceuilController {

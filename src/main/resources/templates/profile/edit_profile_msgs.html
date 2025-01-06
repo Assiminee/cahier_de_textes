@@ -24,3 +24,11 @@
     </p>
   </div>
 </div>
+
+<div th:fragment="edit_profile_success" th:if="${success != null}" th:class="${success ? 'p-4 mt-2 text-sm text-[#52b963] rounded-lg bg-[#71ff88]' : 'p-4 mt-2 text-sm text-red-800 rounded-lg bg-[#ffdbdc]'}"
+     role="alert">
+  <div>
+    <p th:if="${success}">Vos données ont été modifiées avec succès</p>
+    <p th:unless="${success}">Une erreur s'est produite lors de la modification.<br/>Veuillez réessayer plus tard.</p>
+  </div>
+</div>

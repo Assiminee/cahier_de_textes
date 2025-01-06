@@ -13,18 +13,24 @@ import java.util.UUID;
 
 @Repository
 public interface ModuleRepository extends  JpaRepository<Module, UUID> {
-    @Query("SELECT m FROM Module m WHERE " +
-            "(:intitule IS NULL OR LOWER(m.intitule) LIKE LOWER(CONCAT('%', :intitule, '%'))) AND " +
-            "(:responsable IS NULL OR LOWER(m.responsable.nom) LIKE LOWER(CONCAT('%', :responsable, '%'))) AND " +
+    String findModuleIntituleById(UUID id);
+
+    @Query("SELECT m FROM Module m " +
+            "LEFT JOIN m.responsable r WHERE " +
+            "(:intitule = '' OR LOWER(m.intitule) LIKE LOWER(CONCAT('%', :intitule, '%'))) AND " +
+            "(:responsable = '' OR CONCAT(r.nom, ' ', r.prenom) LIKE LOWER(CONCAT('%', :responsable, '%'))) AND " +
             "(:modeEvaluation IS NULL OR m.modeEvaluation = :modeEvaluation) AND " +
             "(:min IS NULL OR m.nombre_heures >= :min) AND " +
-            "(:max IS NULL OR m.nombre_heures <= :max)")
-    Page<Module> filterModules(@Param("intitule") String intitule,
-                               @Param("responsable") String responsable,
-                               @Param("modeEvaluation") ModeEval modeEvaluation,
-                               @Param("min") Integer min,
-                               @Param("max") Integer max,
-                               Pageable pageable);
+            "(:max IS NULL OR m.nombre_heures <= :max)"
+    )
+    Page<Module> filterModules(
+            @Param("intitule") String intitule,
+           @Param("responsable") String responsable,
+           @Param("modeEvaluation") ModeEval modeEvaluation,
+           @Param("min") Integer min,
+           @Param("max") Integer max,
+           Pageable pageable
+    );
 
     boolean existsByIntituleIgnoreCase(@NotBlank String intitule);
 }

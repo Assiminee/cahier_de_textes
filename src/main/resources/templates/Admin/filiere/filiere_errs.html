@@ -1,0 +1,23 @@
+<div th:fragment="filieres_errs" sec:authorize="hasRole('ROLE_ADMIN')" th:if="${post != null || delete != null || put != null}"
+     th:class="${error ? 'p-4 mt-2 text-sm rounded-lg text-red-800 bg-[#ffdbdc]' : 'p-4 mt-2 text-sm rounded-lg text-[#70b26a] bg-[#ebf8a4]'} "
+     role="alert">
+    <div th:if="${duplicateIntitule != null}">
+        <p>
+            L'intitulé <span class="font-bold" th:text="|'${duplicateIntitule}'|"></span>
+            ne peut pas être utilisé pour deux filières differentes
+        </p>
+    </div>
+    <div th:if="${duplicateCoordinateur != null}">
+        <p>
+            Le professeur <span class="font-bold" th:text="|'${duplicateCoordinator}'|"></span>
+            déjà coordinateur d'une autre filière
+        </p>
+    </div>
+    <div th:if="${msg != null}">
+        <p th:unless="${error}"> La filière
+            <span class="font-bold" th:text="|'${msg}'|"></span> a été
+            <span th:text="${delete != null ? 'supprimée' : (put != null ? 'modifiée' : 'ajoutée')}"></span> avec succès
+        </p>
+        <p th:if="${error}" class="font-bold" th:text="${msg}"></p>
+    </div>
+</div>

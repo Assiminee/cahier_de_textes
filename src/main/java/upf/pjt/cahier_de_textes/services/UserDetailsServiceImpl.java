@@ -1,6 +1,9 @@
 package upf.pjt.cahier_de_textes.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -30,5 +33,27 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             throw new UsernameNotFoundException(username);
 
         return new CustomUserDetails(user);
+    }
+
+    /*
+     * Purpose of this method: after the authenticated user's data changes
+     * the data in the SecurityContextHolder doesn't get updated.
+     */
+    public static void updateCustomUserDetails(User updatedUser) {
+        // Rebuild the custom user details from the updated user
+        CustomUserDetails updatedDetails = new CustomUserDetails(updatedUser);
+
+        Authentication oldAuth = SecurityContextHolder.getContext().getAuthentication();
+
+        // Create new authentication with updated principal
+        UsernamePasswordAuthenticationToken newAuth =
+            new UsernamePasswordAuthenticationToken(
+                    updatedDetails,
+                    oldAuth.getCredentials(),
+                    oldAuth.getAuthorities()
+            );
+
+        // Update the SecurityContext
+        SecurityContextHolder.getContext().setAuthentication(newAuth);
     }
 }

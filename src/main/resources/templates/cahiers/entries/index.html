@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head th:replace="~{fragments/head :: head ('Gestion des Affectations')}"></head>
+<body class="bg-gray-100 h-screen">
+
+<div class="flex h-screen" th:with="role = ${#authentication.getAuthorities()}">
+
+    <aside th:replace="~{fragments/side_bar :: aside}"></aside>
+    <main class="bg-white rounded-l-lg shadow-lg w-full col-span-11 flex flex-col h-screen">
+        <nav th:replace="~{fragments/nav :: nav}"></nav>
+        <div class="flex-1 overflow-y-auto " id="THISISDADIV">
+            <section class="p-6 overflow-auto">
+                <div th:replace="~{cahiers/entry_fragments/general_information :: div}"></div>
+                <div class="flex pb-5"
+                     th:classappend="${role[0].getAuthority().equals('ROLE_PROF') ? 'justify-between' : 'justify-center'}"
+                >
+                    <h1 class="text-4xl font-semibold pt-5 text-[#B10C74]"
+                        th:text="|Cahier de Textes - ${cahier.filiere} - ${cahier.createdAt.getYear()}|"></h1>
+                    <a sec:authorize="hasRole('PROF')" th:href="@{|/cahiers/${cahier.id}/new_entry|}"
+                            class="bg-[#313863] hover:bg-[#5663af] text-white font-bold mt-5 py-3 px-6 h-1/2  rounded">
+                        + Ajouter une entrée
+                    </a>
+                </div>
+                <table th:replace="~{cahiers/entries/entry_table :: table}"></table>
+                <div th:replace="~{cahiers/entries/entry_pagination :: div}"></div>
+            </section>
+        </div>
+    </main>
+</div>
+</body>
+</html>

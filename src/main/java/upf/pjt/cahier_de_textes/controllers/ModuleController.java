@@ -9,16 +9,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import upf.pjt.cahier_de_textes.dao.entities.*;
+import upf.pjt.cahier_de_textes.dao.entities.Module;
 import upf.pjt.cahier_de_textes.dao.repositories.ModuleRepository;
 import upf.pjt.cahier_de_textes.dao.repositories.ProfesseurRepository;
-import upf.pjt.cahier_de_textes.dao.entities.Module;
-import upf.pjt.cahier_de_textes.dao.entities.Professeur;
-import upf.pjt.cahier_de_textes.dao.entities.User;
 import upf.pjt.cahier_de_textes.dao.entities.enumerations.ModeEval;
 import upf.pjt.cahier_de_textes.utils.AuthUtils;
 import java.util.List;
 import java.util.UUID;
-
 
 @Controller
 @RequestMapping(name = "Module management endpoints", path = "/modules")
@@ -34,15 +32,20 @@ public class ModuleController {
     ) {
         this.moduleRepository = moduleRepository;
         this.professorRepository = professorRepository;
-    }@GetMapping()
+    }
+
+    @GetMapping()
     public String showModules(
-            @RequestParam(required = false) String intitule, @RequestParam(required = false) String responsable,
-            @RequestParam(required = false) String modeEvaluation,
+            @RequestParam(required = false, defaultValue = "") String intitule,
+            @RequestParam(required = false, defaultValue = "") String responsable,
+            @RequestParam(required = false, defaultValue = "") String modeEvaluation,
             @RequestParam(required = false) Integer min,
             @RequestParam(required = false) Integer max,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            Model model) {
+            Model model
+    )
+    {
         try {
             User currentUser = AuthUtils.getAuthenticatedUser();
             model.addAttribute("user", currentUser);
@@ -130,6 +133,7 @@ public class ModuleController {
         }
         return "redirect:/modules";
     }
+
     @GetMapping("/{id}")
     public String showEditModule(@PathVariable UUID id, Model model) {
         Module module = moduleRepository.findById(id)
@@ -141,6 +145,7 @@ public class ModuleController {
         model.addAttribute("professors", professors);
         return "Admin/Module/module";
     }
+
     @PutMapping("/{id}")
     public String editModule(
             @PathVariable UUID id,
@@ -150,15 +155,25 @@ public class ModuleController {
             @RequestParam ModeEval modeEvaluation,
             RedirectAttributes redirectAttributes) {
         try {
-            Module existingModule = moduleRepository.findById(id)
-                    .orElseThrow(() -> new IllegalArgumentException("Module not found"));
+            Module existingModule = moduleRepository.findById(id).orElse(null);
+
+            if (existingModule == null)
+                return "redirect:/error/404";
 
             existingModule.setIntitule(intitule);
             existingModule.setNombre_heures(nombre_heures);
             existingModule.setModeEvaluation(modeEvaluation);
+
             if (responsable != null) {
                 existingModule.setResponsable(professorRepository.findById(responsable)
                         .orElseThrow(() -> new IllegalArgumentException("Responsable not found")));
+            }
+
+            for (Affectation aff : existingModule.getAffectations()) {
+                Cahier cahier = aff.getCahier();
+
+                if (cahier != null)
+                    cahier.setModule(existingModule.getIntitule());
             }
 
             moduleRepository.save(existingModule);

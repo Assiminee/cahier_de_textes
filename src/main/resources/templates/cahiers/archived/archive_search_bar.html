@@ -1,0 +1,64 @@
+<form th:fragment="archive_search_bar" method="GET" class="flex justify-between gap-4 w-full">
+  <div class="flex rounded-md shadow-sm">
+    <label for="fil" class="flex-1 block mb-2 font-medium">Filière
+      <input
+              type="text"
+              name="filiere"
+              id="fil"
+              th:value="${filiere}"
+              placeholder="Chercher par Filière"
+              class="block w-full rounded-l-md py-2 px-3 text-sm placeholder-gray-400 focus:ring-indigo-500 focus:border-indigo-500"
+      />
+    </label>
+    <label for="mod" class="flex-1 block mb-2 font-medium">Module
+      <input
+              type="text"
+              name="module"
+              id="mod"
+              th:value="${module}"
+              placeholder="Chercher par Module"
+              class="block w-full py-2 px-3 text-sm placeholder-gray-400 focus:ring-indigo-500 focus:border-indigo-500"
+      />
+    </label>
+    <label for="prof" class="flex-1 block mb-2 font-medium">Professeur
+      <input
+              type="text"
+              name="professeur"
+              id="prof"
+              th:value="${professeur}"
+              placeholder="Chercher par Professeur"
+              class="block w-full py-2 px-3 text-sm placeholder-gray-400 focus:ring-indigo-500 focus:border-indigo-500"
+      />
+    </label>
+    <label for="niveau" class="flex-1 block mb-2 font-medium">Niveau
+      <input
+              type="number"
+              name="niveau"
+              id="niveau"
+              th:value="${niveau}"
+              class="block w-full py-2 px-3 text-sm placeholder-gray-400 focus:ring-indigo-500 focus:border-indigo-500"
+      />
+    </label>
+    <label for="semestre" class="flex-1 block mb-2 font-medium">Semestre
+      <input
+              type="number"
+              name="semestre"
+              id="semestre"
+              th:value="${semestre}"
+              class="block w-full py-2 px-3 text-sm placeholder-gray-400 focus:ring-indigo-500 focus:border-indigo-500"
+      />
+    </label>
+    <label for="annee" class="flex-1 block mb-2 font-medium">Annee
+      <input
+              type="number"
+              name="annee"
+              id="annee"
+              th:value="${annee}"
+              class="block w-full py-2 rounded-r-md px-3 text-sm placeholder-gray-400 focus:ring-indigo-500 focus:border-indigo-500"
+      />
+    </label>
+  </div>
+  <button type="submit" class="pt-4 pl-2 hover:opacity-80">
+    <img src="/public/seach.png" alt="Rechercher" class="h-6 w-6">
+  </button>
+</form>

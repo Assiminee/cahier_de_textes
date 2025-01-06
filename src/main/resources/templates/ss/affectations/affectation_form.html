@@ -1,0 +1,90 @@
+<div th:fragment="affectation_form"
+      id="affectationForm"
+      class="row-span-6 overflow-y-auto"
+
+>
+    <div th:replace="~{ss/affectations/delete_affectation_modal :: div}"></div>
+    <!-- Modules et Professeurs -->
+    <div class="grid grid-cols-2 w-full">
+        <form th:each="i : ${#numbers.sequence(1, 8)}"
+             class="mx-16 my-5 p-5 flex flex-col gap-2 border border-[#bfbbb6] rounded-lg bg-[#f2eee7] affForms hidden"
+             th:id="|affForm-${i}|"
+        >
+            <input type="hidden" class="niveauInputs" value="" name="niveau">
+            <input type="hidden" class="semestreInputs" value="" name="semestre">
+            <div class="flex flex-col gap-5 justify-center">
+                <div class="flex-1/3">
+                    <label th:for="|module-${i}|"
+                           class="block mb-2 font-medium moduleSelects">Module</label>
+                    <select th:id="|module-${i}|" name="module" disabled
+                            class="w-full p-3 rounded bg-gray-300 border border-gray-500 text-gray-700">
+                        <option value="" selected>Selectionner un Module</option>
+                        <option th:each="module : ${modules}"
+                                th:value="${module.getId()}"
+                                th:text="${module.getIntitule()}"
+                        >
+                        </option>
+                    </select>
+                </div>
+                <div class="flex-1/6">
+                    <label th:for="|prof-${i}|"
+                           class="block mb-2 font-medium profSelects">Professeur</label>
+                    <select th:id="|prof-${i}|" name="professeur" disabled
+                            class="w-full p-3 rounded bg-gray-300 border border-gray-500 text-gray-700">
+                        <option value="" selected>Selectionner un Professeur</option>
+                        <option th:each="prof : ${profs}"
+                                th:value="${prof.getId()}"
+                                th:text="${prof.getFullName()}">
+                        </option>
+                    </select>
+                </div>
+                <div class="flex-1/6">
+                    <label th:for="|jour-${i}|"
+                           class="block mb-2 font-medium jourSelect">Jour</label>
+                    <select th:id="|jour-${i}|" name="jour" disabled
+                            class="w-full p-3 rounded bg-gray-300 border border-gray-500 text-gray-700">
+                        <option value="" selected>Selectionner un jour</option>
+                        <option value="LUN">Lundi</option>
+                        <option value="MAR">Mardi</option>
+                        <option value="MER">Mercredi</option>
+                        <option value="JEU">Jeudi</option>
+                        <option value="VEN">Vendredi</option>
+                        <option value="SAM">Samedi</option>
+                    </select>
+                </div>
+                <div class="flex gap-5 justify-center">
+                    <div class="flex-1/6">
+                        <label th:for="|start-${i}|"
+                               class="block mb-2 font-medium jourSelect">Heure de début</label>
+                        <select th:id="|start-${i}|" name="heureDebut" disabled
+                                class="w-full p-3 rounded bg-gray-300 border border-gray-500 text-gray-700">
+                            <option value="" selected>Début de la séance</option>
+                            <option value="8">08 : 00</option>
+                            <option value="14">14 : 00</option>
+                        </select>
+                    </div>
+                    <div class="flex-1/6">
+                        <label th:for="|end-${i}|"
+                               class="block mb-2 font-medium jourSelect">Fin de séance</label>
+                        <input th:id="|end-${i}|" type="text" name="heureFin" placeholder="Fin de la séance" readonly
+                               class="w-full p-3 rounded bg-gray-300 border border-gray-500 text-gray-700"
+                        />
+                    </div>
+                    <button class="bg-transparent self-end mb-2 saveButtons hidden"
+                            type="submit" th:id="|save-${i}|">
+                        <img src="/public/save.png" class="w-10 h-8">
+                    </button>
+                    <button class="bg-transparent self-end mb-2 modifyBtns"
+                            type="button" th:id="|modify-${i}|">
+                        <img src="/public/modifier.png" class="w-10 h-8">
+                    </button>
+                    <button class="bg-transparent self-end mb-2 removeBtns"
+                            type="button" th:id="|remove-${i}|" data-modal-toggle="deleteAffectationModal" data-modal-target="deleteAffectationModal" >
+                        <img src="/public/minus.png" class="w-10 h-8">
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<!-- Modal footer -->

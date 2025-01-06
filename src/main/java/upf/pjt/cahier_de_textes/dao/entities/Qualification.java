@@ -13,7 +13,6 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
-@ToString
 @NoArgsConstructor
 @Getter
 @Setter
@@ -42,5 +41,14 @@ public class Qualification {
     @JoinColumn(name = "prof")
     @JsonBackReference
     private Professeur prof;
-    
+
+    @Override
+    public String toString() {
+        return "Qualification{" +
+                "id=" + id +
+                ", intitule='" + intitule + '\'' +
+                ", dateObtention=" + dateObtention +
+                ", prof=" + prof.getFullName() +
+                '}';
+    }
 }

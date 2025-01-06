@@ -58,17 +58,17 @@ public class UserRegistrationDto {
     private String role;
 
     public UserRegistrationDto(
-     String nom
-    , String prenom
-    , String telephone
-    , String email
-    , LocalDate dateNaissance
-    , String adresse
-    , Genre genre
-    , String cin
-    , String password
-    , String confirmPassword
-    , String role) {
+            String nom
+            , String prenom
+            , String telephone
+            , String email
+            , LocalDate dateNaissance
+            , String adresse
+            , Genre genre
+            , String cin
+            , String password
+            , String confirmPassword
+            , String role) {
         this.nom = nom;
         this.prenom = prenom;
         this.telephone = telephone;
@@ -81,6 +81,7 @@ public class UserRegistrationDto {
         this.confirmPassword = confirmPassword;
         this.role = role;
     }
+
     public void RegisterUser(User user) {
         user.setNom(nom);
         user.setPrenom(prenom);
@@ -90,25 +91,6 @@ public class UserRegistrationDto {
         user.setTelephone(telephone);
         user.setEmail(email);
         user.setDateNaissance(dateNaissance);
-    /*    user.setRole();*/
-
     }
-
-
-
-  /*  @NotNull(message = "Grade is required", groups = ProfessorValidationGroup.class)
-    private Grade grade;
-
-    @NotNull(message = "Date Dernier Diplôme is required for professors", groups = ProfessorValidationGroup.class)
-    private LocalDate dateDernierDiplome;
-
-    @NotNull(message = "Date d'Embauche is required for professors", groups = ProfessorValidationGroup.class)
-    private LocalDate dateEmbauche;
-
-    // Prof-specific qualifications
-    private List<QualificationDto> qualifications;
-
-    @Null(message = "ID should be null", groups = CommonValidationGroup.class)
-    private UUID id;*/
 
 }

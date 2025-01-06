@@ -1,0 +1,35 @@
+<div th:fragment="affectation_pagination"
+     class="py-6 pagination-container"
+     th:with="page = ${affs.getPageable().getPageNumber()}, pages = ${affs.getTotalPages()}"
+>
+  <ul th:if="${pages > 1}" class="pagination flex justify-center gap-4">
+    <!-- Previous Page -->
+    <li th:if="${page > 0}">
+      <a sec:authorize="hasAnyRole('SS', 'SP')" th:href="@{/affectations(page=${page - 1}, filiere=${filiere}, module=${module}, professeur=${professeur}, jour=${jour}, heure=${heure})}"
+         class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">Précédent</a>
+
+      <a sec:authorize="hasRole('PROF')" th:with="url = ${'/professeurs/' + user.getId() + '/affectations'}"
+         th:href="@{${url}(page=${page - 1}, filiere=${filiere}, module=${module}, jour=${jour}, heure=${heure})}"
+         class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">Précédent</a>
+    </li>
+    <li th:each="i : ${#numbers.sequence(1, pages)}">
+      <a sec:authorize="hasAnyRole('SS', 'SP')" th:href="@{/affectations(page=${i - 1}, filiere=${filiere}, module=${module}, professeur=${professeur}, jour=${jour}, heure=${heure})}"
+         class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+         th:classappend="${(i - 1) == page ? 'font-bold text-[#B10C74]' : ''}"
+         th:text="${i}"></a>
+
+      <a sec:authorize="hasRole('PROF')" th:with="url = ${'/professeurs/' + user.getId() + '/affectations'}"
+         th:href="@{${url}(page=${page - 1}, filiere=${filiere}, module=${module}, jour=${jour}, heure=${heure})}"
+         th:classappend="${(i - 1) == page ? 'font-bold text-[#B10C74]' : ''}"
+         th:text="${i}"></a>
+    </li>
+    <li th:if="${page < pages - 1}">
+      <a sec:authorize="hasAnyRole('SS', 'SP')" th:href="@{/affectations(page=${page + 1}, filiere=${filiere}, module=${module}, professeur=${professeur}, jour=${jour}, heure=${heure})}"
+         class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">Suivant</a>
+
+      <a sec:authorize="hasRole('PROF')" th:with="url = ${'/professeurs/' + user.getId() + '/affectations'}"
+         th:href="@{${url}(page=${page + 1}, filiere=${filiere}, module=${module}, jour=${jour}, heure=${heure})}"
+         class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">Suivant</a>
+    </li>
+  </ul>
+</div>

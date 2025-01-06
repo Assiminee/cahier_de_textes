@@ -1,30 +1,32 @@
 package upf.pjt.cahier_de_textes.controllers;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import upf.pjt.cahier_de_textes.dao.dtos.UserDTO;
+import upf.pjt.cahier_de_textes.dao.dtos.filiere.AffectationDTO;
+import upf.pjt.cahier_de_textes.dao.entities.*;
+import upf.pjt.cahier_de_textes.dao.entities.Module;
+import upf.pjt.cahier_de_textes.dao.repositories.ProfesseurRepository;
+import upf.pjt.cahier_de_textes.services.AffectationService;
+import upf.pjt.cahier_de_textes.services.UserService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import upf.pjt.cahier_de_textes.dao.dtos.CustomUserDetails;
 import upf.pjt.cahier_de_textes.dao.dtos.ProfEditDto;
-import upf.pjt.cahier_de_textes.dao.entities.Professeur;
-import upf.pjt.cahier_de_textes.dao.entities.Qualification;
-import upf.pjt.cahier_de_textes.dao.entities.Role;
-import upf.pjt.cahier_de_textes.dao.entities.User;
-import upf.pjt.cahier_de_textes.dao.entities.Module;
 import upf.pjt.cahier_de_textes.dao.entities.enumerations.Genre;
 import upf.pjt.cahier_de_textes.dao.entities.enumerations.Grade;
 import upf.pjt.cahier_de_textes.dao.entities.enumerations.RoleEnum;
@@ -35,46 +37,61 @@ import java.util.UUID;
 
 @Slf4j
 @Controller
-@RequestMapping("/professeur")
+@RequestMapping("/professeurs")
 public class ProfesseurController {
-
-
     private final ProfesseurRepository professeurRepository;
-    private  final RoleRepository roleRepository ;
-    private  final  UserRepository userRepository ;
-    private  final QualificationRepository qualificationRepository ;
-    private final ModuleRepository moduleRepository ;
-    private final FiliereRepository filiereRepository ;
+    private final RoleRepository roleRepository;
+    private final ModuleRepository moduleRepository;
+    private final FiliereRepository filiereRepository;
+    private final AffectationService affectationService;
+    private final int SIZE = 10;
 
-    @Autowired
-    public ProfesseurController(ProfesseurRepository professeurRepository , RoleRepository roleRepository , UserRepository userRepository, QualificationRepository qualificationRepository, ModuleRepository moduleRepository, FiliereRepository filiereRepository) {
+    public ProfesseurController(
+            ProfesseurRepository professeurRepository,
+            RoleRepository roleRepository,
+            ModuleRepository moduleRepository,
+            FiliereRepository filiereRepository, AffectationService affectationService
+    ) {
         this.professeurRepository = professeurRepository;
-        this.userRepository = userRepository;
         this.roleRepository = roleRepository;
-        this.qualificationRepository = qualificationRepository;
         this.moduleRepository = moduleRepository;
         this.filiereRepository = filiereRepository;
+        this.affectationService = affectationService;
     }
 
-    @GetMapping("/qualifications")
-    public String qualifications(HttpServletRequest request, HttpServletResponse response, Model model) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    @GetMapping("/{id}/affectations")
+    public String getProfesseurAffectations(
+            @PathVariable("id") UUID id,
+            Model model,
+            @RequestParam(required = false, defaultValue = "") String filiere,
+            @RequestParam(required = false, defaultValue = "") String module,
+            @RequestParam(required = false, defaultValue = "") String jour,
+            @RequestParam(required = false, defaultValue = "0") int heure,
+            @RequestParam(defaultValue = "0") int page
+    ) {
+        UserDTO user = UserService.getAuthenticatedUser();
 
-        if (auth.getPrincipal() instanceof CustomUserDetails cud) {
-            UUID id = cud.getUser().getId();
-            Professeur prof = professeurRepository.findById(id).orElse(null);
+        if (user == null)
+            return "redirect:/error/401";
 
-            if (prof != null) {
-                model.addAttribute("user", prof);
-                return "Professeur/qualifications";
-            }
-        }
+        if (!user.getId().equals(id))
+            return "redirect:/error/403";
 
-        SecurityContextLogoutHandler logoutHandler = new SecurityContextLogoutHandler();
-        logoutHandler.logout(request, response, auth);
-        return "redirect:/auth/login";
+        Pageable pageable = PageRequest.of(page, SIZE);
+        Page<AffectationDTO> affectations = affectationService
+                .getProfesseurAffectationDTOPage(id, filiere, module, heure, jour, pageable);
+
+        model.addAttribute("user", user);
+        model.addAttribute("affs", affectations);
+        model.addAttribute("filiere", filiere);
+        model.addAttribute("module", module);
+        model.addAttribute("jour", jour);
+        model.addAttribute("heure", heure);
+
+        return "affectations/index";
     }
-    @GetMapping()
+
+    @GetMapping
     public String showProfessors(
             Model model,
             @RequestParam(defaultValue = "0") int page,
@@ -84,15 +101,15 @@ public class ProfesseurController {
             @RequestParam(required = false, defaultValue = "") String grade
     ) {
         // Authenticate and set model attributes
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication.getPrincipal() instanceof CustomUserDetails userDetails) {
-            User currentUser = userDetails.getUser();
-            model.addAttribute("user", currentUser); // Add the user to the model
+        UserDTO user = UserService.getAuthenticatedUser();
 
-            model.addAttribute("grades", Grade.values());
-            model.addAttribute("roles", RoleEnum.values());
-            model.addAttribute("genres", Genre.values());
-        }
+        if (user == null)
+            return "redirect:/error/401";
+
+        model.addAttribute("user", user);
+        model.addAttribute("grades", Grade.values());
+        model.addAttribute("roles", RoleEnum.values());
+        model.addAttribute("genres", Genre.values());
 
         // Parse grade if provided
         Grade parsedGrade = grade.isBlank() ? null : Grade.valueOf(grade.toUpperCase());
@@ -119,72 +136,74 @@ public class ProfesseurController {
 
         return "Admin/Professeur/professeur";
     }
+
     @PutMapping("/{id}")
     @Transactional
     public String editProf(@PathVariable UUID id,
                            Model model,
                            @Valid ProfEditDto updatedProfDto,
                            RedirectAttributes redirectAttributes) {
+        UserDTO user = UserService.getAuthenticatedUser();
+
+        if (user == null)
+            return "redirect:/error/401";
 
         // 1) Load security context (if needed)
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication.getPrincipal() instanceof CustomUserDetails userDetails) {
-            User currentUser = userDetails.getUser();
-            model.addAttribute("user", currentUser);
-            model.addAttribute("grades", Grade.values());
-            model.addAttribute("roles", RoleEnum.values());
-            model.addAttribute("genres", Genre.values());
-        }
+
+        model.addAttribute("user", user);
+        model.addAttribute("grades", Grade.values());
+        model.addAttribute("roles", RoleEnum.values());
+        model.addAttribute("genres", Genre.values());
 
         // 2) Fetch existing professor
-        Optional<Professeur> existingProfOpt = professeurRepository.findById(id);
-        if (existingProfOpt.isEmpty()) {
-            redirectAttributes.addFlashAttribute("error", "Professeur introuvable.");
-            return "redirect:/professeur";
-        }
-        Professeur existingProf = existingProfOpt.get();
+        Professeur prof = professeurRepository.findById(id).orElse(null);
+
+        if (prof == null)
+            return "redirect:/error/404";
 
         // 3) Check if any other professor already uses this email, CIN, or telephone
         boolean alreadyExists = professeurRepository.existsByEmailOrCinOrTelephone(
                 updatedProfDto.getEmail(),
                 updatedProfDto.getCin(),
                 updatedProfDto.getTelephone(),
-                existingProf.getId() // exclude current prof by ID
+                prof.getId() // exclude current prof by ID
         );
 
         if (alreadyExists) {
             // If so, redirect with an error message
             redirectAttributes.addFlashAttribute("error",
                     "Un professeur avec cet email, CIN ou téléphone existe déjà.");
-            return "redirect:/professeur";
+            return "redirect:/professeurs";
         }
 
         // 4) Everything is okay; update the fields
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        updatedProfDto.updateEntity(existingProf, encoder);
+        updatedProfDto.updateEntity(prof, encoder);
 
         // 5) Save
-        professeurRepository.save(existingProf);
+        professeurRepository.save(prof);
 
         // 6) Success message
         redirectAttributes.addFlashAttribute("success",
                 "Professeur mis à jour avec succès.");
 
-        return "redirect:/professeur";
+        return "redirect:/professeurs";
     }
 
 
     @GetMapping("/viewprof")
     public String viewProf(Model model
     ) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication.getPrincipal() instanceof CustomUserDetails userDetails) {
-            User currentUser = userDetails.getUser();
-            model.addAttribute("user", currentUser); // Add the user to the model
-            model.addAttribute("grades", Grade.values());
-            model.addAttribute("roles", RoleEnum.values());
-            model.addAttribute("genres", Genre.values());
-        }
+        UserDTO user = UserService.getAuthenticatedUser();
+
+        if (user == null)
+            return "redirect:/error/401";
+
+        model.addAttribute("user", user); // Add the user to the model
+        model.addAttribute("grades", Grade.values());
+        model.addAttribute("roles", RoleEnum.values());
+        model.addAttribute("genres", Genre.values());
+
         return "Admin/Professeur/profView";
     }
 
@@ -192,61 +211,56 @@ public class ProfesseurController {
     @DeleteMapping("/{id}")
     @Transactional
     public String deleteProf(@PathVariable UUID id, RedirectAttributes redirectAttributes) {
-        Optional<Professeur> professeurOpt = professeurRepository.findById(id);
+        Professeur prof = professeurRepository.findById(id).orElse(null);
 
-        if (professeurOpt.isEmpty()) {
-            redirectAttributes.addFlashAttribute("actionAttributesExists", true);
-            redirectAttributes.addFlashAttribute("error", "Professeur introuvable.");
-            return "redirect:/professeur";
-        }
+        if (prof == null)
+            return "redirect:/error/404";
 
-        Professeur professeur = professeurOpt.get();
-
-        for (Module module : professeur.getModules()) {
+        for (Module module : prof.getModules()) {
             module.setResponsable(null);
             moduleRepository.save(module);
         }
 
-        if (professeur.getFiliere() != null) {
-            professeur.getFiliere().setCoordinateur(null);
-            filiereRepository.save(professeur.getFiliere());
+        if (prof.getFiliere() != null) {
+            prof.getFiliere().setCoordinateur(null);
+            filiereRepository.save(prof.getFiliere());
         }
 
-        professeurRepository.delete(professeur);
+        for (Affectation aff : prof.getAffectations())
+            affectationService.deleteAffectation(aff);
+
+        professeurRepository.delete(prof);
 
         redirectAttributes.addFlashAttribute("action", true);
-        redirectAttributes.addFlashAttribute("deleted", professeur.getNom() + " " + professeur.getPrenom());
+        redirectAttributes.addFlashAttribute("deleted", prof.getFullName());
 
-        return "redirect:/professeur";
+        return "redirect:/professeurs";
     }
 
- @GetMapping("/{id}")
+    @GetMapping("/{id}")
     public String getProfesseurById(
             @PathVariable UUID id,
             Model model,
-            @RequestParam(name="view", defaultValue="false") boolean view,
+            @RequestParam(name = "view", defaultValue = "false") boolean view,
             RedirectAttributes redirectAttributes
-    ) {
-        Optional<Professeur> professeurOpt = professeurRepository.findById(id);
+    )
+    {
+        UserDTO user = UserService.getAuthenticatedUser();
 
-        if (professeurOpt.isEmpty()) {
-            redirectAttributes.addFlashAttribute("error", "Professeur introuvable.");
-            return "redirect:/professeur";
-        }
+        if (user == null)
+            return "redirect:/error/401";
 
-        Professeur professeur = professeurOpt.get();
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Professeur prof = professeurRepository.findById(id).orElse(null);
 
-        if (authentication.getPrincipal() instanceof CustomUserDetails userDetails) {
-            User currentUser = userDetails.getUser();
-            model.addAttribute("user", currentUser); // Add the user to the model
-        }
+        if (prof == null)
+            return "redirect:/error/404";
 
-        model.addAttribute("professeur", professeur);
+        model.addAttribute("user", user);
+        model.addAttribute("professeur", prof);
         model.addAttribute("grades", Grade.values());
         model.addAttribute("roles", RoleEnum.values());
         model.addAttribute("genres", Genre.values());
-        model.addAttribute("qualifications", professeur.getQualifications());
+        model.addAttribute("qualifications", prof.getQualifications());
         model.addAttribute("view", view);
 
         return "Admin/Professeur/profView"; // Path to the Thymeleaf template
@@ -257,40 +271,41 @@ public class ProfesseurController {
     public String addProfesseur(
             @Valid Professeur professeur,
             RedirectAttributes redirectAttributes
-    ) {
-        if (professeurRepository.existsByEmailOrCinOrTelephone(
-                professeur.getEmail(),
-                professeur.getCin(),
-                professeur.getTelephone(),
-                null)) {
+    )
+    {
+        boolean exists = professeurRepository.existsByEmailOrCinOrTelephone(
+                            professeur.getEmail(),
+                            professeur.getCin(),
+                            professeur.getTelephone(),
+                            null
+                        );
+        if (exists) {
             redirectAttributes.addFlashAttribute("actionAttributesExists", true);
             redirectAttributes.addFlashAttribute("error", "A professor with this email, CIN, or telephone already exists.");
-            return "redirect:/professeur";
+            return "redirect:/professeurs";
         }
 
         try {
             Role role = roleRepository.findByRole(RoleEnum.ROLE_PROF);
             professeur.setRole(role);
 
-
             if (professeur.getQualifications() != null) {
                 for (Qualification qualification : professeur.getQualifications()) {
                     qualification.setProf(professeur); // Associate qualifications with the professor
                 }
             }
+
             BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
             professeur.setPwd(encoder.encode(professeur.getPwd()));
 
             professeurRepository.save(professeur);
 
             redirectAttributes.addFlashAttribute("action", true);
-            redirectAttributes.addFlashAttribute("added", professeur.getNom() + " " + professeur.getPrenom());
+            redirectAttributes.addFlashAttribute("added", professeur.getFullName());
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "An error occurred while adding the professor: " + e.getMessage());
         }
 
-        return "redirect:/professeur";
+        return "redirect:/professeurs";
     }
-
-
 }

@@ -1,5 +1,6 @@
 <aside th:fragment="side_bar"
-       class="w-1/8 hover:w-1/5 group relative w-16 transition-all duration-300 bg-[#F2EEE7] shadow-md flex flex-col justify-between">
+       class="w-1/8 hover:w-1/5 group relative w-16 transition-all duration-300 bg-[#F2EEE7] shadow-md flex flex-col justify-between"
+>
     <div>
         <!-- Logo -->
         <div class="py-4 flex justify-center">
@@ -16,17 +17,14 @@
                     </a>
                 </li>
                 <!-- Admin specific routes -->
-                <li th:if="${user.getRole().getAuthority() == 'ROLE_ADMIN'}">
-
-                <li class="group/home hover:bg-[#B10C74] flex justify-center group-hover:justify-start px-5 py-2 text-gray-700 hover:text-white transition-all duration-100">
-                <img th:src="@{/public/dashboard.png}" alt="Home" class="transition-all duration-100">
-
-                <a th:href="@{/dashboard}">
-
-                        <span class="ml-4 text-sm hidden group-hover:block">Dashboard</span>
-                    </a>
-                </li>
+                <li sec:authorize="hasRole('ADMIN')">
                     <ul class="space-y-4">
+                        <li class="group/dash hover:bg-[#B10C74] flex justify-center group-hover:justify-start px-5 py-2 text-gray-700 hover:text-white transition-all duration-100">
+                            <a th:href="@{/dashboard}" class="flex">
+                                <svg th:replace="~{fragments/icons/dash_icon :: svg}"></svg>
+                                <span class="ml-4 text-sm hidden group-hover:block">Dashboard</span>
+                            </a>
+                        </li>
                         <li class="group/user hover:bg-[#B10C74] flex justify-center group-hover:justify-start px-5 py-2 text-gray-700 hover:text-white transition-all duration-100">
                             <a th:href="@{/users}" class="flex">
                                 <svg th:replace="~{fragments/icons/users_icon :: svg}"></svg>
@@ -34,7 +32,7 @@
                             </a>
                         </li>
                         <li class="group/professor hover:bg-[#B10C74] flex justify-center group-hover:justify-start px-5 py-2 text-gray-700 hover:text-white transition-all duration-100">
-                           <a th:href="@{/professeur}" class="flex">
+                           <a th:href="@{/professeurs}" class="flex">
                             <svg th:replace="~{fragments/icons/professors_icon :: svg}"></svg>
                             <span class="ml-4 text-sm hidden group-hover:block">Professeurs</span>
                            </a>
@@ -45,29 +43,44 @@
                             <span class="ml-4 text-sm hidden group-hover:block">Modules</span>
                             </a>
                         </li>
-                        <li class="group/filiere hover:bg-[#B10C74] flex justify-center group-hover:justify-start px-5 py-2 text-gray-700 hover:text-white transition-all duration-100">
-                            <a th:href="@{/filieres}" class="flex">
-                                <svg th:replace="~{fragments/icons/filiere_icon :: svg}"></svg>
-                                <span class="ml-4 text-sm hidden group-hover:block">Filières</span>
-                            </a>
-                        </li>
-                    </ul>
+                        </ul>
                 </li>
+
+                <!-- Admin and SS specific routes -->
+                <li sec:authorize="hasAnyRole('ADMIN', 'SS')"
+                    class="group/filiere hover:bg-[#B10C74] flex justify-center group-hover:justify-start px-5 py-2 text-gray-700 hover:text-white transition-all duration-100">
+                    <a th:href="@{/filieres}" class="flex">
+                        <svg th:replace="fragments/icons/filiere_icon :: svg"></svg>
+                        <span class="ml-4 text-sm hidden group-hover:block">Filières</span>
+                    </a>
+                </li>
+
+                <!-- SS and SP specific routes -->
+                <li sec:authorize="hasAnyRole('SS', 'SP')"
+                    class="group/affectations hover:bg-[#B10C74] flex justify-center group-hover:justify-start px-5 py-2 text-gray-700 hover:text-white transition-all duration-100">
+                    <a th:href="@{/affectations}" class="flex">
+                        <svg th:replace="fragments/icons/affectation_icon :: svg"></svg>
+                        <span class="ml-4 text-sm hidden group-hover:block">Affectations</span>
+                    </a>
+                </li>
+
+
+                <li sec:authorize="hasAnyRole('SS', 'SP')"
+                    class="group/archive hover:bg-[#B10C74] flex justify-center group-hover:justify-start px-5 py-2 text-gray-700 hover:text-white transition-all duration-100">
+                    <a th:href="@{/cahiers/archive}" class="flex">
+                        <svg th:replace="fragments/icons/archive_icon :: svg"></svg>
+                        <span class="ml-4 text-sm hidden group-hover:block">Archive</span>
+                    </a>
+                </li>
+
                 <!-- Professor specific routes -->
-                <li th:if="${user.getRole().getAuthority() == 'ROLE_PROF'}">
-                    <ul class="space-y-4">
-                        <li class="group/module hover:bg-[#B10C74] flex justify-center group-hover:justify-start px-5 py-2 text-gray-700 hover:text-white transition-all duration-100">
-                            <svg th:replace="~{fragments/icons/module_icon :: svg}"></svg>
-                            <span class="ml-4 text-sm hidden group-hover:block">Mes affectations</span>
-                        </li>
-                        <li class="group/filiere hover:bg-[#B10C74] flex justify-center group-hover:justify-start px-5 py-2 text-gray-700 hover:text-white transition-all duration-100">
-                            <a th:href="@{/professeur/qualifications}" class="flex">
-                                <svg th:replace="~{fragments/icons/filiere_icon :: svg}"></svg>
-                                <span class="ml-4 text-sm hidden group-hover:block">Mes qualifications</span>
-                            </a>
-                        </li>
-                    </ul>
+                <li sec:authorize="hasRole('PROF')" class="group/module hover:bg-[#B10C74] flex justify-center group-hover:justify-start px-5 py-2 text-gray-700 hover:text-white transition-all duration-100">
+                    <a th:href="@{|/professeurs/${user.getId()}/affectations|}" class="flex">
+                        <svg th:replace="fragments/icons/module_icon :: svg"></svg>
+                        <span class="ml-4 text-sm hidden group-hover:block">Mes affectations</span>
+                    </a>
                 </li>
+
             </ul>
         </nav>
     </div>

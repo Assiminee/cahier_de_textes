@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head th:replace="~{fragments/head :: head ('Entrée de cahier de textes')}"></head>
+<body class="bg-gray-100 h-screen">
+
+<div class="flex h-screen">
+    <aside th:replace="fragments/side_bar :: aside"></aside>
+    <main class="bg-white rounded-l-lg shadow-lg w-full col-span-11 flex flex-col h-screen">
+        <nav th:replace="fragments/nav :: nav"></nav>
+        <div class="flex-1 overflow-y-auto " id="THISISDADIV">
+            <section class="px-5 pt-2 border-b border-gray-900">
+                <div th:replace="~{cahiers/entry_fragments/general_information :: div}"></div>
+            </section>
+            <section class="flex pb-5 justify-center">
+                <h1 class="text-4xl font-semibold pt-5 text-[#B10C74]"
+                    th:text="|Entrée de cahier de textes - Filière ${cahier.filiere}|"></h1>
+            </section>
+            <section class="p-12">
+                <form th:action="${formAction}" method="POST" id="entryForm">
+                    <input th:if="${formMethod.equals('PUT')}" type="hidden" name="_method" value="PUT">
+                    <div class="flex flex-col gap-6">
+
+                        <!-- Date and Time -->
+                        <div class="flex justify-between gap-5">
+                            <!-- Date -->
+                            <div class="flex-1 ">
+                                <label for="date" class="block font-semibold text-gray-700">Date</label>
+                                <input type="date" name="date" id="date" required
+                                       th:value="${entry != null ? entry.date : ''}"
+                                       class="w-full mt-1 p-3 border rounded-md" th:readonly="${!enabled}"
+                                       th:classappend="${!enabled ? 'bg-gray-300' : ''}"
+                                >
+                            </div>
+
+                            <!-- Time -->
+                            <div class="flex-1">
+                                <label for="start" class="block font-semibold text-gray-700">Crénaux Horaire</label>
+                                <div class="flex items-center gap-4">
+                                    <input type="time" name="heureDebut" id="start" required
+                                           th:value="${entry != null ? entry.heureDebut : ''}"
+                                           class="w-full mt-1 p-3 border rounded-md" th:readonly="${!enabled}"
+                                           th:classappend="${!enabled ? 'bg-gray-300' : ''}">
+                                    <span>à</span>
+                                    <input type="time" name="heureFin" id="end" required
+                                           th:value="${entry != null ? entry.heureFin : ''}"
+                                           class="w-full mt-1 p-3 border rounded-md" th:readonly="${!enabled}"
+                                           th:classappend="${!enabled ? 'bg-gray-300' : ''}">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Description and Nature -->
+                        <div class="flex justify-between h-40">
+                            <!-- Description -->
+                            <div class="flex-1">
+                                <label for="desc" class="block font-semibold text-gray-700">Description</label>
+                                <textarea name="description" placeholder="Description de la séance" rows="4"
+                                          th:readonly="${!enabled}" th:classappend="${!enabled ? 'bg-gray-300' : ''}"
+                                          class="w-full mt-1 p-3 border rounded-md" id="desc"
+                                          th:text="${entry != null ? entry.description : ''}"
+                                ></textarea>
+                            </div>
+
+                            <!-- Nature -->
+                            <div th:replace="~{cahiers/entry_fragments/nature}"></div>
+                        </div>
+                    </div>
+
+                    <div th:replace="~{cahiers/entry_fragments/filled_objectifs :: div}"></div>
+
+                    <div class="flex justify-center gap-4 mt-6">
+                        <button type="submit" class="bg-[#313863] text-white px-6 py-3 rounded-md hover:bg-[#5663af]"
+                                th:classappend="${!enabled ? 'hidden' : ''}"
+                        >
+                            Enregistrer
+                        </button>
+                        <a th:href="${previous}"
+                           class="bg-[#B10C74] text-white px-6 py-3 rounded-md hover:bg-[#db2777]">
+                            Annuler
+                        </a>
+                    </div>
+                </form>
+            </section>
+        </div>
+    </main>
+</div>
+<script type="module">
+    import {erase, checkboxOnChange} from '/public/js/entry/objectives.js';
+
+    window.erase = erase;
+    window.checkboxOnChange = checkboxOnChange;
+</script>
+</body>
+</html>
