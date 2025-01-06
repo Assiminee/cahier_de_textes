@@ -22,7 +22,6 @@ public class Cahier {
             this.entrees = new ArrayList<>();
     }
 
-
     public Cahier(Affectation affectation) {
         this.archived = false;
 

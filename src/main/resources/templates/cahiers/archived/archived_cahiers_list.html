@@ -1,0 +1,43 @@
+<table th:fragment="filiere_table" class="w-full border-collapse border border-gray-200 shadow-sm rounded-lg overflow-hidden">
+  <thead class="bg-[#b10c74] text-white">
+  <tr>
+    <th class="py-4"></th>
+    <th class="py-4 text-center">Filière</th>
+    <th class="py-4 text-center">Module</th>
+    <th class="py-4 text-center">Professeur</th>
+    <th class="py-4 text-center">Semestre</th>
+    <th sec:authorize="hasRole('SS')" class="py-4"></th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:if="${cahiers == null || cahiers.getNumberOfElements() == 0}"
+      class="text-center justify-center bg-gray-100 hover:bg-gray-200 transition-all"
+  >
+    <td colspan="6" class="p-4 font-medium" th:text="'Aucun cahier à afficher'"></td>
+  </tr>
+  <tr th:if="${cahiers != null}" th:each="cahier : ${cahiers}"
+      th:with="title = |${cahier.filiere} ${cahier.niveau} - ${cahier.createdAt.getYear()}|"
+      class="text-center bg-gray-100 hover:bg-gray-200 transition-all">
+    <td class="p-4 flex justify-center content-center">
+      <a class="hover:opacity-80"
+         th:with="url = ${'/cahiers/' + cahier.id}"
+         th:href="@{${url}}">
+        <img src="/public/eye.png" alt="Voir" class="h-6 w-8">
+      </a>
+    </td>
+    <td class="p-4" th:text="${title}"></td>
+    <td class="p-4" th:text="${cahier.module}"></td>
+    <td class="p-4" th:text="${cahier.professeur}"></td>
+    <td class="p-4" th:text="|Semestre ${cahier.semestre}|"></td>
+    <td class="p-4 flex justify-center content-center">
+      <button type="button"
+              class="hover:opacity-80 cahierDelBtns"
+              data-modal-target="deleteModal"
+              data-modal-toggle="deleteModal" th:data-cahier="${cahier.id}" th:data-title="${title}"
+      >
+        <img src="/public/trash.png" alt="Delete" class="h-6 w-6">
+      </button>
+    </td>
+  </tr>
+  </tbody>
+</table>

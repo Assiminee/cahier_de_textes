@@ -17,6 +17,7 @@ public class ErrorResponse {
     private final String MAX_AFF_PER_PROF = "Un professeur ne peut pas dépasser 3 affectations par niveau et semestre dans une filière";
     private final String INTERNAL_SERVER_ERROR = "Une erreur s'est produite lors de la création, modification, ou suppression de l'affectation. Veuillez réessayer plus tard.";
     private final String AFFECTATION_NOT_FOUND = "L'affectation que vous essayé de modifier ou supprimer n'existe pas";
+    private final String FORBIDDEN_MODIFICATION = "Un cahier de texte est associé a cette affectation. Vous devez supprimer l'affectation et créer une nouvelle";
 
     public void moduleNotFound() {
         this.message = MODULE_NOT_FOUND;
@@ -56,5 +57,10 @@ public class ErrorResponse {
     public void affectationNotFound() {
         this.message = AFFECTATION_NOT_FOUND;
         this.httpStatus = HttpStatus.NOT_FOUND;
+    }
+
+    public void forbiddenModification() {
+        this.message = FORBIDDEN_MODIFICATION;
+        this.httpStatus = HttpStatus.CONFLICT;
     }
 }

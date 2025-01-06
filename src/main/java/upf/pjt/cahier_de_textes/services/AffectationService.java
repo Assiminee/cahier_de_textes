@@ -165,19 +165,16 @@ public class AffectationService {
                 return null;
             }
 
-            Professeur prof = professeurRepository.findById(affDTO.getProfesseur().getId()).orElse(null);
+            Cahier cahier = affectation.getCahier();
+            Professeur prof = getProfesseur(affDTO, affectation, cahier, err);
 
-            if (prof == null) {
-                err.profNotFound();
+            if (prof == null)
                 return null;
-            }
 
-            Module module = moduleRepository.findById(affDTO.getModule().getId()).orElse(null);
+            Module module = getModule(affDTO, affectation, filiere, cahier, err);
 
-            if (module == null) {
-                err.moduleNotFound();
+            if (module == null)
                 return null;
-            }
 
             if (affectation.getProf().getId() != prof.getId()) {
                 if (hoursSurpassed(prof, module)) {
@@ -192,14 +189,6 @@ public class AffectationService {
                 affectation.setProf(prof);
             }
 
-            if (affectation.getModule().getId() != module.getId()) {
-                if (duplicateData(filiere, module, affDTO)) {
-                    err.duplicateAffectation();
-                    return null;
-                }
-                affectation.setModule(module);
-            }
-
             if (affectation.getJour() != affDTO.getJour() || affectation.getHeureDebut() != affDTO.getHeureDebut()) {
                 if (scheduleConflict(filiere, affDTO)) {
                     err.scheduleConflict();
@@ -210,6 +199,10 @@ public class AffectationService {
                 affectation.setHeureFin(affDTO.getHeureFin());
             }
 
+            cahier.setModule(module.getIntitule());
+            cahier.setProfesseur(prof.getFullName());
+            cahierRepository.save(cahier);
+
             affectation = affectationRepository.save(affectation);
         } catch (Exception e) {
             log.error(String.valueOf(e.getCause()));
@@ -219,11 +212,56 @@ public class AffectationService {
         return affectation;
     }
 
+    public Module getModule(AffectationDTO affDTO, Affectation aff, Filiere fil, Cahier cahier, ErrorResponse err) {
+        Module module = moduleRepository.findById(affDTO.getModule().getId()).orElse(null);
+
+        if (module == null) {
+            err.moduleNotFound();
+            return null;
+        }
+
+        if (!module.getId().equals(aff.getModule().getId())) {
+            if (cahier != null && cahier.getEntrees() != null && !cahier.getEntrees().isEmpty()) {
+                err.forbiddenModification();
+                return null;
+            }
+
+            if (duplicateData(fil, module, affDTO)) {
+                err.duplicateAffectation();
+                return null;
+            }
+            aff.setModule(module);
+        }
+
+        return module;
+    }
+
+    public Professeur getProfesseur(AffectationDTO affDTO, Affectation aff, Cahier cahier, ErrorResponse err) {
+        Professeur prof = professeurRepository.findById(affDTO.getProfesseur().getId()).orElse(null);
+
+        if (prof == null) {
+            err.profNotFound();
+            return null;
+        }
+
+        if (!prof.getId().equals(aff.getProf().getId())) {
+            if (cahier != null &&cahier.getEntrees() != null && !cahier.getEntrees().isEmpty()) {
+                err.forbiddenModification();
+                return null;
+            }
+        }
+
+        return prof;
+    }
+
     public Page<AffectationDTO> getAffectationDTOPage(String filiere, String module, String professeur, int heure, String jour, Pageable pageable) {
         Jour parsedJour;
 
-        try { parsedJour = Jour.valueOf(jour); }
-        catch (Exception e) { parsedJour = null; }
+        try {
+            parsedJour = Jour.valueOf(jour);
+        } catch (Exception e) {
+            parsedJour = null;
+        }
 
         Page<Affectation> affectations = affectationRepository.getAffectations(filiere, module, professeur, heure, parsedJour, pageable);
 

@@ -1,0 +1,71 @@
+<div th:fragment="filled_objectifs"
+     th:each="i : ${#numbers.sequence(0, 3)}"
+     th:with="objectif = ${(entry != null && entry.objectifs.size() > i) ? entry.objectifs[i] : null}"
+     class="flex gap-5 pt-5" th:id="|objectifDiv-${i}|">
+    <div th:if="${objectif != null}"
+         class="flex-1 flex gap-5 justify-between">
+        <input type="hidden" th:name="|objectifs[${i}].id|" th:id="|objectifs[${i}].id|"
+               th:value="${objectif.id}"
+        >
+        <button th:if="${enabled}" class="bg-transparent self-end mb-2 removeBtns"
+                type="button" th:id="|erase-${i}|" th:onclick="|erase(${i})|">
+            <img src="/public/eraser.png" alt="delete" class="w-8 h-8">
+        </button>
+        <div class="flex-1">
+            <label th:if="${i == 0}" th:for="|objectifs-${i}-contenue|" class="block font-semibold text-gray-700">Objectifs</label>
+            <input type="text" th:name="|objectifs[${i}].contenue|"
+                   th:id="|objectifs-${i}-contenue|"
+                   th:required="${i == 0}"
+                   placeholder="Saisir un objectif"
+                   class="w-full mt-1 p-3 border rounded-md"
+                   th:value="${objectif.contenue}"
+                   th:readonly="${!enabled}" th:classappend="${!enabled ? 'bg-gray-300' : ''}"
+            >
+        </div>
+
+        <!-- Atteint -->
+        <div class="flex items-center me-4 mt-6" th:with="name = |objectifs[${i}].atteint|">
+            <input th:id="|objectifs-${i}-atteint|"
+                   type="checkbox" value="true"
+                   th:disabled="${!enabled}"
+                   th:onchange="|checkboxOnChange(event, ${i})|"
+                   class="w-7 h-7 text-2xl text-[#B10C74] bg-gray-700 border-gray-600 rounded focus:ring-[#B10C74] focus:ring-2 atteintCheckbox"
+                   th:name="${objectif.atteint ? name : ''}"
+                   th:checked="${objectif.atteint}"
+            >
+            <label th:for="|objectifs-${i}-atteint|"
+                   class="ms-2 text-2xl font-medium text-[#313863]">Atteint</label>
+
+            <input type="hidden" th:id="|atteint-${i}-hidden|" th:name="${!objectif.atteint ? name : ''}" value="false">
+        </div>
+    </div>
+    <div th:if="${objectif == null}" class="flex-1 flex gap-5 justify-between">
+        <button th:if="${enabled}" class="bg-transparent self-end mb-2 removeBtns"
+                type="button" th:id="|erase-${i}|" th:onclick="|erase(${i})|">
+            <img src="/public/eraser.png" alt="delete" class="w-8 h-8">
+        </button>
+        <div class="flex-1">
+            <label th:if="${i == 0}" th:for="|objectifs-${i}-contenue|" class="block font-semibold text-gray-700">Objectifs</label>
+            <input type="text" th:name="|objectifs[${i}].contenue|"
+                   th:id="|objectifs-${i}-contenue|"
+                   th:required="${i == 0}"
+                   placeholder="Saisir un objectif"
+                   class="w-full mt-1 p-3 border rounded-md"
+                   th:readonly="${!enabled}"
+                   th:classappend="${!enabled ? 'bg-gray-300' : ''}">
+        </div>
+
+        <!-- Atteint -->
+        <div class="flex items-center me-4 mt-6">
+            <input th:id="|objectifs-${i}-atteint|"
+                   type="checkbox" value="true"
+                   th:disabled="${!enabled}"
+                   th:onchange="|checkboxOnChange(event, ${i})|"
+                   class="w-7 h-7 text-2xl text-[#B10C74] bg-gray-700 border-gray-600 rounded focus:ring-[#B10C74] focus:ring-2 atteintCheckbox">
+            <label th:for="|objectifs-${i}-atteint|"
+                   class="ms-2 text-2xl font-medium text-[#313863]">Atteint</label>
+
+            <input type="hidden" th:id="|atteint-${i}-hidden|" th:name="|objectifs[${i}].atteint|" value="false">
+        </div>
+    </div>
+</div>
