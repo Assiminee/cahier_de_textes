@@ -1,5 +1,6 @@
 package upf.pjt.cahier_de_textes.dao.repositories;
 
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -8,8 +9,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import upf.pjt.cahier_de_textes.dao.entities.Module;
 import upf.pjt.cahier_de_textes.dao.entities.enumerations.ModeEval;
-
-import java.util.List;
 import java.util.UUID;
 
 @Repository
@@ -27,5 +26,5 @@ public interface ModuleRepository extends  JpaRepository<Module, UUID> {
                                @Param("max") Integer max,
                                Pageable pageable);
 
-    Page<Module> findByIntituleContainingIgnoreCase(String intitule, Pageable pageable);
+    boolean existsByIntituleIgnoreCase(@NotBlank String intitule);
 }

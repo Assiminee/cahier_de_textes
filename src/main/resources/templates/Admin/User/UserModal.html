@@ -1,0 +1,142 @@
+<div th:fragment="UserModal"
+     id="userModal" tabindex="-1"
+     aria-hidden="true"
+     class="hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-1/2 md:inset-0 h-[calc(100%-1rem)] w-full max-h-[100vh]  overflow-hidden ">
+    <div class="relative p-4 w-1/2 max-w-2xl max-h-full">
+        <!-- Modal content -->
+        <div class="relative bg-[#f2eee7] rounded-lg shadow">
+            <!-- Modal header -->
+            <div class="flex p-4 md:p-5 border-b rounded-t border-gray-600">
+                <h3 id="modalTitle" class="text-3xl text-center font-bold text-gray-900"></h3>
+                <button type="button"
+                        class="bg-transparent hover:bg-[#B10C74] hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center hover:text-white"
+                        data-modal-hide="userModal">
+                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                         viewBox="0 0 14 14">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                    </svg>
+                    <span class="sr-only">Close modal</span>
+                </button>
+            </div>
+            <!-- Modal body -->
+            <div class="p-4 md:p-5 max-h-[60vh] space-y-4 overflow-y-auto">
+                <form th:action="@{/users}" th:method="POST" id="userModalForm">
+                    <!-- Nom -->
+                    <div class="px-3 pb-3">
+                        <label for="nom" class="block mb-2 font-medium">Nom</label>
+                        <input type="text" name="nom" id="nom" pattern="^[a-zA-Z]+([ \-][a-zA-Z]+)*$" required
+                               class="peer/nom w-full p-3 rounded border border-gray-500 text-gray-700"/>
+                        <span class="invisible peer-invalid/nom:visible text-[#B10C74] text-sm">Le nom ne doit contenir que des lettres, des espaces, des tirets ou des apostrophes</span>
+                    </div>
+
+                    <!-- Prenom -->
+                    <div class="px-3 pb-3">
+                        <label for="prenom" class="block mb-2 font-medium">Prénom</label>
+                        <input type="text" name="prenom" id="prenom" pattern="^[a-zA-Z]+([ \-][a-zA-Z]+)*$" required
+                               class="peer/prenom w-full p-3 rounded border border-gray-500 text-gray-700"/>
+                        <span class="invisible peer-invalid/prenom:visible text-[#B10C74] text-sm">Le prénom ne doit contenir que des lettres, des espaces, des tirets ou des apostrophes</span>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="px-3 pb-3">
+                        <label for="email" class="block mb-2 font-medium">Email</label>
+                        <input type="email" name="email" id="email" required
+                               class="peer/email w-full p-3 rounded border border-gray-500 text-gray-700"/>
+                        <span class="invisible peer-invalid/email:visible text-[#B10C74] text-sm">Email invalid</span>
+                    </div>
+                    <!-- Date de Naissance -->
+                    <div class="px-3 pb-3">
+                        <label for="dateNaissance" class="block mb-2 font-medium">Date de Naissance</label>
+                        <input type="date" name="dateNaissance" id="dateNaissance"
+                               class="peer/dateNaissance w-full p-3 rounded bg-gray-100 border border-gray-500 text-gray-700" required />
+                        <span  class="invisible peer-invalid/dateNaissance:visible text-[#B10C74] text-sm">l'utilsateur doit avoir au moins 18 ans.</span>
+                    </div>
+
+                    <div class="px-3 pb-3">
+                        <label for="adresse" class="block mb-2 font-medium">Adresse</label>
+                        <input type="text" name="adresse" id="adresse"
+                               class="peer/add w-full p-3 rounded bg-gray-100 border border-gray-500 text-gray-700" required />
+                        <span  class="invisible peer-invalid/add:visible text-[#B10C74] text-sm">Remplissez le champs d'adresse</span>
+                    </div>
+
+                    <!-- CIN -->
+                    <div class="px-3 pb-3">
+                        <label for="cin" class="block mb-2 font-medium">CIN</label>
+                        <input type="text" name="cin" id="cin" pattern="^[A-Za-z]{1,2}[0-9]{4,6}$"
+                               placeholder="Saisir le CIN" class=" peer/cin w-full p-3 rounded bg-gray-100 border border-gray-500 text-gray-700" required />
+                        <span class="invisible peer-invalid/cin:visible text-[#B10C74] text-sm">Format de CIN invalide!.</span>
+                    </div>
+                    <!-- Telephone -->
+                    <div class="px-3 pb-3">
+                        <label for="telephone" class="block mb-2 font-medium">Téléphone</label>
+                        <input type="text" name="telephone" id="telephone" pattern="^\+212[6-7][0-9]{8}$"
+                               class=" peer/tel w-full p-3 rounded bg-gray-100 border border-gray-500 text-gray-700" required />
+                        <span class="invisible peer-invalid/tel:visible text-[#B10C74] text-sm">Numéro de téléphone marocain invalide (exemple : +212XXXXXXXXXX).</span>
+                    </div>
+
+                    <div class="px-3 pb-3">
+                        <label for="role-select" class="block mb-2 font-medium">Rôle</label>
+                        <select id="role-select" required
+                                name="role"
+                                class="p-2 w-full border rounded-md focus:outline-none">
+                            <option value="" selected>Selectionnez un role</option>
+                            <option value="ROLE_SS">Service de scolarité</option>
+                            <option value="ROLE_SP">Service Pédagogique</option>
+                            <option value="ROLE_ADMIN">Administrateur</option>
+                        </select>
+                    </div>
+
+                    <div class="px-3 pb-3">
+                        <label for="genre" class="block mb-2 font-medium">Sexe</label>
+                        <select  name ="genre" id="genre" required  class="p-2 w-full border rounded-md focus:outline-none">
+                            <option value="" selected>Saisir Sexe</option>
+                            <option value="M">Male</option>
+                            <option value="F">Female</option>
+                        </select>
+                    </div>
+                    <div class="px-3 pb-3 bg-[#f2eee7]" id="pwd">
+                        <label for="password" class="block mb-2 font-medium">Mot de Passe</label>
+                        <input
+                                type="password"
+                                id="password"
+                                name="password"
+                                placeholder="Enter your password"
+                                class="peer/pwd w-full p-3 rounded bg-gray-80 border border-gray-500 text-gray-700"
+                                required
+                        />
+                        <span  class=" invisible peer-invalid/pwd:visible text-[#B10C74] text-sm">
+      Le mot de passe doit comporter au moins 8 caractères, inclure des lettres majuscules et minuscules, un chiffre et un caractère spécial.
+    </span>
+                    </div>
+
+                    <!-- Confirm Password -->
+                    <div class="px-3 pb-3 bg-[#f2eee7]" id="confPWD">
+                        <label for="confirmPassword" class="block mb-2 font-medium">Confirmer le Mot de Passe</label>
+                        <input
+                                type="password"
+                                id="confirmPassword"
+                                name="confirmPassword"
+                                placeholder="Confirm your password"
+                                class="peer/pwdConf w-full p-3 rounded bg-gray-80 border border-gray-500 text-gray-700"
+                                required
+                        />
+                        <span  class="invisible peer-invalid/pwdConf:visible text-[#B10C74] text-sm">Les mots de passe ne correspondent pas</span>
+                    </div>
+
+                </form>
+            </div>
+            <!-- Modal footer -->
+            <div class="flex items-center justify-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
+                <button type="submit" form="userModalForm" id="confirmBtn"
+                        class="w-1/4 bg-[#313863] text-white font-bold py-3 px-6 m-2 rounded hover:bg-[#5663af]">
+                    Confirmer
+                </button>
+                <button type="button" data-modal-hide="userModal"
+                        class="w-1/4 bg-[#B10C74] hover:bg-[#db2777] text-white m-2 font-bold py-3 px-6 rounded">
+                    Annuler
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

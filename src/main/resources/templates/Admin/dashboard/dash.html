@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head th:replace="~{fragments/head :: head ('Statistiques')}"></head>
+<body class="bg-gray-100 font-sans">
+<div class="flex h-screen overflow-hidden">
+    <!-- Sidebar -->
+    <aside th:replace="~{fragments/side_bar :: aside}" class="bg-blue-500 w-1/5 min-h-screen"></aside>
+
+    <!-- Main Content -->
+    <main class="bg-white rounded-l-lg shadow-lg w-full flex flex-col overflow-y-auto">
+        <!-- Header -->
+        <header th:replace="~{fragments/nav.html :: nav}" class="shadow-md"></header>
+
+        <!-- Title Section -->
+        <section class="px-7 py-6 pr-8 flex justify-between items-center">
+            <h2 class="text-3xl font-medium">Statistiques de l'application</h2>
+        </section>
+
+        <!-- Statistics Cards -->
+        <div class="px-7 grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+            <!-- Total Users -->
+            <div class="bg-white shadow-md rounded-lg p-6">
+                <h2 class="text-lg font-semibold text-gray-700">Total Users</h2>
+                <p class="text-4xl font-bold text-blue-500" id="totalUsers">0</p>
+            </div>
+            <!-- Female Users -->
+            <div class="bg-white shadow-md rounded-lg p-6">
+                <h2 class="text-lg font-semibold text-gray-700">Female Users</h2>
+                <p class="text-4xl font-bold text-pink-500" id="femaleUsers">0</p>
+            </div>
+            <!-- Male Users -->
+            <div class="bg-white shadow-md rounded-lg p-6">
+                <h2 class="text-lg font-semibold text-gray-700">Male Users</h2>
+                <p class="text-4xl font-bold text-blue-500" id="maleUsers">0</p>
+            </div>
+        </div>
+
+        <!-- Roles Distribution -->
+        <div class="px-7 grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-white shadow-md rounded-lg p-4">
+                <h2 class="text-lg font-semibold text-gray-700 mb-2">Roles Distribution</h2>
+                <!-- Removed <ul> for role data display -->
+                <canvas id="rolesChart" class="w-full mt-4"></canvas>
+            </div>
+
+
+            <!-- Education Levels -->
+            <div class="bg-white shadow-md rounded-lg p-4">
+                <h2 class="text-lg font-semibold text-gray-700 mb-2">Education Levels (Professors)</h2>
+                <canvas id="educationChart" class="w-full mt-4"></canvas>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+    // Initialize Roles Chart
+    const rolesChart = new Chart(document.getElementById('rolesChart'), {
+        type: 'pie',
+        data: {
+            labels: [], // Dynamic labels for roles
+            datasets: [{
+                label: 'Roles Distribution',
+                data: [], // Dynamic data for roles
+                backgroundColor: ['#313863', '#B10C74', '#F2EEE7', '#87CEFA']
+            }]
+        }
+    });
+    const educationChart = new Chart(document.getElementById('educationChart'), {
+        type: 'bar',
+        data: {
+            labels: [], // Dynamic labels for grades
+            datasets: [{
+                label: 'Number of Professors',
+                data: [], // Dynamic data for grades
+                backgroundColor: ['#B10C74', '#313863']
+            }]
+        }
+    });
+
+
+    // Fetch and Update Dashboard Data
+    async function fetchData() {
+        try {
+            const response = await fetch('/api/dashboard-stats');
+            if (!response.ok) {
+                console.error("Failed to fetch dashboard stats:", response.statusText);
+                return;
+            }
+
+            const data = await response.json();
+
+            // Update Cards
+            document.getElementById('totalUsers').textContent = data.totalUsers;
+            document.getElementById('femaleUsers').textContent = data.femaleUsers;
+            document.getElementById('maleUsers').textContent = data.maleUsers;
+
+            // Update Roles Chart
+            const roleLabels = Object.keys(data.roleData);
+            const roleCounts = Object.values(data.roleData);
+
+            rolesChart.data.labels = roleLabels;
+            rolesChart.data.datasets[0].data = roleCounts;
+            rolesChart.update();
+
+            const gradeLabels = Object.keys(data.gradeData);
+            const gradeCounts = Object.values(data.gradeData);
+            educationChart.data.labels = gradeLabels;
+            educationChart.data.datasets[0].data = gradeCounts;
+            educationChart.update();
+        } catch (error) {
+            console.error("Error fetching dashboard data:", error);
+        }
+    }
+
+    // Fetch Data on Page Load
+    fetchData();
+</script>
+</body>
+</html>

@@ -52,7 +52,7 @@ public class Professeur extends User {
     private List<Module> modules = new ArrayList<>();
 
     @NotNull
-//    @HasAtLeastOneQualification
+  @HasAtLeastOneQualification
     @OneToMany(mappedBy = "prof", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<Qualification> qualifications = new ArrayList<>();

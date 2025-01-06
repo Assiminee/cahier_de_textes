@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import upf.pjt.cahier_de_textes.dao.entities.Qualification;
 import upf.pjt.cahier_de_textes.dao.repositories.ProfesseurRepository;
 import upf.pjt.cahier_de_textes.dao.repositories.RoleRepository;
 import upf.pjt.cahier_de_textes.dao.repositories.UserRepository;
@@ -14,31 +15,38 @@ import upf.pjt.cahier_de_textes.dao.entities.User;
 import upf.pjt.cahier_de_textes.dao.entities.enumerations.RoleEnum;
 
 
+// package upf.pjt.cahier_de_textes.services;
+
 @Service
 public class UserRegistrationService {
 
-    @Autowired
-    private ProfesseurRepository professeurRepository;
+    private final ProfesseurRepository professeurRepository;
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private RoleRepository roleRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    public UserRegistrationService(
+            ProfesseurRepository professeurRepository,
+            UserRepository userRepository,
+            RoleRepository roleRepository,
+            PasswordEncoder passwordEncoder
+    ) {
+        this.professeurRepository = professeurRepository;
+        this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @Transactional
     public void registerUser(UserRegistrationDto dto) {
-        // Fetch the role
+
         RoleEnum selectedRoleEnum = RoleEnum.valueOf(dto.getRole().toUpperCase());
         Role role = roleRepository.findOneByRole(selectedRoleEnum);
         if (role == null) {
             throw new IllegalArgumentException("Role not found for: " + dto.getRole());
         }
 
-        // Common fields for User
         User user = new User();
         user.setNom(dto.getNom());
         user.setPrenom(dto.getPrenom());
@@ -51,33 +59,8 @@ public class UserRegistrationService {
         user.setPwd(passwordEncoder.encode(dto.getPassword()));
         user.setRole(role);
 
-        if (selectedRoleEnum == RoleEnum.ROLE_PROF) {
-            // Validate and save professor-specific fields
-            Professeur professeur = new Professeur();
-            professeur.setNom(user.getNom());
-            professeur.setPrenom(user.getPrenom());
-            professeur.setTelephone(user.getTelephone());
-            professeur.setEmail(user.getEmail());
-            professeur.setDateNaissance(user.getDateNaissance());
-            professeur.setAdresse(user.getAdresse());
-            professeur.setGenre(user.getGenre());
-            professeur.setCin(user.getCin());
-            professeur.setPwd(user.getPwd());
-            professeur.setRole(user.getRole());
-
-            if (dto.getGrade() == null || dto.getDateDernierDiplome() == null || dto.getDateEmbauche() == null) {
-                throw new IllegalArgumentException("Professor-specific fields cannot be null.");
-            }
-            professeur.setGrade(dto.getGrade());
-            professeur.setDateDernierDiplome(dto.getDateDernierDiplome());
-            professeur.setDateEmbauche(dto.getDateEmbauche());
-
-            professeurRepository.save(professeur);
-            System.out.println("Professeur saved with ID: " + professeur.getId());
-        } else {
-            // Save non-professor user
             userRepository.save(user);
             System.out.println("User saved with ID: " + user.getId());
         }
     }
-}
+

@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head th:replace="~{fragments/head :: head ('Profsseur')}"></head>
+<body class="bg-gray-100 font-sans">
+<div class="flex h-screen">
+  <div th:replace="~{fragments/side_bar :: aside}"></div>
+  <main class="bg-white rounded-l-lg shadow-lg w-full flex flex-col h-screen">
+    <header th:replace="~{fragments/nav.html :: nav}"></header>
+
+    <section class="px-7 py-6 pr-8 flex justify-between items-center">
+      <h2 th:if="${professeur == null}" class="text-3xl font-medium text-[#B10C74]">
+        Ajouter un nouveau professeur
+      </h2>
+      <h2 th:if="${professeur != null}" class="text-3xl font-medium text-[#B10C74]">
+        Éditer le professeur <span class="text-[#B10C74]" th:text="${professeur.nom + ' ' + professeur.prenom }"></span>
+      </h2>
+    </section>
+
+    <form class="grid grid-cols-[1fr_auto_1fr] gap-6 px-6 pb-6 overflow-auto" id="addProfForm" method="post"
+          th:action="${professeur == null} ? @{/professeur} : @{/professeur/{id}(id=${professeur.id})}"
+          onsubmit="return validateUserForm(this.id)">
+
+      <!-- If we're editing, we tell Spring to treat this as a PUT -->
+      <input type="hidden" name="_method" th:value="${professeur == null ? 'POST' : 'PUT'}" />
+
+      <!-- Left Column -->
+      <div class="space-y-4">
+        <!-- Nom -->
+        <div>
+          <label for="nom" class="block mb-2 font-medium">Nom</label>
+          <input type="text" id="nom" name="nom"  th:value="${professeur != null && professeur.nom != null ? professeur.nom : ''}"
+                 placeholder="Saisir Nom"
+                 th:disabled="${view}"
+                 class="w-full p-3 rounded bg-gray-80 border border-gray-500 text-gray-700"
+                 th:classappend="${view} ? ' bg-gray-300' : ''"
+          />
+          <span id="nom-error" class="text-[#B10C74] text-sm hidden">Le nom ne doit contenir que des lettres, des espaces, des tirets ou des apostrophes.</span>
+
+        </div>
+
+        <!-- Prénom -->
+        <div>
+          <label for="prenom" class="block mb-2 font-medium">Prénom</label>
+          <input type="text" id="prenom" name="prenom" th:value="${professeur != null && professeur.nom != null ? professeur.prenom: ''}"
+                 placeholder="Saisir Prénom"
+                 th:disabled="${view}"
+                 class="w-full p-3 rounded bg-gray-80 border border-gray-500 text-gray-700"
+                 th:classappend="${view} ? ' bg-gray-300' : ''"
+                 required />
+          <span id="prenom-error" class="text-[#B10C74] text-sm hidden">Le prénom ne doit contenir que des lettres, des espaces, des tirets ou des apostrophes.</span>
+
+        </div>
+
+        <!-- Email -->
+        <div>
+          <label for="email" class="block mb-2 font-medium">Email</label>
+          <input type="email" id="email" name="email" th:value="${professeur != null && professeur.nom != null ? professeur.email : ''}"
+                 placeholder="Saisir Email"
+                 th:disabled="${view}"
+                 class="w-full p-3 rounded bg-gray-80 border border-gray-500 text-gray-700"
+                 th:classappend="${view} ? ' bg-gray-300' : ''"
+                 required />
+          <span id="email-error" class="text-[#B10C74] text-sm hidden">Entrer un e-mail valide.</span>
+        </div>
+
+        <!-- CIN -->
+        <div>
+          <label for="cin" class="block mb-2 font-medium">CIN</label>
+          <input type="text" id="cin" name="cin" th:value="${professeur != null && professeur.cin != null ? professeur.cin : ''}"
+                 placeholder="Saisir CIN"  th:disabled="${view}"
+                 class="w-full p-3 rounded bg-gray-80 border border-gray-500 text-gray-700"
+                 th:classappend="${view} ? ' bg-gray-300' : ''"
+                 required />
+          <span id="cin-error" class="text-[#B10C74] text-sm hidden">Format de CIN invalide!.</span>
+        </div>
+
+        <!-- Téléphone -->
+        <div>
+          <label for="telephone" class="block mb-2 font-medium">Numéro de Téléphone</label>
+          <input type="text" id="telephone" name="telephone" th:value="${professeur != null && professeur.telephone != null ? professeur.telephone : ''}"
+                 placeholder="Saisir Numéro de Téléphone"
+                 th:disabled="${view}"
+                 class="w-full p-3 rounded bg-gray-80 border border-gray-500 text-gray-700"
+                 th:classappend="${view} ? ' bg-gray-300' : ''"
+                 required />
+          <span id="telephone-error" class="text-[#B10C74] text-sm hidden">Numéro de téléphone marocain invalide (exemple : +212XXXXXXXXXX).</span>
+        </div>
+        <div>
+          <label for="genre" class="block mb-2 font-medium">Sexe</label>
+          <select  required name="genre" id="genre"
+                   th:disabled="${view}"
+                   class="w-full p-3 rounded bg-gray-80 border border-gray-500 text-gray-700"
+                   th:classappend="${view} ? ' bg-gray-300' : ''">
+            <option value="" disabled th:if="${professeur == null || professeur.genre == null}" selected>Saisir Sexe</option>
+            <option value="F" th:selected="${professeur != null && professeur.genre == 'F'}">Femme</option>
+            <option value="M" th:selected="${professeur != null && professeur.genre == 'M'}">Homme</option>
+          </select>
+
+        </div>
+        <!-- Adresse -->
+        <div>
+          <label for="adresse" class="block mb-2 font-medium">Adresse</label>
+          <input type="text" id="adresse" name="adresse" th:value="${professeur != null && professeur.adresse != null ? professeur.adresse : ''}"
+                 placeholder="Saisir Adresse"  th:disabled="${view}"
+                 class="w-full p-3 rounded bg-gray-80 border border-gray-500 text-gray-700"
+                 th:classappend="${view} ? ' bg-gray-300' : ''"
+                 required />
+        </div>
+
+        <!-- Date de Naissance -->
+        <div>
+          <label for="dateNaissance" class="block mb-2 font-medium">Date de Naissance</label>
+          <input type="date" id="dateNaissance" name="dateNaissance" th:value="${professeur != null && professeur.dateNaissance != null ? professeur.dateNaissance : ''}"
+                 th:disabled="${view}"
+                 class="w-full p-3 rounded bg-gray-80 border border-gray-500 text-gray-700"
+                 th:classappend="${view} ? ' bg-gray-300' : ''" />
+          <span id="dateNaissance-error" class="text-[#B10C74] text-sm hidden">l'utilsateur doit avoir au moins 18 ans.</span>
+
+        </div>
+
+        <div>
+          <label  th:disabled="${view}"
+                  class="block mb-2 font-medium"
+                  th:classappend="${view} ? ' hidden' : ''"
+                  th:if="${professeur == null}" for="password1" >Mot de Passe</label>
+          <label th:disabled="${view}"
+                 class="block mb-2 font-medium"
+                 th:classappend="${view} ? ' hidden' : ''"
+                  th:if="${professeur != null}" for="password2" > Modifier le Mot de Passe</label>
+          <input th:if="${professeur == null}" type="password" id="password1" name="pwd"
+                 placeholder="Enter your password"
+                 class="w-full p-3 rounded bg-gray-80 border border-gray-500 text-gray-700"
+                  />
+          <input  th:if="${professeur != null}" type="password" id="password2" name="pwd"
+                 placeholder="Enter your password" th:disabled="${view}"
+                  class="w-full p-3 rounded bg-gray-80 border border-gray-500 text-gray-700"
+                  th:classappend="${view} ? ' hidden' : ''"
+                 />
+
+
+          <span id="password-error" class="text-[#B10C74] text-sm hidden">
+      Le mot de passe doit comporter au moins 8 caractères, inclure des lettres majuscules et minuscules, un chiffre et un caractère spécial.
+    </span>
+        </div>
+
+      </div>
+
+      <div class="border-l-2 border-gray-300"></div>
+      <!-- Right Column -->
+      <div class="space-y-4">
+        <!-- Confirm Password -->
+        <div>
+          <label th:disabled="${view}"
+                 class="block mb-2 font-medium"
+                 th:classappend="${view} ? ' hidden' : ''"
+                 >Confirmer le Mot de Passe</label>
+
+
+          <input class="w-full p-3 rounded bg-gray-80 border border-gray-500 text-gray-700" id="confirmPassword1" name="confirmPassword" placeholder="Confirm your password"
+                 required
+                 th:if="${professeur == null}"
+                 type="password"/>
+          <input th:if="${professeur != null}"  type="password" id="confirmPassword2" name="confirmPassword"
+                 placeholder="Confirm your password"
+                 th:disabled="${view}"
+                 class="w-full p-3 rounded bg-gray-80 border border-gray-500 text-gray-700"
+                 th:classappend="${view} ? ' hidden' : ''"
+                  />
+          <span id="confirmPassword-error" class="text-[#B10C74] text-sm hidden">Les mots de passe ne correspondent pas</span>
+        </div>
+
+        <!-- Date Dernier Diplome -->
+        <div>
+          <label for="dateDernierDiplome" class="block mb-2 font-medium">Date Dernier Diplôme</label>
+          <input type="date" id="dateDernierDiplome" name="dateDernierDiplome" th:value="${professeur != null && professeur.dateDernierDiplome != null ? professeur.dateDernierDiplome : ''}"
+                 th:disabled="${view}"
+                 class="w-full p-3 rounded bg-gray-80 border border-gray-500 text-gray-700"
+                 th:classappend="${view} ? ' bg-gray-300' : ''"
+                 required />
+        </div>
+
+        <!-- Grade -->
+        <div>
+          <label for="grade" class="block mb-2 font-medium">Grade</label>
+          <select  name="grade" id="grade"
+                   th:disabled="${view}"
+                   class="w-full p-3 rounded bg-gray-80 border border-gray-500 text-gray-700"
+                   th:classappend="${view} ? ' bg-gray-300' : ''"
+                  required>
+            <option value="" disabled th:if="${professeur == null || professeur.grade== null}" selected> Saisir Grade</option>
+            <option value="MA" th:selected="${professeur != null && professeur.grade == 'MA'}">Master</option>
+            <option value="PHD" th:selected="${professeur != null && professeur.genre == 'PHD'}">Doctorat</option>
+          </select>
+        </div>
+
+        <!-- Date Embauche -->
+        <div>
+          <label for="dateEmbauche" class="block mb-2 font-medium">Date d'Embauche</label>
+          <input  type="date" id="dateEmbauche" name="dateEmbauche"  th:value="${professeur != null && professeur.dateEmbauche != null ? professeur.dateEmbauche : ''}"
+                  th:disabled="${view}"
+                  class="w-full p-3 rounded bg-gray-80 border border-gray-500 text-gray-700"
+                  th:classappend="${view} ? ' bg-gray-300' : ''"
+                 required />
+        </div>
+
+        <!-- If professeur not null, show existing qualifications container -->
+        <div th:if="${professeur != null}" id="qualifications-container" class="  space-y-12">
+          <label  class="block  font-medium">Qualifications</label>
+          <div th:if="${professeur.qualifications != null}" th:each="qualification, iterStat : ${professeur.qualifications}" class="flex gap-4 qualification-item">
+            <input type="text"
+                   th:name="|qualifications[${iterStat.index}].intitule|"
+                   th:value="${qualification.intitule}"
+                   placeholder="Saisir Intitulé"
+                   th:disabled="${view}"
+                   class="w-full p-3 rounded bg-gray-80 border border-gray-500 text-gray-700"
+                   th:classappend="${view} ? ' bg-gray-300' : ''"
+                   required />
+            <input type="date"
+                   th:name="|qualifications[${iterStat.index}].dateObtention|"
+                   th:value="${qualification.dateObtention}"
+                   th:disabled="${view}"
+                   class="w-full p-3 rounded bg-gray-80 border border-gray-500 text-gray-700"
+                   th:classappend="${view} ? ' bg-gray-300' : ''"
+                   required />
+            <button type="button"
+                    th:disabled="${view}"
+                    class="px-3 py-2 rounded remove-btn"
+                    th:classappend="${view} ? ' hidden' : ''"
+                    onclick="removeQualification(this)">
+              <img src="/public/minus.png" class="w-10 h-8" />
+            </button>
+          </div>
+        </div>
+
+        <!-- If professeur is null, show a default empty qualification input -->
+        <div th:if="${professeur == null}" id="noqualifications-container">
+          <label  class="block mb-2 font-medium">Qualifications</label>
+          <div class="flex gap-4 mb-8">
+            <input type="text" name="qualifications[0].intitule"
+                   placeholder="Saisir Intitulé"
+                   class="w-full p-3 rounded border" th:disabled="${view}"
+                   required />
+            <input type="date" name="qualifications[0].dateObtention"
+                   class="w-full p-3 rounded border"
+                   required />
+          </div>
+        </div>
+
+        <!-- Button to add additional qualifications -->
+        <button type="button" th:disabled="${view}"
+                class="px-3 py-2 rounded remove-btn"
+                th:classappend="${view} ? ' hidden' : ''"onclick="addQualification()">
+          <img src="/public/add.png" class="w-10 h-8" />
+        </button>
+      </div>
+        <script src="/public/js/ValidationUser.js"></script>
+        <!-- Submit and Cancel buttons -->
+
+
+        <div class="col-span-full flex justify-start gap-x-6">
+
+          <button type="submit" class="w-[269px] bg-[#313863] hover:bg-[#5663af] text-white font-bold py-3 px-4 rounded">
+            Confirmer
+          </button>
+          <a href="/professeur" class="w-[269px] text-center bg-[#B10C74] hover:bg-[#db2777] text-white font-bold py-3 px-4 rounded">
+            Annuler
+          </a>
+        </div>
+
+      <script src="/public/js/ValidationUser.js"></script>
+
+    </form>
+  </main>
+</div>
+
+<!-- Only the addQualification logic was changed below -->
+<script type="module">
+  import { deleteProf } from '/public/js/profs/prof.js';
+  $(document).ready(() => {
+    deleteProf();
+  });
+
+  document.addEventListener("DOMContentLoaded", function () {
+    let qualificationIndex = 1;
+
+    // Function to add a new qualification
+    window.addQualification = function () {
+      // We'll look for either 'qualifications-container' (prof not null)
+      // or 'noqualifications-container' (prof is null)
+      const container = document.getElementById('qualifications-container')
+              || document.getElementById('noqualifications-container');
+
+      const newQualification = `
+        <div class="flex mb-11 gap-4">
+          <input type="text"
+                 name="qualifications[${qualificationIndex}].intitule"
+                 placeholder="Saisir Intitulé"
+                 class="w-full py-3 p-3 rounded border"
+                 required />
+          <input type="date"
+                 name="qualifications[${qualificationIndex}].dateObtention"
+                 class="w-full p-3 rounded border"
+                 required />
+          <button type="button"
+                  class="px-3 py-2 rounded"
+                  onclick="removeQualification(this)">
+            <img src="/public/minus.png" class="w-10 h-8">
+          </button>
+        </div>
+      `;
+      container.insertAdjacentHTML('beforeend', newQualification);
+      qualificationIndex++;
+    };
+
+    // Function to remove a qualification
+    window.removeQualification = function (button) {
+      button.parentElement.remove();
+    };
+  });
+</script>
+</body>
+</html>

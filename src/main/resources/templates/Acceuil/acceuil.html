@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head th:replace="~{fragments/head :: head ('Acceuil')}"></head>
+<body class="bg-gray-100 font-sans">
+<div class="flex h-screen overflow-hidden">
+    <!-- Sidebar -->
+    <div th:replace="~{fragments/side_bar :: aside}"></div>
+
+    <!-- Main Content -->
+    <main class="bg-white rounded-l-lg shadow-lg w-full flex flex-col h-screen overflow-y-auto">
+        <!-- Header -->
+        <header th:replace="~{fragments/nav.html :: nav}"></header>
+
+        <!-- Page Title Section -->
+        <section class="px-7 py-1 flex flex-col justify-center items-center">
+            <img src="public/logo.png" alt="logo" class="w-[170px] h-[135px] max-w-xs rounded-l-lg">
+            <h2 class="text-3xl font-medium text-center mb-2"> Bienvenue sur UPF-management</h2>
+            <p class="text-lg text-gray-600 text-center max-w-2xl">
+                Découvrez une application innovante conçue pour simplifier la gestion des cahiers de textes,
+                optimiser la communication entre les enseignants ,service de scholarité et service pédagogique  et suivre efficacement les progrès académiques.
+            </p>
+        </section>
+
+
+
+        <!-- Functional Cards Section -->
+        <section class="px-7 py-3 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            <!-- Card: Dashboard -->
+            <div class="bg-[#F2EEE7] shadow-md rounded-lg p-6 flex flex-col items-center">
+                <img th:src="@{/public/dash.png}" alt="Dashboard Icon" class="w-12 h-12 mb-4">
+                <h3 class="text-xl font-semibold text-gray-700 mb-2">Dashboard</h3>
+                <p class="text-sm text-gray-600 text-center">Accédez aux statistiques globales de l'application et surveillez les indicateurs clés.</p>
+                <a th:href="@{/dashboard}" class="mt-4 bg-[#313863] text-white py-2 px-4 rounded hover:bg-blue-950">Voir plus</a>
+            </div>
+
+            <!-- Card: Bibliothèque -->
+            <div class="bg-[#F2EEE7] shadow-md rounded-lg p-6 flex flex-col items-center">
+                <img th:src="@{/public/book.png}" alt="Library Icon" class="w-12 h-12 mb-4">
+                <h3 class="text-xl font-semibold text-gray-700 mb-2">Bibliothèque</h3>
+                <p class="text-sm text-gray-600 text-center">Explorez et gérez l'ensemble de vos cahiers de textes et documents archivés.</p>
+                <a th:href="@{/bibliotheque}" class="mt-4 bg-[#313863] text-white py-2 px-4 rounded hover:bg-blue-950">Voir plus</a>
+            </div>
+
+
+
+            <!-- Card: Gestion des Affectations -->
+            <div class="bg-[#F2EEE7] shadow-md rounded-lg p-6 flex flex-col items-center">
+                <img th:src="@{/public/teacher.png}" alt="Assignment Icon" class="w-12 h-12 mb-4">
+                <h3 class="text-xl font-semibold text-gray-700 mb-2">Gestion des Affectations</h3>
+                <p class="text-sm text-gray-600 text-center">Supervisez et gérez les affectations des professeurs et des classes.</p>
+                <a th:href="@{/affectations}" class="mt-4 bg-[#313863] text-white py-2 px-4 rounded hover:bg-blue-950">Voir plus</a>
+            </div>
+        </section>
+    </main>
+</div>
+</body>
+</html>
