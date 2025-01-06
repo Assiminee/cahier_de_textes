@@ -9,7 +9,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import upf.pjt.cahier_de_textes.dao.dtos.UserDTO;
-import upf.pjt.cahier_de_textes.dao.dtos.filiere.AffectationDTO;
 import upf.pjt.cahier_de_textes.dao.entities.Cahier;
 import upf.pjt.cahier_de_textes.dao.entities.Entree;
 import upf.pjt.cahier_de_textes.dao.entities.Objectif;

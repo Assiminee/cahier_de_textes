@@ -17,7 +17,7 @@
     </section>
 
     <form class="grid grid-cols-[1fr_auto_1fr] gap-6 px-6 pb-6 overflow-auto" id="addProfForm" method="post"
-          th:action="${professeur == null} ? @{/professeur} : @{/professeur/{id}(id=${professeur.id})}"
+          th:action="${professeur == null} ? @{/professeurs} : @{/professeurs/{id}(id=${professeur.id})}"
           onsubmit="return validateUserForm(this.id)">
 
       <!-- If we're editing, we tell Spring to treat this as a PUT -->
@@ -249,7 +249,7 @@
         <!-- Button to add additional qualifications -->
         <button type="button" th:disabled="${view}"
                 class="px-3 py-2 rounded remove-btn"
-                th:classappend="${view} ? ' hidden' : ''"onclick="addQualification()">
+                th:classappend="${view} ? ' hidden' : ''" onclick="addQualification()">
           <img src="/public/add.png" class="w-10 h-8" />
         </button>
       </div>
@@ -262,7 +262,7 @@
           <button type="submit" class="w-[269px] bg-[#313863] hover:bg-[#5663af] text-white font-bold py-3 px-4 rounded">
             Confirmer
           </button>
-          <a href="/professeur" class="w-[269px] text-center bg-[#B10C74] hover:bg-[#db2777] text-white font-bold py-3 px-4 rounded">
+          <a href="/professeurs" class="w-[269px] text-center bg-[#B10C74] hover:bg-[#db2777] text-white font-bold py-3 px-4 rounded">
             Annuler
           </a>
         </div>

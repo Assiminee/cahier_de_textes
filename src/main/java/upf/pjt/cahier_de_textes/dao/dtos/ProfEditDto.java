@@ -4,6 +4,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import upf.pjt.cahier_de_textes.dao.entities.Affectation;
+import upf.pjt.cahier_de_textes.dao.entities.Cahier;
 import upf.pjt.cahier_de_textes.dao.entities.Professeur;
 import upf.pjt.cahier_de_textes.dao.entities.Qualification;
 import upf.pjt.cahier_de_textes.dao.entities.enumerations.Genre;
@@ -59,6 +61,12 @@ public class ProfEditDto {
                 qualification.setProf(existingProf);
                 existingProf.getQualifications().add(qualification);
             }
+        }
+
+        for (Affectation aff : existingProf.getAffectations()) {
+            Cahier cahier = aff.getCahier();
+
+            cahier.setProfesseur(existingProf.getFullName());
         }
     }
 

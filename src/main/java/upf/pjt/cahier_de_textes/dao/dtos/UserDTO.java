@@ -20,18 +20,18 @@ import java.util.UUID;
 @Setter
 @ToString
 public class UserDTO {
-    private UUID id;
-    private String nom;
-    private String prenom;
-    private Genre genre;
-    private String cin;
-    private String adresse;
-    private String telephone;
-    private String email;
-    private LocalDate dateNaissance;
-    private List<Qualification> qualifications;
-    private Grade grade;
-    private String role;
+    protected UUID id;
+    protected String nom;
+    protected String prenom;
+    protected Genre genre;
+    protected String cin;
+    protected String adresse;
+    protected String telephone;
+    protected String email;
+    protected LocalDate dateNaissance;
+    protected List<Qualification> qualifications;
+    protected Grade grade;
+    protected String role;
 
 
     public UserDTO(String nom, String prenom, String genre, String cin, String adresse, String telephone, String email, String dateNaissance) {
