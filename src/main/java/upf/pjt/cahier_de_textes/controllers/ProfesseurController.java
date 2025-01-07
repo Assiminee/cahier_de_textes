@@ -43,6 +43,8 @@ public class ProfesseurController {
     private final RoleRepository roleRepository;
     private final ModuleRepository moduleRepository;
     private final FiliereRepository filiereRepository;
+    private final AffectationRepository affectationRepository;
+    private final CahierRepository cahierRepository;
     private final AffectationService affectationService;
     private final int SIZE = 10;
 
@@ -50,12 +52,14 @@ public class ProfesseurController {
             ProfesseurRepository professeurRepository,
             RoleRepository roleRepository,
             ModuleRepository moduleRepository,
-            FiliereRepository filiereRepository, AffectationService affectationService
+            FiliereRepository filiereRepository, AffectationRepository affectationRepository, CahierRepository cahierRepository, AffectationService affectationService
     ) {
         this.professeurRepository = professeurRepository;
         this.roleRepository = roleRepository;
         this.moduleRepository = moduleRepository;
         this.filiereRepository = filiereRepository;
+        this.affectationRepository = affectationRepository;
+        this.cahierRepository = cahierRepository;
         this.affectationService = affectationService;
     }
 
@@ -226,8 +230,23 @@ public class ProfesseurController {
             filiereRepository.save(prof.getFiliere());
         }
 
-        for (Affectation aff : prof.getAffectations())
-            affectationService.deleteAffectation(aff);
+        for (Affectation aff : prof.getAffectations()) {
+            Cahier cahier = aff.getCahier();
+            aff.setCahier(null);
+
+            if (cahier != null) {
+                if (cahier.getEntrees() != null && !cahier.getEntrees().isEmpty()) {
+                    cahier.setAffectation(null);
+                    cahier.setArchived(true);
+
+                    cahierRepository.save(cahier);
+                } else {
+                    cahierRepository.delete(cahier);
+                }
+            }
+
+            affectationRepository.deleteById(aff.getId());
+        }
 
         professeurRepository.delete(prof);
 

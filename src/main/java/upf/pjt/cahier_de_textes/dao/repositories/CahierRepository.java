@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import upf.pjt.cahier_de_textes.dao.entities.Cahier;
+
+import java.util.List;
 import java.util.UUID;
 
 @Repository
@@ -18,7 +20,7 @@ public interface CahierRepository extends JpaRepository<Cahier, UUID> {
             "(:professeur = '' OR LOWER(c.professeur) LIKE LOWER(CONCAT('%', :professeur, '%'))) AND " +
             "(:niveau IS NULL OR c.niveau = :niveau) AND " +
             "(:semestre IS NULL OR c.semestre = :semestre) AND " +
-            "(:annee IS NULL OR FUNCTION('YEAR', c.createdAt) = :annee)")
+            "(:annee IS NULL OR c.annee = :annee)")
     Page<Cahier> findArchivedCahiersByFilters(
             @Param("filiere") String filiere,
             @Param("module") String module,
@@ -28,4 +30,6 @@ public interface CahierRepository extends JpaRepository<Cahier, UUID> {
             @Param("annee") Integer annee,
             Pageable pageable
     );
+
+    List<Cahier> findAllByProfId(UUID professeur);
 }

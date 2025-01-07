@@ -8,8 +8,16 @@
     <main class="bg-white rounded-l-lg shadow-lg w-full col-span-11 flex flex-col h-screen">
         <nav th:replace="fragments/nav :: nav"></nav>
         <div class="flex-1 overflow-y-auto " id="THISISDADIV">
-            <section class="px-5 pt-2 border-b border-gray-900">
-                <div th:replace="~{cahiers/entry_fragments/general_information :: div}"></div>
+            <section class="pt-2 flex flex-col border-b border-gray-900">
+                <div class="px-5">
+                    <div th:replace="~{cahiers/entry_fragments/general_information :: div}"></div>
+                </div>
+
+                <div th:if="${error != null}"
+                     th:class="|p-3 w-full text-sm font-semibold ${error ? 'text-red-800 bg-red-100' : 'text-green-800 bg-green-100'}|"
+                     role="alert">
+                    <p th:text="${msg}"></p>
+                </div>
             </section>
             <section class="flex pb-5 justify-center">
                 <h1 class="text-4xl font-semibold pt-5 text-[#B10C74]"
