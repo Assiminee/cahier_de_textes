@@ -9,6 +9,7 @@ export const addModule = () => {
         enableInputs(intitule, nombreHeures);
         selectValue(responsable, "");
         selectValue(modeEvaluation, "");
+        hideInputs(false, $("#confirmBtn"));
 
         hiddenMethodInput(true);
     });
@@ -26,7 +27,7 @@ export const viewModuleInfo = () => {
 
             const intituleData = btn.data("intitule");
             const responsableData = btn.data("responsable");
-            const heuresData = btn.data("heures");
+            const heuresData = btn.data("nombreheures");
             const evaluationData = btn.data("modeevaluation");
             console.log(intituleData,responsableData,heuresData,evaluationData);
             $("#moduleModalTitle").text(`Consulter les Informations du Module: ${intituleData}`);
@@ -67,7 +68,7 @@ export const viewModuleInfo = () => {
             enableInput($("#nombreHeures"), heuresData);
             selectValue($("#responsable"), responsableData);
             selectValue($("#modeEvaluation"), evaluationData);
-
+            hideInputs(false, $("#confirmBtn"));
             // Set form action
             $("#moduleModalForm").attr("action", `/modules/${button.data("id")}`);
             hiddenMethodInput(false);
