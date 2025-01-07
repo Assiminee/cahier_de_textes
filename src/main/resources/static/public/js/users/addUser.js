@@ -1,4 +1,5 @@
-import { enableInputs,enableInput , selectValue , hiddenMethodInput ,disableInputs,hideInputs,disableSelects} from '/public/js/utils.js'
+import { enableInputs,enableInput , selectValue , hiddenMethodInput ,disableInputs,hideInputs,disableSelects}
+    from '/public/js/utils.js'
 
 export const addUser = (user) => {
     $("#addUserBtn").on("click", (e) => {
@@ -17,6 +18,7 @@ export const addUser = (user) => {
         enableInputs(nom, prenom, email, tel, adresse, cin, dateNaissance);
         selectValue(role, "");
         selectValue(genre, "");
+        hideInputs(false, $("#confirmBtn"));
 
         $("#userModalForm").attr("action", "/users");
         hiddenMethodInput(true);
@@ -71,8 +73,6 @@ export const viewUserInfo = () => {
 
             $("#confPWD").addClass("hidden");
             $("#pwd").addClass("hidden");
-
-
         })
     })
 }
@@ -114,6 +114,7 @@ export const modifyUser = () => {
 
             $("#userModalForm").attr("action", `/users/${btn.data("id")}`);
             hiddenMethodInput(false);
+            hideInputs(false, $("#confirmBtn"));
 
             $("#password").removeAttr("required");
             $("#confirmPassword").removeAttr("required");

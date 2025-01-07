@@ -11,8 +11,11 @@
       <h2 th:if="${professeur == null}" class="text-3xl font-medium text-[#B10C74]">
         Ajouter un nouveau professeur
       </h2>
-      <h2 th:if="${professeur != null}" class="text-3xl font-medium text-[#B10C74]">
+      <h2 th:if="${professeur != null && view == false}" class="text-3xl font-medium text-[#B10C74]">
         Éditer le professeur <span class="text-[#B10C74]" th:text="${professeur.nom + ' ' + professeur.prenom }"></span>
+      </h2>
+      <h2 th:if="${ professeur !=null && view == true}" class="text-3xl font-medium text-[#B10C74]">
+        Consuler le professeur <span class="text-[#B10C74]" th:text="${professeur.nom + ' ' + professeur.prenom }"></span>
       </h2>
     </section>
 
@@ -259,7 +262,7 @@
 
         <div class="col-span-full flex justify-start gap-x-6">
 
-          <button type="submit" class="w-[269px] bg-[#313863] hover:bg-[#5663af] text-white font-bold py-3 px-4 rounded">
+          <button th:classappend="${view ? 'hidden' : ''}" type="submit" class="w-[269px] bg-[#313863] hover:bg-[#5663af] text-white font-bold py-3 px-4 rounded">
             Confirmer
           </button>
           <a href="/professeurs" class="w-[269px] text-center bg-[#B10C74] hover:bg-[#db2777] text-white font-bold py-3 px-4 rounded">

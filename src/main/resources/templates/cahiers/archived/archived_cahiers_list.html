@@ -16,7 +16,7 @@
     <td colspan="6" class="p-4 font-medium" th:text="'Aucun cahier à afficher'"></td>
   </tr>
   <tr th:if="${cahiers != null}" th:each="cahier : ${cahiers}"
-      th:with="title = |${cahier.filiere} ${cahier.niveau} - ${cahier.createdAt.getYear()}|"
+      th:with="title = |${cahier.filiere} ${cahier.niveau} - ${cahier.annee}|"
       class="text-center bg-gray-100 hover:bg-gray-200 transition-all">
     <td class="p-4 flex justify-center content-center">
       <a class="hover:opacity-80"
