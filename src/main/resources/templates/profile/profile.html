@@ -13,8 +13,7 @@
             <div class="col-span-2 flex px-10 pt-10 justify-between">
                 <div class="flex flex-col">
                     <h1 class="text-4xl font-semibold">Mes Informations</h1>
-                    <div th:replace="~{profile/edit_profile_msgs :: edit_profile_errors}"></div>
-                    <div th:replace="~{profile/edit_profile_msgs :: edit_profile_success}"></div>
+                    <div th:replace="~{profile/edit_profile_msgs :: div}"></div>
                 </div>
                 <div>
                     <button data-modal-target="editPwdModal" data-modal-toggle="editPwdModal" type="button"

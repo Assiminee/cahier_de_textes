@@ -6,6 +6,7 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
@@ -28,11 +29,15 @@ public class Cahier {
         if (this.entrees == null)
             this.entrees = new ArrayList<>();
 
+        int month = LocalDate.now().getMonthValue();
+
         this.filiere = affectation.getFiliere().getIntitule();
         this.module = affectation.getModule().getIntitule();
         this.professeur = affectation.getProf().getFullName();
+        this.profId = affectation.getProf().getId();
         this.niveau = affectation.getNiveau();
         this.semestre = affectation.getSemestre();
+        this.annee = (month >= 9 ? LocalDate.now().getYear() : LocalDate.now().getYear() - 1);
     }
 
     @Id
@@ -53,6 +58,9 @@ public class Cahier {
     @Column(name = "module")
     private String module;
 
+    @Column(name = "profId")
+    private UUID profId;
+
     @Column(name = "professeur")
     private String professeur;
 
@@ -61,6 +69,9 @@ public class Cahier {
 
     @Column(name = "semestre")
     private int semestre;
+
+    @Column(name = "annee")
+    private int annee;
 
     @Column(name = "archive")
     private boolean archived;
@@ -79,6 +90,7 @@ public class Cahier {
                 ", updatedAt=" + updatedAt +
                 ", filiere='" + filiere + '\'' +
                 ", module='" + module + '\'' +
+                ", profId='" + profId + '\'' +
                 ", professeur='" + professeur + '\'' +
                 ", archived=" + archived +
                 ", entrees=" + entrees +

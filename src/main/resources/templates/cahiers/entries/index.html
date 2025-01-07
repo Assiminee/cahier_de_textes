@@ -15,7 +15,7 @@
                      th:classappend="${role[0].getAuthority().equals('ROLE_PROF') ? 'justify-between' : 'justify-center'}"
                 >
                     <h1 class="text-4xl font-semibold pt-5 text-[#B10C74]"
-                        th:text="|Cahier de Textes - ${cahier.filiere} - ${cahier.createdAt.getYear()}|"></h1>
+                        th:text="|Cahier de Textes - ${cahier.filiere} - ${cahier.annee}|"></h1>
                     <a sec:authorize="hasRole('PROF')" th:href="@{|/cahiers/${cahier.id}/new_entry|}"
                             class="bg-[#313863] hover:bg-[#5663af] text-white font-bold mt-5 py-3 px-6 h-1/2  rounded">
                         + Ajouter une entrée

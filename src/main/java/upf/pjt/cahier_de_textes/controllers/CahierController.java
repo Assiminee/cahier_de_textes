@@ -138,7 +138,7 @@ public class CahierController {
             if (cahier.getEntrees() == null)
                 cahier.setEntrees(new ArrayList<>());
             else
-                semaine = !cahier.getEntrees().isEmpty() ? cahier.getEntrees().size() : 1;
+                semaine = !cahier.getEntrees().isEmpty() ? cahier.getEntrees().size() + 1 : 1;
 
             List<Objectif> objectifs = entry.getObjectifs();
             entry.setObjectifs(new ArrayList<>());
@@ -162,11 +162,16 @@ public class CahierController {
             savedCahier = cahierRepository.save(cahier);
             savedEntry = savedCahier.getEntrees().get(savedCahier.getEntrees().size() - 1);
 
+            redAtts.addFlashAttribute("error", false);
+            redAtts.addFlashAttribute("msg", "Entrée créer avec succès");
+
             return "redirect:/cahiers/" + id + "/entries/" + savedEntry.getId();
         } catch (Exception e) {
-            log.error("Error creating entry: \n{}", String.valueOf(e));
+            log.error("Error creating entry: \n{}", String.valueOf(e));redAtts.addFlashAttribute("error", false);
         }
 
+        model.addAttribute("msg", "L'entrée n'as pas été enregistré. Veuillez réessayer plutard.");
+        model.addAttribute("error", true);
         model.addAttribute("user", user);
         model.addAttribute("formAction", "/cahiers/" + id + "/entries");
         model.addAttribute("formMethod", "POST");
@@ -219,38 +224,46 @@ public class CahierController {
         if (!user.getId().equals(cahier.getAffectation().getProf().getId()))
             return "redirect:/error/403";
 
-        Entree e = cahier
-                .getEntrees()
-                .stream()
-                .filter(entree -> entree.getId().equals(entryId))
-                .findFirst()
-                .orElse(null);
+        try {
+            Entree e = cahier
+                    .getEntrees()
+                    .stream()
+                    .filter(entree -> entree.getId().equals(entryId))
+                    .findFirst()
+                    .orElse(null);
 
-        if (e == null)
-            return "redirect:/error/404";
+            if (e == null)
+                return "redirect:/error/404";
 
-        e.setDescription(entry.getDescription());
-        e.setDate(entry.getDate());
-        e.setHeureDebut(entry.getHeureDebut());
-        e.setHeureFin(entry.getHeureFin());
-        e.setNature(entry.getNature());
+            e.setDescription(entry.getDescription());
+            e.setDate(entry.getDate());
+            e.setHeureDebut(entry.getHeureDebut());
+            e.setHeureFin(entry.getHeureFin());
+            e.setNature(entry.getNature());
 
-        List<Objectif> objectives = new ArrayList<>();
+            List<Objectif> objectives = new ArrayList<>();
 
-        for (Objectif obj : entry.getObjectifs()) {
-            if (obj.getContenue() == null || obj.getContenue().isBlank())
-                continue;
+            for (Objectif obj : entry.getObjectifs()) {
+                if (obj.getContenue() == null || obj.getContenue().isBlank())
+                    continue;
 
-            obj.setEntree(e);
-            objectives.add(obj);
+                obj.setEntree(e);
+                objectives.add(obj);
+            }
+
+            e.getObjectifs().clear();
+
+            for (Objectif obj : objectives)
+                e.addObjectif(obj);
+
+            cahierRepository.save(cahier);
+            redAtts.addFlashAttribute("error", false);
+            redAtts.addFlashAttribute("msg", "Entrée modifiée avec succès");
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            redAtts.addFlashAttribute("msg", "L'entrée n'as pas été enregistré. Veuillez réessayer plutard.");
+            redAtts.addFlashAttribute("error", true);
         }
-
-        e.getObjectifs().clear();
-
-        for (Objectif obj : objectives)
-            e.addObjectif(obj);
-
-        cahierRepository.save(cahier);
 
         return "redirect:/cahiers/" + id + "/entries/" + entryId;
     }

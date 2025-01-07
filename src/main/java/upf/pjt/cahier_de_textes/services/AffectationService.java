@@ -107,6 +107,7 @@ public class AffectationService {
         return affectationRepository.save(affectation);
     }
 
+    @Transactional
     public ErrorResponse deleteAffectation(UUID affId) {
         ErrorResponse err = new ErrorResponse();
 
@@ -118,7 +119,21 @@ public class AffectationService {
                 return err;
             }
 
-            deleteAffectation(affectation);
+            Cahier cahier = affectation.getCahier();
+            affectation.setCahier(null);
+
+            if (cahier != null) {
+                if (cahier.getEntrees() != null && !cahier.getEntrees().isEmpty()) {
+                    cahier.setAffectation(null);
+                    cahier.setArchived(true);
+
+                    cahierRepository.save(cahier);
+                } else {
+                    cahierRepository.delete(cahier);
+                }
+            }
+
+            affectationRepository.deleteById(affectation.getId());
 
             boolean exists = affectationRepository.existsById(affId);
 
@@ -128,6 +143,7 @@ public class AffectationService {
             }
 
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             log.error(String.valueOf(e.getMessage()));
             err.internalServerError();
             return err;
@@ -201,6 +217,7 @@ public class AffectationService {
 
             cahier.setModule(module.getIntitule());
             cahier.setProfesseur(prof.getFullName());
+            cahier.setProfId(prof.getId());
             cahierRepository.save(cahier);
 
             affectation = affectationRepository.save(affectation);
@@ -245,7 +262,7 @@ public class AffectationService {
         }
 
         if (!prof.getId().equals(aff.getProf().getId())) {
-            if (cahier != null &&cahier.getEntrees() != null && !cahier.getEntrees().isEmpty()) {
+            if (cahier != null && cahier.getEntrees() != null && !cahier.getEntrees().isEmpty()) {
                 err.forbiddenModification();
                 return null;
             }

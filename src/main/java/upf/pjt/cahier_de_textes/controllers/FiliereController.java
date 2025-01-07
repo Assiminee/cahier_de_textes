@@ -15,14 +15,12 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import upf.pjt.cahier_de_textes.dao.dtos.UserDTO;
 import upf.pjt.cahier_de_textes.dao.dtos.filiere.FiliereDTO;
 import upf.pjt.cahier_de_textes.dao.entities.Affectation;
+import upf.pjt.cahier_de_textes.dao.entities.Cahier;
 import upf.pjt.cahier_de_textes.dao.entities.Filiere;
 import upf.pjt.cahier_de_textes.dao.entities.Professeur;
 import upf.pjt.cahier_de_textes.dao.entities.enumerations.Diplome;
-import upf.pjt.cahier_de_textes.dao.repositories.AffectationRepository;
-import upf.pjt.cahier_de_textes.dao.repositories.FiliereRepository;
+import upf.pjt.cahier_de_textes.dao.repositories.*;
 import org.springframework.data.domain.Pageable;
-import upf.pjt.cahier_de_textes.dao.repositories.ModuleRepository;
-import upf.pjt.cahier_de_textes.dao.repositories.ProfesseurRepository;
 import upf.pjt.cahier_de_textes.services.AffectationService;
 import upf.pjt.cahier_de_textes.services.FilieresService;
 import upf.pjt.cahier_de_textes.services.UserService;
@@ -42,6 +40,7 @@ public class FiliereController {
     private final AffectationRepository affectationRepository;
     private final int SIZE = 10;
     private final AffectationService affectationService;
+    private final CahierRepository cahierRepository;
 
     public FiliereController(
             FiliereRepository filiereRepository,
@@ -49,7 +48,7 @@ public class FiliereController {
             ModuleRepository moduleRepository,
             FilieresService filieresService,
             ObjectMapper objectMapper,
-            AffectationRepository affectationRepository, AffectationService affectationService) {
+            AffectationRepository affectationRepository, AffectationService affectationService, CahierRepository cahierRepository) {
         this.filiereRepository = filiereRepository;
         this.professeurRepository = professeurRepository;
         this.moduleRepository = moduleRepository;
@@ -57,6 +56,7 @@ public class FiliereController {
         this.objectMapper = objectMapper;
         this.affectationRepository = affectationRepository;
         this.affectationService = affectationService;
+        this.cahierRepository = cahierRepository;
     }
 
     @GetMapping
@@ -128,10 +128,27 @@ public class FiliereController {
             Professeur coordinateur = filiere.getCoordinateur();
 
             coordinateur.setFiliere(null);
+            filiere.setCoordinateur(null);
             professeurRepository.save(coordinateur);
 
-            filiere.setCoordinateur(null);
-            deleteAffectationsAndCahiers(filiere);
+            for (Affectation aff : filiere.getAffectations()) {
+                Cahier cahier = aff.getCahier();
+                aff.setCahier(null);
+
+                if (cahier != null) {
+                    if (cahier.getEntrees() != null && !cahier.getEntrees().isEmpty()) {
+                        cahier.setAffectation(null);
+                        cahier.setArchived(true);
+
+                        cahierRepository.save(cahier);
+                    } else {
+                        cahierRepository.delete(cahier);
+                    }
+                }
+
+                affectationRepository.deleteById(aff.getId());
+            }
+
             filiereRepository.delete(filiere);
 
             redAtts.addFlashAttribute("error", false);
@@ -163,6 +180,9 @@ public class FiliereController {
             Boolean dupData = filieresService.duplicateData(filiere, "put", redAtts);
 
             if (!dupData) {
+                if (!fil.getIntitule().equals(filiere.getIntitule()))
+                    changeCahierFiliere(fil.getId(), filiere.getIntitule());
+
                 fil.setCoordinateur(filiere.getCoordinateur());
                 fil.setDiplome(filiere.getDiplome());
                 fil.setIntitule(filiere.getIntitule());
@@ -215,6 +235,17 @@ public class FiliereController {
         model.addAttribute("profs", professeurRepository.findAll());
 
         return "ss/affectations/index";
+    }
+
+    private void changeCahierFiliere(UUID id, String intitule) {
+        List<Affectation> affectations = affectationRepository.findAllByFiliere_Id(id);
+
+        for (Affectation affectation : affectations) {
+            Cahier cahier = affectation.getCahier();
+
+            cahier.setFiliere(intitule);
+            cahierRepository.save(cahier);
+        }
     }
 
     private void deleteAffectationsAndCahiers(Filiere filiere) {

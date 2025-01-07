@@ -17,22 +17,23 @@
   </div>
 
   <!-- Error Messages -->
-  <div th:if="${actionAttributesExists == true}" class="p-4 text-sm text-[#B10C74] rounded-lg bg-red-100" role="alert">
-    <span>garbageeeeee</span>
-    <div th:if="${emailerror != null}">
+  <div th:if="${error != null && error == true}" class="p-4 text-sm text-[#B10C74] rounded-lg bg-red-100" role="alert">
+    <div th:if="${email != null}">
       <p>
-        Attention ! L'email <span class="font-bold" th:text="${emailerror}"></span>
+        Attention ! L'email <span class="font-bold" th:text="${email}"></span>
         existe déjà
       </p>
     </div>
     <div th:if="${telephone != null}">
       <p>
-        Le numéro de téléphone existe déjà !
+        Attention ! Le numero de téléphone <span class="font-bold" th:text="${telephone}"></span>
+        existe déjà
       </p>
     </div>
     <div th:if="${cin != null}">
       <p>
-        Le numéro de la CIN existe déjà !
+        Attention ! La CIN <span class="font-bold" th:text="${cin}"></span>
+        existe déjà
       </p>
     </div>
   </div>

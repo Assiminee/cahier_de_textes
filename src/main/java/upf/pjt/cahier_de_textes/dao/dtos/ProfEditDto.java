@@ -69,26 +69,4 @@ public class ProfEditDto {
             cahier.setProfesseur(existingProf.getFullName());
         }
     }
-
-    public static ProfEditDto fromEntity(Professeur professeur) {
-        ProfEditDto dto = new ProfEditDto();
-        dto.setNom(professeur.getNom());
-        dto.setPrenom(professeur.getPrenom());
-        dto.setEmail(professeur.getEmail());
-        dto.setAdresse(professeur.getAdresse());
-        dto.setGenre(professeur.getGenre());
-        dto.setDateNaissance(professeur.getDateNaissance());
-        dto.setCin(professeur.getCin());
-        dto.setTelephone(professeur.getTelephone());
-        dto.setGrade(professeur.getGrade());
-        dto.setDateDernierDiplome(professeur.getDateDernierDiplome());
-        dto.setDateEmbauche(professeur.getDateEmbauche());
-        dto.setPwd(professeur.getPwd());
-        dto.setQualifications(
-                professeur.getQualifications() != null
-                        ? professeur.getQualifications().stream().collect(Collectors.toList())
-                        : null
-        );
-        return dto;
-    }
 }

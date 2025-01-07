@@ -11,9 +11,12 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import upf.pjt.cahier_de_textes.dao.entities.*;
 import upf.pjt.cahier_de_textes.dao.entities.Module;
+import upf.pjt.cahier_de_textes.dao.repositories.AffectationRepository;
+import upf.pjt.cahier_de_textes.dao.repositories.CahierRepository;
 import upf.pjt.cahier_de_textes.dao.repositories.ModuleRepository;
 import upf.pjt.cahier_de_textes.dao.repositories.ProfesseurRepository;
 import upf.pjt.cahier_de_textes.dao.entities.enumerations.ModeEval;
+import upf.pjt.cahier_de_textes.services.ModuleService;
 import upf.pjt.cahier_de_textes.utils.AuthUtils;
 import java.util.List;
 import java.util.UUID;
@@ -24,14 +27,18 @@ public class ModuleController {
 
     private final ModuleRepository moduleRepository;
     private final  ProfesseurRepository professorRepository;
+    private final CahierRepository cahierRepository;
+    private final AffectationRepository affectationRepository;
 
     @Autowired
     public ModuleController(
             ModuleRepository moduleRepository,
-            ProfesseurRepository professorRepository
-    ) {
+            ProfesseurRepository professorRepository,
+            CahierRepository cahierRepository, AffectationRepository affectationRepository) {
         this.moduleRepository = moduleRepository;
         this.professorRepository = professorRepository;
+        this.cahierRepository = cahierRepository;
+        this.affectationRepository = affectationRepository;
     }
 
     @GetMapping()
@@ -87,7 +94,6 @@ public class ModuleController {
     @PostMapping()
     public String addModule(@ModelAttribute Module module, Model model, RedirectAttributes redAtt) {
         try {
-
             try {
                 User currentUser = AuthUtils.getAuthenticatedUser();
                 model.addAttribute("user", currentUser);
@@ -117,14 +123,31 @@ public class ModuleController {
     @DeleteMapping("/{id}")
     public String deleteModules(@PathVariable UUID id, RedirectAttributes redirectAttributes) {
         try {
-            System.out.println("Delete request received for module ID: " + id);
-
             Module module = moduleRepository.findById(id).orElse(null);
-            if (module == null) {
-                redirectAttributes.addFlashAttribute("error", "Module introuvable.");
-                return "redirect:/modules";
+
+            if (module == null)
+                return "redirect:/error/404";
+
+            for (Affectation aff : module.getAffectations()) {
+                Cahier cahier = aff.getCahier();
+                aff.setCahier(null);
+
+                if (cahier != null) {
+                    if (cahier.getEntrees() != null && !cahier.getEntrees().isEmpty()) {
+                        cahier.setAffectation(null);
+                        cahier.setArchived(true);
+
+                        cahierRepository.save(cahier);
+                    } else {
+                        cahierRepository.delete(cahier);
+                    }
+                }
+
+                affectationRepository.deleteById(aff.getId());
             }
-            moduleRepository.deleteById(id);
+
+            moduleRepository.delete(module);
+
             redirectAttributes.addFlashAttribute("action", true);
             redirectAttributes.addFlashAttribute("deleteSuccess",  module.getIntitule() );
         } catch (Exception e) {

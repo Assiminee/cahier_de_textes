@@ -1,4 +1,6 @@
-<div th:fragment="edit_profile_errors" th:if="${error == true || password != null}" class="p-4 mt-2 text-sm text-red-800 rounded-lg bg-[#ffdbdc]"
+<div th:fragment="edit_profile_msgs"
+     th:if="${error != null}"
+     th:class="|p-4 mt-2 text-sm ${!error ? 'text-green-800 bg-green-200' : 'text-red-800 bg-red-200'} rounded-lg |"
      role="alert">
   <div th:if="${email != null}">
     <p>
@@ -23,11 +25,7 @@
       <span class="font-bold" th:text="|${password}|"></span>
     </p>
   </div>
-</div>
-
-<div th:fragment="edit_profile_success" th:if="${success != null}" th:class="${success ? 'p-4 mt-2 text-sm text-[#52b963] rounded-lg bg-[#71ff88]' : 'p-4 mt-2 text-sm text-red-800 rounded-lg bg-[#ffdbdc]'}"
-     role="alert">
-  <div>
+  <div th:if="${success != null}">
     <p th:if="${success}">Vos données ont été modifiées avec succès</p>
     <p th:unless="${success}">Une erreur s'est produite lors de la modification.<br/>Veuillez réessayer plus tard.</p>
   </div>
