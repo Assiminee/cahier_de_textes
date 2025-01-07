@@ -17,7 +17,6 @@ public class CustomErrorController implements ErrorController {
     public String handleError(HttpServletRequest request) {
         Object status = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
 
-        System.out.println(status);
         if (status != null) {
             int statusCode = Integer.parseInt(status.toString());
 
@@ -33,7 +32,8 @@ public class CustomErrorController implements ErrorController {
             if (statusCode == 401)
                 return "redirect:/error/401";
         }
-        return "error/default";
+
+        return "redirect:/error/500";
     }
 
     @GetMapping("/403")
@@ -53,4 +53,7 @@ public class CustomErrorController implements ErrorController {
 
     @GetMapping("/405")
     public String forbiddenMethod() { return "error/405"; }
+
+    @GetMapping("/500")
+    public String internalServerError() { return "error/default"; }
 }

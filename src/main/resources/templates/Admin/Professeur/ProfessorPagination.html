@@ -1,5 +1,5 @@
 <div class="py-6 pagination-container">
-    <ul class="pagination flex justify-center gap-4">
+    <ul th:if="${totalPages > 1}" class="pagination flex justify-center gap-4">
         <!-- Previous Page -->
         <li th:if="${currentPage > 0}">
             <a th:href="@{/professeurs(page=${currentPage - 1}, size=${size}, nomComplet=${nomComplet}, email=${email}, grade=${grade})}"

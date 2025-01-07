@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     // Validation function for both Add and Edit forms
-    function validateUserForm(form) {
+    const validateUserForm = (form) => {
         let isValid = true;
 
         // Regex Patterns
@@ -45,6 +45,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
         // Nom
+        console.log(form);
         const nomInput = form.querySelector('[name="nom"]');
         const nomError = form.querySelector('#nom-error');
         if (nomInput && !nomRegex.test(nomInput.value.trim())) {
@@ -138,4 +139,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
         return isValid;
     }
+
+    window.validateUserForm = validateUserForm;
 });

@@ -15,17 +15,16 @@ public class AcceuilController {
 
     @GetMapping
     public String getDashboardPage(Model model) {
-
-
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication.getPrincipal() instanceof CustomUserDetails userDetails)
-
         {
             User currentUser = userDetails.getUser();
             model.addAttribute("user", currentUser);
+
+            return "Acceuil/acceuil";
         }
-        model.addAttribute("pageTitle", "Statistiques de l'application");
-        return "Acceuil/acceuil"; // Name of the Thymeleaf HTML file (without .html)
+
+        return "redirect:/error/401";
     }
 }
 
