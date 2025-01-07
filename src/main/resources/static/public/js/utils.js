@@ -12,6 +12,7 @@ export const disableInputs = (addClass, removeClass, disable, ...inputs) => {
             input.removeClass(removeClass)
     }
 }
+
 export const disableSelects = (addClass, removeClass, disable, ...selects) => {
     for (const select of selects) {
         if (disable)

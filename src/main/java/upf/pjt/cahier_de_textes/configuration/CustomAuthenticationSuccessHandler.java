@@ -16,8 +16,9 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
         for (GrantedAuthority authority : authentication.getAuthorities()) {
             String redirectUrl = String.valueOf(RoleEnum.valueOf(authority.getAuthority()));
+
             if (redirectUrl != null) {
-                response.sendRedirect("/profile");
+                response.sendRedirect("/acceuil");
                 return;
             }
         }

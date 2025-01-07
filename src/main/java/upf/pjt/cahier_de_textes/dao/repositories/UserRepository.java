@@ -19,6 +19,10 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     boolean existsByIdIsNotAndCin(UUID id, String cin);
     boolean existsByIdIsNotAndTelephone(UUID id, String telephone);
 
+    boolean existsByEmail(String email);
+    boolean existsByCin(String cin);
+    boolean existsByTelephone(String telephone);
+
     @Query("SELECT COUNT(u) FROM User u")
     int countAllUsers();
 
@@ -28,9 +32,9 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     @Query("SELECT r.role, COUNT(u) FROM User u JOIN u.role r GROUP BY r.role")
     List<Object[]> countUsersByRole();
 
-    @Query("SELECT u FROM User u " +
-            "WHERE (:nomComplet IS NULL OR CONCAT(u.nom, ' ', u.prenom) LIKE %:nomComplet%) " +
-            "AND (:email IS NULL OR u.email LIKE %:email%) " +
+    @Query("SELECT u FROM User u WHERE " +
+            "(:nomComplet = '' OR LOWER(CONCAT(u.nom, ' ', u.prenom)) LIKE LOWER(CONCAT('%', :nomComplet, '%'))) " +
+            "AND (:email = '' OR LOWER(u.email) LIKE LOWER(CONCAT('%', :email, '%'))) " +
             "AND (:role IS NULL OR u.role = :role) " +
             "AND (u.role != :excludedRole)"
     )

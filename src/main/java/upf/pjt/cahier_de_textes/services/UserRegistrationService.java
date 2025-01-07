@@ -39,8 +39,8 @@ public class UserRegistrationService {
     }
 
     @Transactional
-    public void registerUser(UserRegistrationDto dto) {
-
+    public User registerUser(UserRegistrationDto dto)
+    {
         RoleEnum selectedRoleEnum = RoleEnum.valueOf(dto.getRole().toUpperCase());
         Role role = roleRepository.findOneByRole(selectedRoleEnum);
         if (role == null) {
@@ -59,8 +59,9 @@ public class UserRegistrationService {
         user.setPwd(passwordEncoder.encode(dto.getPassword()));
         user.setRole(role);
 
-            userRepository.save(user);
-            System.out.println("User saved with ID: " + user.getId());
-        }
+        user = userRepository.save(user);
+        System.out.println("User saved with ID: " + user.getId());
+        return user;
     }
+}
 

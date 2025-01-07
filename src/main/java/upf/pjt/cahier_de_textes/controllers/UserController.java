@@ -54,32 +54,35 @@ public class UserController {
     @GetMapping
     public String showUsers(
             Model model,
-            @RequestParam(required = false) String nomComplet,
-            @RequestParam(required = false) String role,
-            @RequestParam(required = false) String email,
+            @RequestParam(required = false, defaultValue = "") String nomComplet,
+            @RequestParam(required = false, defaultValue = "") String role,
+            @RequestParam(required = false, defaultValue = "") String searchEmail,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
         // Authenticate and set model attributes
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication.getPrincipal() instanceof CustomUserDetails userDetails) {
-            User currentUser = userDetails.getUser();
-            model.addAttribute("user", currentUser);
-            model.addAttribute("grades", Grade.values());
-            model.addAttribute("roles", RoleEnum.values());
-            model.addAttribute("genres", Genre.values());
-        }
+        UserDTO user = UserService.getAuthenticatedUser();
+
+        if (user == null)
+            return "redirect:/error/401";
+
+        model.addAttribute("user", user);
+        model.addAttribute("grades", Grade.values());
+        model.addAttribute("roles", RoleEnum.values());
+        model.addAttribute("genres", Genre.values());
         model.addAttribute("nomComplet", nomComplet);
         model.addAttribute("role", role);
-        model.addAttribute("email", email);
+        model.addAttribute("searchEmail", searchEmail);
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("nom").ascending());
 
         Role profRole = roleRepository.findByRole(RoleEnum.ROLE_PROF);
         Role roleEntity = null;
-        if (role != null && !role.isBlank()) {
+
+        if (!role.isBlank()) {
             try {
                 RoleEnum roleEnum = RoleEnum.valueOf(role.toUpperCase());
+
                 if (roleEnum != RoleEnum.ROLE_PROF) { // Exclude 'prof'
                     roleEntity = roleRepository.findByRole(roleEnum);
                 } else {
@@ -89,7 +92,7 @@ public class UserController {
                 model.addAttribute("error", "Invalid role");
             }
         }
-        Page<User> usersPage = userRepository.searchUsers(nomComplet, email, roleEntity, profRole, pageable);
+        Page<User> usersPage = userRepository.searchUsers(nomComplet, searchEmail, roleEntity, profRole, pageable);
 
         model.addAttribute("users", usersPage.getContent());
         model.addAttribute("totalPages", usersPage.getTotalPages());
@@ -103,14 +106,23 @@ public class UserController {
     public String addUser(@Validated @ModelAttribute UserRegistrationDto userRegistrationDto, Model model, RedirectAttributes redAtt) {
 
         try {
-            userRegistrationService.registerUser(userRegistrationDto);
-            redAtt.addFlashAttribute("action", true);
-            redAtt.addFlashAttribute("added", userRegistrationDto.getNom() + " " + userRegistrationDto.getPrenom());
-            return "redirect:/users";
+            if (userService.hasUniqueAttributes(userRegistrationDto, redAtt)) {
+                User user = userRegistrationService.registerUser(userRegistrationDto);
+                redAtt.addFlashAttribute("action", true);
+                redAtt.addFlashAttribute("added", user.getFullName());
+            }
         } catch (IllegalArgumentException e) {
+            log.error(e.getMessage());
             model.addAttribute("errorMessage", e.getMessage());
-            return "Admin/User/users";
+            redAtt.addFlashAttribute("error", true);
+            redAtt.addFlashAttribute("msg", "Une erreur est survenue. Veuillez réessayer plutard");
         }
+
+        for (String key : redAtt.getFlashAttributes().keySet()) {
+            System.out.println(key);
+            System.out.println(redAtt.getFlashAttributes().get(key));
+        }
+        return "redirect:/users";
     }
 
     @PatchMapping("/{id}")
@@ -201,13 +213,9 @@ public class UserController {
         try {
             System.out.println(editUserDTO);
 
-            Optional<User> userOpt = userRepository.findById(id);
-            if (userOpt.isEmpty()) {
-                redirectAttributes.addFlashAttribute("error", "User not found.");
-                return "redirect:/users";
-            }
-
-            User user = userOpt.get();
+            User user = userRepository.findById(id).orElse(null);
+            if (user == null)
+                return "redirect:/error/404";
 
             if (!userService.hasUniqueAttributes(id, editUserDTO, redirectAttributes)) {
                 redirectAttributes.addFlashAttribute("actionAttributesExists", true);
@@ -242,9 +250,8 @@ public class UserController {
 
             userRepository.save(user);
 
-            String successMessage = "User updated successfully: " + user.getNom() + " " + user.getPrenom();
-            redirectAttributes.addFlashAttribute("success", successMessage);
-            redirectAttributes.addFlashAttribute("actionAttributesExists", true);
+            redirectAttributes.addFlashAttribute("action", true);
+            redirectAttributes.addFlashAttribute("editSucessUser", user.getFullName());
         } catch (Exception e) {
             System.err.println("Error updating user: " + e.getMessage());
         }

@@ -1,4 +1,4 @@
-import { enableInputs,enableInput , selectValue , hiddenMethodInput ,disableInputs,hideInputs,disableSelects}
+import {enableInput , selectValue , hiddenMethodInput ,disableInputs,hideInputs,disableSelects}
     from '/public/js/utils.js'
 
 export const addUser = (user) => {
@@ -15,7 +15,14 @@ export const addUser = (user) => {
         const role = $("#role-select");
         const genre = $("#genre");
         $("#modalTitle").text("Ajouter un nouvel utilisateur");
-        enableInputs(nom, prenom, email, tel, adresse, cin, dateNaissance);
+
+        disableInputs(
+            "bg-gray-100", "bg-gray-300",
+            false, nom, prenom, email, tel,
+            adresse, cin, dateNaissance,
+            role, genre
+        );
+
         selectValue(role, "");
         selectValue(genre, "");
         hideInputs(false, $("#confirmBtn"));
@@ -23,7 +30,15 @@ export const addUser = (user) => {
         $("#userModalForm").attr("action", "/users");
         hiddenMethodInput(true);
 
-        $("#confPWD").removeClass("hidden");
+        $("#confPWD").removeClass("hidden").val("");
+        nom.val("");
+        prenom.val("");
+        email.val("");
+        password.val("");
+        cin.val("");
+        tel.val("");
+        adresse.val("");
+        dateNaissance.val("");
     })
 }
 
@@ -69,7 +84,7 @@ export const viewUserInfo = () => {
 
             $("#userModalForm").attr("action", `/users/${btn.data("id")}`);
             hiddenMethodInput(false);
-            disableSelects("bg-gray-300", "bg-gray-100", true,role, genre);
+            disableSelects("bg-gray-300", "bg-gray-100", true, role, genre);
 
             $("#confPWD").addClass("hidden");
             $("#pwd").addClass("hidden");
@@ -96,19 +111,22 @@ export const modifyUser = () => {
             const nomdata = btn.data("nom");
             const prenomdata = btn.data("prenom")
 
-
-
-
             $("#modalTitle").text(`Modifier l'utilisateur ${nomdata} ${prenomdata}`);
-            enableInput(nom, nomdata);
-            enableInput(prenom, prenomdata);
-            enableInput(email, btn.data("email"));
-            enableInput(cin, btn.data("cin"));
-            enableInput(adresse, btn.data("add"));
-            enableInput(tel, btn.data("tel"));
-            enableInput(dateNaissance, btn.data("date"));
-            enableInput(password, "");
-            enableInput(confPwd, "");
+            disableInputs(
+                "bg-gray-100", "bg-gray-300",
+                false, nom, prenom, email, tel,
+                adresse, cin, dateNaissance,
+                role, genre
+            );
+            nom.val(nomdata);
+            prenom.val(prenomdata);
+            email.val(btn.data("email"));
+            cin.val(btn.data("cin"));
+            adresse.val(btn.data("add"));
+            tel.val(btn.data("tel"));
+            dateNaissance.val(btn.data("date"));
+            password.val("");
+            confPwd.val("");
             selectValue(role, btn.data("role"));
             selectValue(genre, btn.data("genre"));
 
@@ -119,14 +137,11 @@ export const modifyUser = () => {
             $("#password").removeAttr("required");
             $("#confirmPassword").removeAttr("required");
             confPwd.removeClass("hidden");
-            pwd.removeClass("hidden");
-
-
-
-
+            password.removeClass("hidden");
         })
     })
 }
+
 export const deleteUser = () => {
     $(".deleteBtns").each((i, btn) => {
         $(btn).on("click", (e) => {

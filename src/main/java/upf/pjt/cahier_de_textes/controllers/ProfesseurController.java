@@ -207,6 +207,7 @@ public class ProfesseurController {
         model.addAttribute("grades", Grade.values());
         model.addAttribute("roles", RoleEnum.values());
         model.addAttribute("genres", Genre.values());
+        model.addAttribute("view", false);
 
         return "Admin/Professeur/profView";
     }
@@ -298,10 +299,13 @@ public class ProfesseurController {
                             professeur.getTelephone(),
                             null
                         );
+        System.out.println(exists);
         if (exists) {
             redirectAttributes.addFlashAttribute("actionAttributesExists", true);
-            redirectAttributes.addFlashAttribute("error", "A professor with this email, CIN, or telephone already exists.");
-            return "redirect:/professeurs";
+            redirectAttributes.addFlashAttribute("error", "L'email, CIN, ou telephone existe déja.");
+            redirectAttributes.addFlashAttribute("professeur", professeur);
+            redirectAttributes.addFlashAttribute("view", false);
+            return "redirect:/professeurs/viewprof";
         }
 
         try {
@@ -317,14 +321,17 @@ public class ProfesseurController {
             BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
             professeur.setPwd(encoder.encode(professeur.getPwd()));
 
-            professeurRepository.save(professeur);
+            professeur = professeurRepository.save(professeur);
 
             redirectAttributes.addFlashAttribute("action", true);
             redirectAttributes.addFlashAttribute("added", professeur.getFullName());
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             redirectAttributes.addFlashAttribute("error", "An error occurred while adding the professor: " + e.getMessage());
         }
 
-        return "redirect:/professeurs";
+        redirectAttributes.addFlashAttribute("professeur", professeur);
+        redirectAttributes.addFlashAttribute("view", false);
+        return "redirect:/professeurs/viewprof";
     }
 }

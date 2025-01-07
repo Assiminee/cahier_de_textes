@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import upf.pjt.cahier_de_textes.dao.dtos.CustomUserDetails;
+import upf.pjt.cahier_de_textes.dao.dtos.UserRegistrationDto;
 import upf.pjt.cahier_de_textes.dao.entities.Module;
 import upf.pjt.cahier_de_textes.dao.repositories.*;
 import upf.pjt.cahier_de_textes.dao.dtos.UserDTO;
@@ -60,6 +61,27 @@ public class UserService {
 
         if (!hasDuplicateData)
             redirectAttributes.addFlashAttribute("success", true);
+
+        return !hasDuplicateData;
+    }
+
+
+    public boolean hasUniqueAttributes(UserRegistrationDto user, RedirectAttributes redirectAttributes) {
+
+        boolean emailExists = userRepository.existsByEmail(user.getEmail());
+        boolean cinExists = userRepository.existsByCin(user.getCin());
+        boolean telephoneExists = userRepository.existsByTelephone(user.getTelephone());
+        boolean hasDuplicateData = emailExists || cinExists || telephoneExists;
+
+        redirectAttributes.addFlashAttribute("error", hasDuplicateData);
+        if (emailExists)
+            redirectAttributes.addFlashAttribute("email", user.getEmail());
+
+        if (telephoneExists)
+            redirectAttributes.addFlashAttribute("telephone", user.getTelephone());
+
+        if (cinExists)
+            redirectAttributes.addFlashAttribute("cin", user.getCin());
 
         return !hasDuplicateData;
     }
