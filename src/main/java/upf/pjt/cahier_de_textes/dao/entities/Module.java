@@ -38,7 +38,7 @@ public class Module {
     @JsonBackReference
     private Professeur responsable;
 
-    @OneToMany(mappedBy = "module", fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @OneToMany(mappedBy = "module", fetch = FetchType.EAGER)
     @JsonIgnore
     private List<Affectation> affectations;
 

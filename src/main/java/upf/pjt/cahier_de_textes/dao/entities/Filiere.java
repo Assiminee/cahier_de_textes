@@ -52,6 +52,6 @@ public class Filiere {
     @JsonBackReference
     private Professeur coordinateur;
 
-    @OneToMany(mappedBy = "filiere", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "filiere", fetch = FetchType.LAZY)
     private List<Affectation> affectations;
 }

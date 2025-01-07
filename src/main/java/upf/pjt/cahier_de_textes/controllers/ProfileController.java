@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import upf.pjt.cahier_de_textes.dao.dtos.UserDTO;
+import upf.pjt.cahier_de_textes.dao.entities.Cahier;
+import upf.pjt.cahier_de_textes.dao.repositories.CahierRepository;
 import upf.pjt.cahier_de_textes.dao.repositories.ProfesseurRepository;
 import upf.pjt.cahier_de_textes.dao.entities.User;
 import upf.pjt.cahier_de_textes.dao.dtos.CustomUserDetails;
@@ -17,11 +19,13 @@ public class ProfileController {
 
     private final QualificationRepository qualificationRepository;
     private final ProfesseurRepository professeurRepository;
+    private final CahierRepository cahierRepository;
 
     @Autowired
-    public ProfileController(ProfesseurRepository professeurRepository, QualificationRepository qualificationRepository) {
+    public ProfileController(ProfesseurRepository professeurRepository, QualificationRepository qualificationRepository, CahierRepository cahierRepository) {
         this.professeurRepository = professeurRepository;
         this.qualificationRepository = qualificationRepository;
+        this.cahierRepository = cahierRepository;
     }
 
     @GetMapping("/profile")

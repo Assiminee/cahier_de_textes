@@ -61,7 +61,7 @@ public class Professeur extends User {
     @JsonIgnore
     private Filiere filiere;
 
-    @OneToMany(mappedBy = "prof", fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @OneToMany(mappedBy = "prof", fetch = FetchType.EAGER)
     @JsonIgnore
     private List<Affectation> affectations;
 

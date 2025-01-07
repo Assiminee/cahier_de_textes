@@ -1,13 +1,10 @@
 package upf.pjt.cahier_de_textes.dao.dtos;
 
-import ch.qos.logback.core.encoder.EchoEncoder;
 import lombok.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import upf.pjt.cahier_de_textes.dao.entities.Affectation;
 import upf.pjt.cahier_de_textes.dao.entities.User;
 import upf.pjt.cahier_de_textes.dao.entities.enumerations.Genre;
 import upf.pjt.cahier_de_textes.dao.entities.enumerations.Grade;
-import upf.pjt.cahier_de_textes.dao.entities.enumerations.RoleEnum;
 import java.time.LocalDate;
 
 @NoArgsConstructor

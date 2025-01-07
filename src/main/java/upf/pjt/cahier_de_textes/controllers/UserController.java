@@ -14,15 +14,14 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import upf.pjt.cahier_de_textes.dao.dtos.*;
+import upf.pjt.cahier_de_textes.dao.entities.Affectation;
+import upf.pjt.cahier_de_textes.dao.entities.Cahier;
 import upf.pjt.cahier_de_textes.dao.entities.Role;
 import upf.pjt.cahier_de_textes.dao.entities.User;
 import upf.pjt.cahier_de_textes.dao.entities.enumerations.Genre;
 import upf.pjt.cahier_de_textes.dao.entities.enumerations.Grade;
 import upf.pjt.cahier_de_textes.dao.entities.enumerations.RoleEnum;
-import upf.pjt.cahier_de_textes.dao.repositories.ProfesseurRepository;
-import upf.pjt.cahier_de_textes.dao.repositories.QualificationRepository;
-import upf.pjt.cahier_de_textes.dao.repositories.RoleRepository;
-import upf.pjt.cahier_de_textes.dao.repositories.UserRepository;
+import upf.pjt.cahier_de_textes.dao.repositories.*;
 import upf.pjt.cahier_de_textes.services.UserDetailsServiceImpl;
 import upf.pjt.cahier_de_textes.services.UserRegistrationService;
 import upf.pjt.cahier_de_textes.services.UserService;
@@ -39,14 +38,16 @@ public class UserController {
     private final ProfesseurRepository professeurRepository;
     private final UserRegistrationService userRegistrationService;
     private final RoleRepository roleRepository;
+    private final CahierRepository cahierRepository;
 
-    public UserController(UserService userService, QualificationRepository qualificationRepository, UserRepository userRepository, ProfesseurRepository professeurRepository, UserRegistrationService userRegistrationService, RoleRepository roleRepository) {
+    public UserController(UserService userService, QualificationRepository qualificationRepository, UserRepository userRepository, ProfesseurRepository professeurRepository, UserRegistrationService userRegistrationService, RoleRepository roleRepository, CahierRepository cahierRepository) {
         this.userService = userService;
         this.qualificationRepository = qualificationRepository;
         this.userRepository = userRepository;
         this.professeurRepository = professeurRepository;
         this.userRegistrationService = userRegistrationService;
         this.roleRepository = roleRepository;
+        this.cahierRepository = cahierRepository;
     }
 
 
@@ -115,22 +116,21 @@ public class UserController {
     @PatchMapping("/{id}")
     public String editProfileInformation(@PathVariable("id") UUID id, @ModelAttribute UserDTO incomingUser, RedirectAttributes redirectAttributes) {
         try {
-            boolean userExists = userRepository.existsById(id);
-
-            if (!userExists) {
-                redirectAttributes.addFlashAttribute("error", "User not found");
-                redirectAttributes.addFlashAttribute("success", false);
-                return "redirect:/auth/login?error";
-            }
-
             User user = userRepository.findById(id).orElse(null);
 
+            if (user == null)
+                return "redirect:/error/404";
+
             if (userService.hasUniqueAttributes(id, incomingUser, redirectAttributes)) {
-                assert user != null;
                 incomingUser.setUserDetails(user);
 
-                if (user.getRole().getAuthority().equals("ROLE_PROF"))
+                if (user.getRole().getAuthority().equals("ROLE_PROF")) {
                     incomingUser.setProfessorDetails(qualificationRepository, professeurRepository);
+                    for (Cahier cahier : cahierRepository.findAllByProfId(user.getId())) {
+                        cahier.setProfesseur(user.getFullName());
+                        cahierRepository.save(cahier);
+                    }
+                }
 
                 userRepository.save(user);
                 UserDetailsServiceImpl.updateCustomUserDetails(user);
@@ -166,13 +166,10 @@ public class UserController {
 
     @PutMapping("/{id}/password")
     public String updatePassword(@PathVariable UUID id, @ModelAttribute EditPwdDTO editPwdDTO, RedirectAttributes redAtts) throws Exception {
-        System.out.println(editPwdDTO);
         User user = userRepository.findById(id).orElse(null);
 
-        System.out.println(user);
-
         if (user == null)
-            throw new Exception("User with ID '" + id + "' not found");
+            return "redirect:/error/404";
 
         String message;
 
@@ -184,8 +181,7 @@ public class UserController {
                 userRepository.save(user);
             }
 
-            System.out.println(user);
-
+            redAtts.addFlashAttribute("error", !correctPassword);
             message = correctPassword ? "Le mot de passe a bien été modifié" : "L'ancien mot de passe fourni est incorrecte";
         } catch (Exception e) {
             message = "Impossible de changer de mot de passe. Veuillez reessayer plus tard.";
@@ -215,7 +211,6 @@ public class UserController {
 
             if (!userService.hasUniqueAttributes(id, editUserDTO, redirectAttributes)) {
                 redirectAttributes.addFlashAttribute("actionAttributesExists", true);
-                redirectAttributes.addFlashAttribute("emailerror", editUserDTO.getEmail());
                 return "redirect:/users";
             }
 
