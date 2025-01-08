@@ -43,6 +43,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const cinRegex = /^[A-Za-z]{1,2}[0-9]{4,6}$/;
         const telephoneRegex = /^\+212[6-7][0-9]{8}$/;
         const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+        const mode = form.getAttribute("data-mode");
 
         // Nom
         console.log(form);
@@ -115,25 +116,51 @@ document.addEventListener("DOMContentLoaded", function () {
             telephoneError.classList.add("hidden");
         }
 
-        // Password and Confirm Password (Only for Add User Form)
-        const passwordInput = form.querySelector('[name="pwd"]');
-        const confirmPasswordInput = form.querySelector('[name="confirmPassword"]');
-        if (passwordInput && confirmPasswordInput) {
-            const passwordError = form.querySelector('#password-error');
-            const confirmPasswordError = form.querySelector('#confirmPassword-error');
+        const passwordAdd = document.getElementById("passwordAdd");
+        const confirmPasswordAdd = document.getElementById("confirmPasswordAdd");
+        if (passwordAdd && confirmPasswordAdd) {
+            const passwordAddError = document.getElementById("passwordAdd-error");
+            const confirmPasswordAddError = document.getElementById("confirmPasswordAdd-error");
 
-            if (!passwordRegex.test(passwordInput.value)) {
-                passwordError.classList.remove("hidden");
+            if (!passwordRegex.test(passwordAdd.value)) {
+                passwordAddError.classList.remove("hidden");
                 isValid = false;
-            } else if (passwordError) {
-                passwordError.classList.add("hidden");
+            } else {
+                passwordAddError.classList.add("hidden");
             }
 
-            if (passwordInput.value !== confirmPasswordInput.value) {
-                confirmPasswordError.classList.remove("hidden");
+            if (passwordAdd.value !== confirmPasswordAdd.value) {
+                confirmPasswordAddError.classList.remove("hidden");
                 isValid = false;
-            } else if (confirmPasswordError) {
-                confirmPasswordError.classList.add("hidden");
+            } else {
+                confirmPasswordAddError.classList.add("hidden");
+            }
+        }
+
+        // Password validation for Edit Mode
+        const passwordEdit = document.getElementById("passwordEdit");
+        const confirmPasswordEdit = document.getElementById("confirmPasswordEdit");
+        if (passwordEdit && confirmPasswordEdit) {
+            const passwordEditError = document.getElementById("passwordEdit-error");
+            const confirmPasswordEditError = document.getElementById("confirmPasswordEdit-error");
+
+            if (passwordEdit.value.trim() !== "") {
+                if (!passwordRegex.test(passwordEdit.value)) {
+                    passwordEditError.classList.remove("hidden");
+                    isValid = false;
+                } else {
+                    passwordEditError.classList.add("hidden");
+                }
+
+                if (passwordEdit.value !== confirmPasswordEdit.value) {
+                    confirmPasswordEditError.classList.remove("hidden");
+                    isValid = false;
+                } else {
+                    confirmPasswordEditError.classList.add("hidden");
+                }
+            } else {
+                passwordEditError.classList.add("hidden");
+                confirmPasswordEditError.classList.add("hidden");
             }
         }
 

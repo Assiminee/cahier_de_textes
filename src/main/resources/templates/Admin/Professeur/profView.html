@@ -9,7 +9,7 @@
     <header th:replace="~{fragments/nav.html :: nav}"></header>
 
     <section class="px-7 py-6 pr-8 flex justify-between items-center">
-      <h2 th:if="${professeur == null}" class="text-3xl font-medium text-[#B10C74]">
+      <h2 th:if="${professeur == null && add == true}" class="text-3xl font-medium text-[#B10C74]">
         Ajouter un nouveau professeur
       </h2>
       <h2 th:if="${professeur != null && view == false}" class="text-3xl font-medium text-[#B10C74]">
@@ -23,7 +23,7 @@
 
     <form class="grid grid-cols-[1fr_auto_1fr] gap-6 px-6 pb-6 overflow-auto" id="addProfForm" method="post"
           th:action="${professeur == null} ? @{/professeurs} : @{/professeurs/{id}(id=${professeur.id})}"
-            >
+          data-mode="${add ? 'add' : 'edit'}" >
 
       <!-- If we're editing, we tell Spring to treat this as a PUT -->
       <input type="hidden" name="_method" th:value="${professeur == null ? 'POST' : 'PUT'}" />
@@ -123,30 +123,48 @@
 
         </div>
 
-        <div>
-          <label  th:disabled="${view}"
-                  class="block mb-2 font-medium"
-                  th:classappend="${view} ? ' hidden' : ''"
-                  th:if="${professeur == null}" for="password1" >Mot de Passe</label>
-          <label th:disabled="${view}"
-                 class="block mb-2 font-medium"
-                 th:classappend="${view} ? ' hidden' : ''"
-                  th:if="${professeur != null}" for="password2" > Modifier le Mot de Passe</label>
-          <input th:if="${professeur == null}" type="password" id="password1" name="pwd"
+
+
+        <!-- Password Section for Adding -->
+        <div th:if="${professeur == null && add == true}">
+          <label for="passwordAdd" class="block mb-2 font-medium">Mot de Passe</label>
+          <input type="password" id="passwordAdd" name="pwd"
                  placeholder="Enter your password"
                  class="w-full p-3 rounded bg-gray-80 border border-gray-500 text-gray-700"
-                  />
-          <input  th:if="${professeur != null}" type="password" id="password2" name="pwd"
-                 placeholder="Enter your password" th:disabled="${view}"
-                  class="w-full p-3 rounded bg-gray-80 border border-gray-500 text-gray-700"
-                  th:classappend="${view} ? ' hidden' : ''"
-                 />
+                 required />
+          <span id="passwordAdd-error" class="text-[#B10C74] text-sm hidden">
+    Le mot de passe doit comporter au moins 8 caractères, inclure des lettres majuscules et minuscules, un chiffre et un caractère spécial.
+  </span>
 
-
-          <span id="password-error" class="text-[#B10C74] text-sm hidden">
-      Le mot de passe doit comporter au moins 8 caractères, inclure des lettres majuscules et minuscules, un chiffre et un caractère spécial.
-    </span>
+          <label for="confirmPasswordAdd" class="block mb-2 font-medium">Confirmer le Mot de Passe</label>
+          <input type="password" id="confirmPasswordAdd" name="confirmPassword"
+                 placeholder="Confirm your password"
+                 class="w-full p-3 rounded bg-gray-80 border border-gray-500 text-gray-700"
+                 required />
+          <span id="confirmPasswordAdd-error" class="text-[#B10C74] text-sm hidden">
+    Les mots de passe ne correspondent pas
+  </span>
         </div>
+
+        <!-- Password Section for Editing (only if not in view mode) -->
+        <div th:if="${professeur != null && view == false}">
+          <label for="passwordEdit" class="block mb-2 font-medium">Modifier le Mot de Passe</label>
+          <input type="password" id="passwordEdit" name="pwd"
+                 placeholder="Enter your password"
+                 class="w-full p-3 rounded bg-gray-80 border border-gray-500 text-gray-700" />
+          <span id="passwordEdit-error" class="text-[#B10C74] text-sm hidden">
+    Le mot de passe doit comporter au moins 8 caractères, inclure des lettres majuscules et minuscules, un chiffre et un caractère spécial.
+  </span>
+
+          <label for="confirmPasswordEdit" class="block mb-2 font-medium">Confirmer le Mot de Passe</label>
+          <input type="password" id="confirmPasswordEdit" name="confirmPassword"
+                 placeholder="Confirm your password"
+                 class="w-full p-3 rounded bg-gray-80 border border-gray-500 text-gray-700" />
+          <span id="confirmPasswordEdit-error" class="text-[#B10C74] text-sm hidden">
+    Les mots de passe ne correspondent pas
+  </span>
+        </div>
+
 
       </div>
 
@@ -154,25 +172,7 @@
       <!-- Right Column -->
       <div class="space-y-4">
         <!-- Confirm Password -->
-        <div>
-          <label th:disabled="${view}"
-                 class="block mb-2 font-medium"
-                 th:classappend="${view} ? ' hidden' : ''"
-                 >Confirmer le Mot de Passe</label>
 
-
-          <input class="w-full p-3 rounded bg-gray-80 border border-gray-500 text-gray-700" id="confirmPassword1" name="confirmPassword" placeholder="Confirm your password"
-                 required
-                 th:if="${professeur == null}"
-                 type="password"/>
-          <input th:if="${professeur != null}"  type="password" id="confirmPassword2" name="confirmPassword"
-                 placeholder="Confirm your password"
-                 th:disabled="${view}"
-                 class="w-full p-3 rounded bg-gray-80 border border-gray-500 text-gray-700"
-                 th:classappend="${view} ? ' hidden' : ''"
-                  />
-          <span id="confirmPassword-error" class="text-[#B10C74] text-sm hidden">Les mots de passe ne correspondent pas</span>
-        </div>
 
         <!-- Date Dernier Diplome -->
         <div>
