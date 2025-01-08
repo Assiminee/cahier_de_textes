@@ -94,9 +94,11 @@ export const viewUserInfo = () => {
 export const modifyUser = () => {
     $(".modBtns").each((i, btn) => {
         $(btn).on("click", (e) => {
+            $(".text-\\[#B10C74\\].text-sm").addClass("hidden");
             console.log(e.currentTarget);
             const btn = $(e.currentTarget);
             const nom = $("#nom");
+            $(".error-msg").addClass("hidden");
             const prenom = $("#prenom");
             const email = $("#email");
             const password = $("#pwd");
@@ -138,6 +140,9 @@ export const modifyUser = () => {
             $("#confirmPassword").removeAttr("required");
             confPwd.removeClass("hidden");
             password.removeClass("hidden");
+            telephone.addClass("hidden");
+            cin.addClass("hidden");
+
         })
     })
 }

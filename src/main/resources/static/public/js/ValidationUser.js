@@ -1,40 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
-    // Attach validation logic to "addUserForm"
-    const addUserForm = document.getElementById("addUserForm");
-    if (addUserForm) {
-        addUserForm.addEventListener("submit", function (event) {
-            const isValid = validateUserForm(addUserForm);
-
-            if (!isValid) {
-                event.preventDefault(); // Prevent submission if validation fails
-            }
-        });
-    }
-
-    // Attach validation logic to "addProfForm"
-    const addProfForm = document.getElementById("addProfForm");
-    if (addProfForm) {
-        addProfForm.addEventListener("submit", function (event) {
-            const isValid = validateUserForm(addProfForm);
-
-            if (!isValid) {
-                event.preventDefault(); // Prevent submission if validation fails
-            }
-        });
-    }
-
-    // Attach to edit modals dynamically
-    document.querySelectorAll('[id^="editUserForm-"]').forEach((form) => {
-        form.addEventListener("submit", function (event) {
-            const isValid = validateUserForm(form);
-
-            if (!isValid) {
-                event.preventDefault(); // Prevent submission if validation fails
-            }
-        });
-    });
-
-    // Validation function for both Add and Edit forms
+    // --- Define the validation function first ---
     const validateUserForm = (form) => {
         let isValid = true;
 
@@ -43,10 +8,8 @@ document.addEventListener("DOMContentLoaded", function () {
         const cinRegex = /^[A-Za-z]{1,2}[0-9]{4,6}$/;
         const telephoneRegex = /^\+212[6-7][0-9]{8}$/;
         const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-        const mode = form.getAttribute("data-mode");
 
         // Nom
-        console.log(form);
         const nomInput = form.querySelector('[name="nom"]');
         const nomError = form.querySelector('#nom-error');
         if (nomInput && !nomRegex.test(nomInput.value.trim())) {
@@ -106,7 +69,7 @@ document.addEventListener("DOMContentLoaded", function () {
             cinError.classList.add("hidden");
         }
 
-        // Telephone
+        // Téléphone
         const telephoneInput = form.querySelector('[name="telephone"]');
         const telephoneError = form.querySelector('#telephone-error');
         if (telephoneInput && !telephoneRegex.test(telephoneInput.value.trim())) {
@@ -116,11 +79,12 @@ document.addEventListener("DOMContentLoaded", function () {
             telephoneError.classList.add("hidden");
         }
 
-        const passwordAdd = document.getElementById("passwordAdd");
-        const confirmPasswordAdd = document.getElementById("confirmPasswordAdd");
+        // Password and Confirm Password for Add Mode
+        const passwordAdd = form.querySelector("#passwordAdd");
+        const confirmPasswordAdd = form.querySelector("#confirmPasswordAdd");
         if (passwordAdd && confirmPasswordAdd) {
-            const passwordAddError = document.getElementById("passwordAdd-error");
-            const confirmPasswordAddError = document.getElementById("confirmPasswordAdd-error");
+            const passwordAddError = form.querySelector("#passwordAdd-error");
+            const confirmPasswordAddError = form.querySelector("#confirmPasswordAdd-error");
 
             if (!passwordRegex.test(passwordAdd.value)) {
                 passwordAddError.classList.remove("hidden");
@@ -137,12 +101,36 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         }
 
+        // Password and Confirm Password for Add Mode
+        const password= form.querySelector("#password");
+        const confirmPassword= form.querySelector("#confirmPassword");
+        if (password && confirmPassword) {
+            const passwordError = form.querySelector("#password-error");
+            const confirmPasswordError = form.querySelector("#confirmPassword-error");
+
+            if (password.value.trim() !== "" || confirmPassword.value.trim() !== "") {
+                if (!passwordRegex.test(password.value)) {
+                    passwordError.classList.remove("hidden");
+                    isValid = false;
+                } else {
+                    passwordError.classList.add("hidden");
+                }
+
+                if (password.value !== confirmPassword.value) {
+                    confirmPasswordError.classList.remove("hidden");
+                    isValid = false;
+                } else {
+                    confirmPasswordError.classList.add("hidden");
+                }
+            }
+        }
+
         // Password validation for Edit Mode
-        const passwordEdit = document.getElementById("passwordEdit");
-        const confirmPasswordEdit = document.getElementById("confirmPasswordEdit");
+        const passwordEdit = form.querySelector("#passwordEdit");
+        const confirmPasswordEdit = form.querySelector("#confirmPasswordEdit");
         if (passwordEdit && confirmPasswordEdit) {
-            const passwordEditError = document.getElementById("passwordEdit-error");
-            const confirmPasswordEditError = document.getElementById("confirmPasswordEdit-error");
+            const passwordEditError = form.querySelector("#passwordEdit-error");
+            const confirmPasswordEditError = form.querySelector("#confirmPasswordEdit-error");
 
             if (passwordEdit.value.trim() !== "") {
                 if (!passwordRegex.test(passwordEdit.value)) {
@@ -165,7 +153,42 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         return isValid;
+    };
+    window.validateUserForm = validateUserForm;
+
+    // --- Now attach event listeners after defining the function ---
+    const addUserForm = document.getElementById("addUserForm");
+    if (addUserForm) {
+        addUserForm.addEventListener("submit", function (event) {
+            if (!validateUserForm(addUserForm)) {
+                event.preventDefault();
+            }
+        });
     }
 
-    window.validateUserForm = validateUserForm;
+    const userModalForm = document.getElementById("userModalForm");
+    if (userModalForm) {
+        userModalForm.addEventListener("submit", function (event) {
+            if (!validateUserForm(userModalForm)) {
+                event.preventDefault();
+            }
+        });
+    }
+
+    const addProfForm = document.getElementById("addProfForm");
+    if (addProfForm) {
+        addProfForm.addEventListener("submit", function (event) {
+            if (!validateUserForm(addProfForm)) {
+                event.preventDefault();
+            }
+        });
+    }
+
+    document.querySelectorAll('[id^="editUserForm-"]').forEach((form) => {
+        form.addEventListener("submit", function (event) {
+            if (!validateUserForm(form)) {
+                event.preventDefault();
+            }
+        });
+    });
 });

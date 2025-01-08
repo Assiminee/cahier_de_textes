@@ -21,58 +21,58 @@
             </div>
             <!-- Modal body -->
             <div class="p-4 md:p-5 max-h-[60vh] space-y-4 overflow-y-auto">
-                <form th:action="@{/users}" th:method="POST" id="userModalForm">
+                <form th:action="@{/users}" th:method="POST" id="userModalForm" onsubmit="return validateForm(this.id)">
+                    <script src="/public/js/ValidationUser.js"></script>
                     <!-- Nom -->
                     <div class="px-3 pb-3">
                         <label for="nom" class="block mb-2 font-medium">Nom</label>
-                        <input type="text" name="nom" id="nom" pattern="^[a-zA-Z]+([ \-][a-zA-Z]+)*$" required
-                               class="peer/nom w-full p-3 rounded border border-gray-500 text-gray-700"/>
-                        <span class="invisible peer-invalid/nom:visible text-[#B10C74] text-sm">Le nom ne doit contenir que des lettres, des espaces, des tirets ou des apostrophes</span>
+                        <input type="text" name="nom" id="nom"  required
+                               class=" w-full p-3 rounded border border-gray-500 text-gray-700"/>
+                        <span id="nom-error" class="error-msg text-[#B10C74] text-sm hidden">Le nom ne doit contenir que des lettres, des espaces, des tirets ou des apostrophes.</span>
                     </div>
 
                     <!-- Prenom -->
                     <div class="px-3 pb-3">
                         <label for="prenom" class="block mb-2 font-medium">Prénom</label>
-                        <input type="text" name="prenom" id="prenom" pattern="^[a-zA-Z]+([ \-][a-zA-Z]+)*$" required
-                               class="peer/prenom w-full p-3 rounded border border-gray-500 text-gray-700"/>
-                        <span class="invisible peer-invalid/prenom:visible text-[#B10C74] text-sm">Le prénom ne doit contenir que des lettres, des espaces, des tirets ou des apostrophes</span>
+                        <input type="text" name="prenom" id="prenom" required
+                               class="w-full p-3 rounded border border-gray-500 text-gray-700"/>
+                           <span id="prenom-error" class="error-msg text-[#B10C74] text-sm hidden">Le prénom ne doit contenir que des lettres, des espaces ou des apostrophes.</span>
                     </div>
 
                     <!-- Email -->
                     <div class="px-3 pb-3">
                         <label for="email" class="block mb-2 font-medium">Email</label>
                         <input type="email" name="email" id="email" required
-                               class="peer/email w-full p-3 rounded border border-gray-500 text-gray-700"/>
-                        <span class="invisible peer-invalid/email:visible text-[#B10C74] text-sm">Email invalid</span>
+                               class="w-full p-3 rounded border border-gray-500 text-gray-700"/>
+                        <span id="email-error" class="error-msg text-[#B10C74]  text-sm hidden">E-mail invalide ! </span>
                     </div>
                     <!-- Date de Naissance -->
                     <div class="px-3 pb-3">
                         <label for="dateNaissance" class="block mb-2 font-medium">Date de Naissance</label>
                         <input type="date" name="dateNaissance" id="dateNaissance"
-                               class="peer/dateNaissance w-full p-3 rounded bg-gray-100 border border-gray-500 text-gray-700" required />
-                        <span  class="invisible peer-invalid/dateNaissance:visible text-[#B10C74] text-sm">l'utilsateur doit avoir au moins 18 ans.</span>
+                               class=" w-full p-3 rounded bg-gray-100 border border-gray-500 text-gray-700" required />
+                        <span id="dateNaissance-error" class="error-msg text-[#B10C74] text-sm hidden">l'utilsateur doit avoir au moins 18 ans.</span>
                     </div>
 
                     <div class="px-3 pb-3">
                         <label for="adresse" class="block mb-2 font-medium">Adresse</label>
                         <input type="text" name="adresse" id="adresse"
-                               class="peer/add w-full p-3 rounded bg-gray-100 border border-gray-500 text-gray-700" required />
-                        <span  class="invisible peer-invalid/add:visible text-[#B10C74] text-sm">Remplissez le champs d'adresse</span>
-                    </div>
+                               class="w-full p-3 rounded bg-gray-100 border border-gray-500 text-gray-700" required />
+                          </div>
 
                     <!-- CIN -->
                     <div class="px-3 pb-3">
                         <label for="cin" class="block mb-2 font-medium">CIN</label>
-                        <input type="text" name="cin" id="cin" pattern="^[A-Za-z]{1,2}[0-9]{4,6}$"
-                               placeholder="Saisir le CIN" class=" peer/cin w-full p-3 rounded bg-gray-100 border border-gray-500 text-gray-700" required />
-                        <span class="invisible peer-invalid/cin:visible text-[#B10C74] text-sm">Format de CIN invalide!.</span>
+                        <input type="text" name="cin" id="cin"
+                               placeholder="Saisir le CIN" class="w-full p-3 rounded bg-gray-100 border border-gray-500 text-gray-700" required />
+                        <span id="cin-error" class="error-msg text-[#B10C74] text-sm hidden">Format de CIN invalide!</span>
                     </div>
                     <!-- Telephone -->
                     <div class="px-3 pb-3">
                         <label for="telephone" class="block mb-2 font-medium">Téléphone</label>
-                        <input type="text" name="telephone" id="telephone" pattern="^\+212[6-7][0-9]{8}$"
-                               class=" peer/tel w-full p-3 rounded bg-gray-100 border border-gray-500 text-gray-700" required />
-                        <span class="invisible peer-invalid/tel:visible text-[#B10C74] text-sm">Numéro de téléphone marocain invalide (exemple : +212XXXXXXXXXX).</span>
+                        <input type="text" name="telephone" id="telephone"
+                               class="w-full p-3 rounded bg-gray-100 border border-gray-500 text-gray-700" required />
+                        <span id="telephone-error" class="error-msg text-[#B10C74] text-sm hidden">Numéro de téléphone marocain invalide (exemple : +212XXXXXXXXXX).</span>
                     </div>
 
                     <div class="px-3 pb-3">
@@ -105,15 +105,14 @@
                                 class="peer/pwd w-full p-3 rounded bg-gray-80 border border-gray-500 text-gray-700"
                                 required
                         />
-                        <span  class=" invisible peer-invalid/pwd:visible text-[#B10C74] text-sm">
-      Le mot de passe doit comporter au moins 8 caractères, inclure des lettres majuscules et minuscules, un chiffre et un caractère spécial.
-    </span>
+                        <span id="password-error" class="error-msg text-[#B10C74] text-sm hidden">Format de CIN invalide!</span>
+
                     </div>
 
                     <!-- Confirm Password -->
                     <div class="px-3 pb-3 bg-[#f2eee7]" id="confPWD">
                         <label for="confirmPassword" class="block mb-2 font-medium">Confirmer le Mot de Passe</label>
-                        <input
+                        <input th:if="${user != null}"
                                 type="password"
                                 id="confirmPassword"
                                 name="confirmPassword"
@@ -121,7 +120,7 @@
                                 class="peer/pwdConf w-full p-3 rounded bg-gray-80 border border-gray-500 text-gray-700"
                                 required
                         />
-                        <span  class="invisible peer-invalid/pwdConf:visible text-[#B10C74] text-sm">Les mots de passe ne correspondent pas</span>
+                        <span id="confirmPassword-error" class="error-msg text-[#B10C74] text-sm hidden">Format de CIN invalide!</span>
                     </div>
 
                 </form>
