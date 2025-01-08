@@ -9,12 +9,11 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import upf.pjt.cahier_de_textes.dao.entities.Module;
 import upf.pjt.cahier_de_textes.dao.entities.enumerations.ModeEval;
+
 import java.util.UUID;
 
 @Repository
-public interface ModuleRepository extends  JpaRepository<Module, UUID> {
-    String findModuleIntituleById(UUID id);
-
+public interface ModuleRepository extends JpaRepository<Module, UUID> {
     @Query("SELECT m FROM Module m " +
             "LEFT JOIN m.responsable r WHERE " +
             "(:intitule = '' OR LOWER(m.intitule) LIKE LOWER(CONCAT('%', :intitule, '%'))) AND " +
@@ -25,12 +24,13 @@ public interface ModuleRepository extends  JpaRepository<Module, UUID> {
     )
     Page<Module> filterModules(
             @Param("intitule") String intitule,
-           @Param("responsable") String responsable,
-           @Param("modeEvaluation") ModeEval modeEvaluation,
-           @Param("min") Integer min,
-           @Param("max") Integer max,
-           Pageable pageable
+            @Param("responsable") String responsable,
+            @Param("modeEvaluation") ModeEval modeEvaluation,
+            @Param("min") Integer min,
+            @Param("max") Integer max,
+            Pageable pageable
     );
 
     boolean existsByIntituleIgnoreCase(@NotBlank String intitule);
+    boolean existsByIdIsNotAndIntituleIgnoreCase(UUID id, String intitule);
 }

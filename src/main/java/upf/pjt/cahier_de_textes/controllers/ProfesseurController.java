@@ -32,6 +32,8 @@ import upf.pjt.cahier_de_textes.dao.entities.enumerations.Grade;
 import upf.pjt.cahier_de_textes.dao.entities.enumerations.RoleEnum;
 import upf.pjt.cahier_de_textes.dao.repositories.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -47,13 +49,14 @@ public class ProfesseurController {
     private final CahierRepository cahierRepository;
     private final AffectationService affectationService;
     private final int SIZE = 10;
+    private final UserRepository userRepository;
 
     public ProfesseurController(
             ProfesseurRepository professeurRepository,
             RoleRepository roleRepository,
             ModuleRepository moduleRepository,
-            FiliereRepository filiereRepository, AffectationRepository affectationRepository, CahierRepository cahierRepository, AffectationService affectationService
-    ) {
+            FiliereRepository filiereRepository, AffectationRepository affectationRepository, CahierRepository cahierRepository, AffectationService affectationService,
+            UserRepository userRepository) {
         this.professeurRepository = professeurRepository;
         this.roleRepository = roleRepository;
         this.moduleRepository = moduleRepository;
@@ -61,6 +64,7 @@ public class ProfesseurController {
         this.affectationRepository = affectationRepository;
         this.cahierRepository = cahierRepository;
         this.affectationService = affectationService;
+        this.userRepository = userRepository;
     }
 
     @GetMapping("/{id}/affectations")
@@ -123,8 +127,8 @@ public class ProfesseurController {
 
         // Fetch filtered professors
         Page<Professeur> professorsPage = professeurRepository.findFilteredProfessors(
-                nomComplet.isBlank() ? null : nomComplet,
-                email.isBlank() ? null : email,
+                nomComplet,
+                email,
                 parsedGrade,
                 pageable
         );
@@ -140,6 +144,7 @@ public class ProfesseurController {
 
         return "Admin/Professeur/professeur";
     }
+
     @PutMapping("/{id}")
     @Transactional
     public String editProf(@PathVariable UUID id,
@@ -155,39 +160,22 @@ public class ProfesseurController {
         model.addAttribute("genres", Genre.values());
 
         Professeur prof = professeurRepository.findById(id).orElse(null);
+
         if (prof == null) return "redirect:/error/404";
 
-        // Check for conflicts
-        boolean alreadyExists = professeurRepository.existsByEmailOrCinOrTelephone(
-                updatedProfDto.getEmail(),
-                updatedProfDto.getCin(),
-                updatedProfDto.getTelephone(),
-                prof.getId()
-        );
+        boolean emailExists = userRepository.existsByIdIsNotAndEmailIgnoreCase(id, updatedProfDto.getEmail());
+        boolean cinExists = userRepository.existsByIdIsNotAndCinIgnoreCase(id, updatedProfDto.getCin());
+        boolean telephoneExists = userRepository.existsByIdIsNotAndTelephone(id, updatedProfDto.getTelephone());
 
-        if (alreadyExists) {
+        if (emailExists)
+            redirectAttributes.addFlashAttribute("emailerror", updatedProfDto.getEmail());
+        if (cinExists)
+            redirectAttributes.addFlashAttribute("cin", updatedProfDto.getCin());
+        if (telephoneExists)
+            redirectAttributes.addFlashAttribute("telephone", updatedProfDto.getTelephone());
+
+        if (emailExists || cinExists || telephoneExists) {
             redirectAttributes.addFlashAttribute("actionAttributesExists", true);
-
-            // Perform individual checks
-            boolean emailExists = professeurRepository.existsByEmailOrCinOrTelephone(
-                    updatedProfDto.getEmail(), null, null, prof.getId());
-            boolean cinExists = professeurRepository.existsByEmailOrCinOrTelephone(
-                    null, updatedProfDto.getCin(), null, prof.getId());
-            boolean telephoneExists = professeurRepository.existsByEmailOrCinOrTelephone(
-                    null, null, updatedProfDto.getTelephone(), prof.getId());
-
-            if (emailExists) {
-                redirectAttributes.addFlashAttribute("emailerror", updatedProfDto.getEmail());
-            }
-            if (cinExists) {
-                redirectAttributes.addFlashAttribute("cin", updatedProfDto.getCin());
-            }
-            if (telephoneExists) {
-                redirectAttributes.addFlashAttribute("telephone", updatedProfDto.getTelephone());
-            }
-
-            redirectAttributes.addFlashAttribute("error",
-                    "Un professeur avec ces attributs existe déjà.");
             return "redirect:/professeurs";
         }
 
@@ -198,7 +186,7 @@ public class ProfesseurController {
 
         redirectAttributes.addFlashAttribute("actionEdit", true);
         redirectAttributes.addFlashAttribute("successEdit",
-                " Le Professeur "+ updatedProfDto.getNom() + ' ' + updatedProfDto.getPrenom() + " mis à jour avec succès.");
+                " Le Professeur " + updatedProfDto.getNom() + ' ' + updatedProfDto.getPrenom() + " mis à jour avec succès.");
         return "redirect:/professeurs";
     }
 
@@ -216,7 +204,7 @@ public class ProfesseurController {
         model.addAttribute("roles", RoleEnum.values());
         model.addAttribute("genres", Genre.values());
         model.addAttribute("view", false);
-        model.addAttribute("add" , true);
+        model.addAttribute("add", true);
 
         return "Admin/Professeur/profView";
     }
@@ -270,10 +258,8 @@ public class ProfesseurController {
     public String getProfesseurById(
             @PathVariable UUID id,
             Model model,
-            @RequestParam(name = "view", defaultValue = "false") boolean view,
-            RedirectAttributes redirectAttributes
-    )
-    {
+            @RequestParam(name = "view", defaultValue = "false") boolean view
+    ) {
         UserDTO user = UserService.getAuthenticatedUser();
 
         if (user == null)
@@ -301,50 +287,36 @@ public class ProfesseurController {
             @Valid Professeur professeur,
             RedirectAttributes redirectAttributes
     ) {
+        boolean emailExists = userRepository.existsByEmailIgnoreCase(professeur.getEmail());
+        boolean cinExists = userRepository.existsByCinIgnoreCase(professeur.getCin());
+        boolean telephoneExists = userRepository.existsByTelephone(professeur.getTelephone());
 
-        boolean exists = professeurRepository.existsByEmailOrCinOrTelephone(
-                professeur.getEmail(),
-                professeur.getCin(),
-                professeur.getTelephone(),
-                null
-        );
-        System.out.println(exists);
-        if (exists) {
-            redirectAttributes.addFlashAttribute("actionAttributesExistsAdd", true);
+        if (emailExists)
+            redirectAttributes.addFlashAttribute("emailerror", professeur.getEmail());
+        if (cinExists)
+            redirectAttributes.addFlashAttribute("cin", professeur.getCin());
+        if (telephoneExists)
+            redirectAttributes.addFlashAttribute("telephone", professeur.getTelephone());
 
-            // Vérifications séparées pour chaque attribut
-            boolean emailExists = professeurRepository.existsByEmailOrCinOrTelephone(
-                    professeur.getEmail(), null, null, null);
-            boolean cinExists = professeurRepository.existsByEmailOrCinOrTelephone(
-                    null, professeur.getCin(), null, null);
-            boolean telephoneExists = professeurRepository.existsByEmailOrCinOrTelephone(
-                    null, null, professeur.getTelephone(), null);
-
-            if (emailExists) {
-                redirectAttributes.addFlashAttribute("emailerror", professeur.getEmail());
-            }
-            if (cinExists) {
-                redirectAttributes.addFlashAttribute("cin", professeur.getCin());
-            }
-            if (telephoneExists) {
-                redirectAttributes.addFlashAttribute("telephone", professeur.getTelephone());
-            }
-
-            redirectAttributes.addFlashAttribute("error", "L'email, CIN, ou téléphone existe déjà.");
-            redirectAttributes.addFlashAttribute("professeur", professeur);
-            redirectAttributes.addFlashAttribute("view", false);
-            redirectAttributes.addFlashAttribute("add", true);
-            return "redirect:/professeurs/viewprof";
+        if (emailExists || cinExists || telephoneExists) {
+            redirectAttributes.addFlashAttribute("actionAttributesExists", true);
+            return "redirect:/professeurs";
         }
 
         try {
+
             Role role = roleRepository.findByRole(RoleEnum.ROLE_PROF);
             professeur.setRole(role);
 
             if (professeur.getQualifications() != null) {
-                for (Qualification qualification : professeur.getQualifications()) {
-                        qualification.setProf(professeur); // Associer les qualifications au professeur
+                List<Qualification> qualifications = new ArrayList<>(professeur.getQualifications());
+                professeur.getQualifications().clear();
+                for (Qualification qualification : qualifications) {
+                    if (qualification.getIntitule() != null && qualification.getDateObtention() != null) {
+                        qualification.setProf(professeur);
+                        professeur.getQualifications().add(qualification);
                     }
+                }
             }
 
             BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();

@@ -210,7 +210,7 @@ public class CahierController {
     }
 
     @PutMapping("/{id}/entries/{entryId}")
-    public String editEntry(@PathVariable("id") UUID id, @PathVariable("entryId") UUID entryId, @ModelAttribute Entree entry, Model model, RedirectAttributes redAtts) {
+    public String editEntry(@PathVariable("id") UUID id, @PathVariable("entryId") UUID entryId, @ModelAttribute Entree entry, RedirectAttributes redAtts) {
         UserDTO user = UserService.getAuthenticatedUser();
 
         if (user == null)
@@ -266,5 +266,23 @@ public class CahierController {
         }
 
         return "redirect:/cahiers/" + id + "/entries/" + entryId;
+    }
+
+    @DeleteMapping("/{id}")
+    public String deleteCahier(@PathVariable("id") UUID id, RedirectAttributes redAtts){
+        Cahier cahier = cahierRepository.findById(id).orElse(null);
+
+        if (cahier == null)
+            return "redirect:/error/404";
+
+        try {
+            cahierRepository.delete(cahier);
+            redAtts.addFlashAttribute("error", false);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            redAtts.addFlashAttribute("error", true);
+        }
+
+        return "redirect:/cahiers/archive";
     }
 }

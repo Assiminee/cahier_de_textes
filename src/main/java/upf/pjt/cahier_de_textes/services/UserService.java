@@ -44,8 +44,8 @@ public class UserService {
 
     public boolean hasUniqueAttributes(UUID id, UserDTO user, RedirectAttributes redirectAttributes) {
 
-        boolean emailExists = userRepository.existsByIdIsNotAndEmail(id, user.getEmail());
-        boolean cinExists = userRepository.existsByIdIsNotAndCin(id, user.getCin());
+        boolean emailExists = userRepository.existsByIdIsNotAndEmailIgnoreCase(id, user.getEmail());
+        boolean cinExists = userRepository.existsByIdIsNotAndCinIgnoreCase(id, user.getCin());
         boolean telephoneExists = userRepository.existsByIdIsNotAndTelephone(id, user.getTelephone());
         boolean hasDuplicateData = emailExists || cinExists || telephoneExists;
 
@@ -68,8 +68,8 @@ public class UserService {
 
     public boolean hasUniqueAttributes(UserRegistrationDto user, RedirectAttributes redirectAttributes) {
 
-        boolean emailExists = userRepository.existsByEmail(user.getEmail());
-        boolean cinExists = userRepository.existsByCin(user.getCin());
+        boolean emailExists = userRepository.existsByEmailIgnoreCase(user.getEmail());
+        boolean cinExists = userRepository.existsByCinIgnoreCase(user.getCin());
         boolean telephoneExists = userRepository.existsByTelephone(user.getTelephone());
         boolean hasDuplicateData = emailExists || cinExists || telephoneExists;
 

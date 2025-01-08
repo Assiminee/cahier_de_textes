@@ -15,12 +15,12 @@ import java.util.UUID;
 @Repository
 public interface UserRepository extends JpaRepository<User, UUID> {
     User findByEmail(String email);
-    boolean existsByIdIsNotAndEmail(UUID id, String email);
-    boolean existsByIdIsNotAndCin(UUID id, String cin);
+    boolean existsByIdIsNotAndEmailIgnoreCase(UUID id, String email);
+    boolean existsByIdIsNotAndCinIgnoreCase(UUID id, String cin);
     boolean existsByIdIsNotAndTelephone(UUID id, String telephone);
 
-    boolean existsByEmail(String email);
-    boolean existsByCin(String cin);
+    boolean existsByEmailIgnoreCase(String email);
+    boolean existsByCinIgnoreCase(String cin);
     boolean existsByTelephone(String telephone);
 
     @Query("SELECT COUNT(u) FROM User u")

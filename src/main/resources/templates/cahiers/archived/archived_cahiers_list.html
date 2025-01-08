@@ -29,11 +29,16 @@
     <td class="p-4" th:text="${cahier.module}"></td>
     <td class="p-4" th:text="${cahier.professeur}"></td>
     <td class="p-4" th:text="|Semestre ${cahier.semestre}|"></td>
-    <td class="p-4 flex justify-center content-center">
+    <td sec:authorize="hasRole('SS')" class="p-4 flex justify-center content-center">
       <button type="button"
               class="hover:opacity-80 cahierDelBtns"
               data-modal-target="deleteModal"
-              data-modal-toggle="deleteModal" th:data-cahier="${cahier.id}" th:data-title="${title}"
+              data-modal-toggle="deleteModal"
+              th:data-cahier="${cahier.id}"
+              th:data-title="${title}"
+              th:data-mod="${cahier.module}"
+              th:data-prof="${cahier.professeur}"
+              th:data-sem="|Semestre ${cahier.semestre}|"
       >
         <img src="/public/trash.png" alt="Delete" class="h-6 w-6">
       </button>

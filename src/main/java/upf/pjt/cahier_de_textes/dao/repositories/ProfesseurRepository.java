@@ -37,9 +37,9 @@ public interface ProfesseurRepository extends  JpaRepository<Professeur, UUID> {
     List<Professeur> findAvailableProfesseurs();
 
     @Query("SELECT p FROM Professeur p WHERE " +
-            "(:nomComplet IS NULL OR p.nom LIKE %:nomComplet%) AND " +
-            "(:email IS NULL OR p.email LIKE %:email%) AND " +
-            "(:grade IS NULL OR p.grade = :grade)")
+            "(:nomComplet = '' OR LOWER(CONCAT(p.nom, ' ', p.prenom)) LIKE LOWER(CONCAT('%', :nomComplet, '%'))) " +
+            "AND (:email = '' OR LOWER(p.email) LIKE LOWER(CONCAT('%', :email, '%'))) " +
+            "AND (:grade IS NULL OR p.grade = :grade)")
 
     Page<Professeur> findFilteredProfessors(
             @Param("nomComplet") String nomComplet,
@@ -59,6 +59,12 @@ public interface ProfesseurRepository extends  JpaRepository<Professeur, UUID> {
             @Param("id") UUID id
     );
 
+    boolean existsByIdIsNotAndEmailIgnoreCase(UUID id, String email);
+    boolean existsByIdIsNotAndCinIgnoreCase(UUID id, String cin);
+    boolean existsByIdIsNotAndTelephone(UUID id, String telephone);
+    boolean existsByEmailIgnoreCase(String email);
+    boolean existsByCinIgnoreCase(String email);
+    boolean existsByTelephone(String email);
 
     @Query("SELECT p.grade, COUNT(p) FROM Professeur p GROUP BY p.grade")
     List<Object[]> countProfessorsByGrade();

@@ -102,11 +102,11 @@ public class ModuleController {
             }
 
             if (moduleRepository.existsByIntituleIgnoreCase(module.getIntitule())) {
-                redAtt.addFlashAttribute("errorAddModule", "Erreur : Un module avec cet intitulé existe déjà.");
+                redAtt.addFlashAttribute("errorAddModule", "Erreur : Un module avec l'intitulé" + module.getIntitule() + "existe déjà.");
                 return "redirect:/modules";
             }
-            if ( module.getNombre_heures() < 1 || module.getNombre_heures() > 48) {
-                redAtt.addFlashAttribute("errorAddModule", "Erreur : Le nombre d'heures doit être compris entre 1 et 48.");
+            if ( module.getNombre_heures() < 20 || module.getNombre_heures() > 48) {
+                redAtt.addFlashAttribute("errorAddModule", "Erreur : Le nombre d'heures doit être compris entre 20 et 48.");
                 return "redirect:/modules";
             }
 
@@ -182,6 +182,16 @@ public class ModuleController {
 
             if (existingModule == null)
                 return "redirect:/error/404";
+
+            if (moduleRepository.existsByIdIsNotAndIntituleIgnoreCase(id, intitule)) {
+                redirectAttributes.addFlashAttribute("errorAddModule", "Erreur : Un module avec l'intitulé" + intitule + "existe déjà.");
+                return "redirect:/modules";
+            }
+
+            if (nombre_heures < 20 || nombre_heures > 48) {
+                redirectAttributes.addFlashAttribute("errorAddModule", "Erreur : Le nombre d'heures doit être compris entre 20 et 48.");
+                return "redirect:/modules";
+            }
 
             existingModule.setIntitule(intitule);
             existingModule.setNombre_heures(nombre_heures);
