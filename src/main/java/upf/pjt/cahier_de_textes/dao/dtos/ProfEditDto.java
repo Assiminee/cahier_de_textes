@@ -19,7 +19,6 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString
 public class ProfEditDto {
     private String nom;
     private String prenom;
@@ -58,8 +57,10 @@ public class ProfEditDto {
         if (qualifications != null) {
             existingProf.getQualifications().clear();
             for (Qualification qualification : qualifications) {
-                qualification.setProf(existingProf);
-                existingProf.getQualifications().add(qualification);
+                if (qualification.getIntitule() != null && qualification.getDateObtention() != null) {
+                    qualification.setProf(existingProf);
+                    existingProf.getQualifications().add(qualification);
+                }
             }
         }
 
@@ -68,5 +69,23 @@ public class ProfEditDto {
 
             cahier.setProfesseur(existingProf.getFullName());
         }
+    }
+
+    @Override
+    public String toString() {
+        return "ProfEditDto{" +
+                "nom='" + nom + '\'' +
+                ", prenom='" + prenom + '\'' +
+                ", email='" + email + '\'' +
+                ", adresse='" + adresse + '\'' +
+                ", genre=" + genre +
+                ", dateNaissance=" + dateNaissance +
+                ", cin='" + cin + '\'' +
+                ", telephone='" + telephone + '\'' +
+                ", grade=" + grade +
+                ", dateDernierDiplome=" + dateDernierDiplome +
+                ", dateEmbauche=" + dateEmbauche +
+                ", pwd='" + pwd + '\'' +
+                '}';
     }
 }

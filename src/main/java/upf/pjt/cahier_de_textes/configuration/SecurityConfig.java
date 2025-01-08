@@ -2,6 +2,7 @@ package upf.pjt.cahier_de_textes.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -18,10 +19,12 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 @Configuration
 public class SecurityConfig {
 
-    private AuthenticationSuccessHandler authSuccessHandler;
+    private final AuthenticationSuccessHandler authSuccessHandler;
+    private final CustomAccessDeniedHandler accessDeniedHandler;
 
-    public SecurityConfig(AuthenticationSuccessHandler authSuccessHandler) {
+    public SecurityConfig(AuthenticationSuccessHandler authSuccessHandler, CustomAccessDeniedHandler accessDeniedHandler) {
         this.authSuccessHandler = authSuccessHandler;
+        this.accessDeniedHandler = accessDeniedHandler;
     }
 
     @Bean
@@ -42,6 +45,25 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/public/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/dashboard").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/filieres").hasAnyRole("ADMIN", "SS")
+                        .requestMatchers(HttpMethod.POST, "/filieres").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/filieres/*").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/users/*").hasAnyRole("SS", "ADMIN", "SP", "PROF")
+                        .requestMatchers(HttpMethod.POST, "/users/*/password").hasAnyRole("SS", "ADMIN", "SP", "PROF")
+                        .requestMatchers(HttpMethod.GET, "/professeurs/*/affectations").hasRole("PROF")
+                        .requestMatchers("/users/**").hasRole("ADMIN")
+                        .requestMatchers("/modules/**").hasRole("ADMIN")
+                        .requestMatchers("/professeurs/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/filieres/*/affectations").hasRole("SS")
+                        .requestMatchers(HttpMethod.PUT, "/filieres/*/affectations/**").hasRole("SS")
+                        .requestMatchers(HttpMethod.DELETE, "/filieres/*/affectations/**").hasRole("SS")
+                        .requestMatchers(HttpMethod.GET, "/filieres/*/affectations").hasRole("SS")
+                        .requestMatchers(HttpMethod.GET, "/affectations").hasAnyRole("SS", "SP")
+                        .requestMatchers(HttpMethod.GET, "/professeurs/**").hasRole("PROF")
+                        .requestMatchers(HttpMethod.GET, "/profile/**").hasAnyRole("SS", "ADMIN", "SP", "PROF")
+                        .requestMatchers(HttpMethod.GET, "/cahiers/**").hasAnyRole("SS", "SP", "PROF")
+                        .requestMatchers("/cahiers/**").hasAnyRole("PROF", "SS")
                         .anyRequest().authenticated()
 
                 )
@@ -59,11 +81,9 @@ public class SecurityConfig {
                         .logoutSuccessUrl("/auth/login")
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")
-
                 )
-                .exceptionHandling(exceptions -> exceptions
-                        .accessDeniedPage("/error")
-                );
+                .exceptionHandling(e -> e.accessDeniedHandler(accessDeniedHandler));
+
         return http.build();
     }
 }
