@@ -3,6 +3,7 @@ import {enableInput , selectValue , hiddenMethodInput ,disableInputs,hideInputs,
 
 export const addUser = (user) => {
     $("#addUserBtn").on("click", (e) => {
+        $(".error-msg").addClass("hidden");
         const btn = e.target;
         const nom = $("#nom");
         const prenom = $("#prenom");
@@ -94,7 +95,6 @@ export const viewUserInfo = () => {
 export const modifyUser = () => {
     $(".modBtns").each((i, btn) => {
         $(btn).on("click", (e) => {
-            $(".text-\\[#B10C74\\].text-sm").addClass("hidden");
             console.log(e.currentTarget);
             const btn = $(e.currentTarget);
             const nom = $("#nom");
