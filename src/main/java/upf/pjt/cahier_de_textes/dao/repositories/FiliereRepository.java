@@ -30,25 +30,8 @@ public interface FiliereRepository extends JpaRepository<Filiere, UUID> {
             Pageable pageable
     );
 
-    @Query("SELECT f FROM Filiere f " +
-            "LEFT JOIN FETCH f.affectations a " +
-            "LEFT JOIN f.coordinateur c " +
-            "WHERE LOWER(f.intitule) LIKE LOWER(CONCAT('%', :intitule, '%')) " +
-            "AND ((:coordinateur = '' AND c IS NULL) OR LOWER(CONCAT(c.nom, ' ', c.prenom)) LIKE LOWER(CONCAT('%', :coordinateur, '%'))) " +
-            "AND (:diplome IS NULL OR f.diplome = :diplome) " +
-            "AND (:reconnue IS NULL OR ((:reconnue = false AND (f.dateExpiration IS NULL OR f.dateExpiration <= CURRENT_DATE)) " +
-            "OR (:reconnue = true AND f.dateExpiration > CURRENT_DATE)))"
-    )
-    Page<Filiere> getFilieresWithAffectations(
-            @Param("intitule") String intitule,
-            @Param("coordinateur") String coordinateur,
-            @Param("diplome") Diplome diplome,
-            @Param("reconnue") Boolean reconnue,
-            Pageable pageable
-    );
-
-    Boolean existsByIntitule(String intitule);
+    Boolean existsByIntituleIgnoreCase(String intitule);
     Boolean existsByCoordinateur(Professeur coordinateur);
-    Boolean existsByIdIsNotAndIntitule(UUID id, String intitule);
+    Boolean existsByIdIsNotAndIntituleIgnoreCase(UUID id, String intitule);
     Boolean existsByIdIsNotAndCoordinateur(UUID id, Professeur coordinateur);
 }

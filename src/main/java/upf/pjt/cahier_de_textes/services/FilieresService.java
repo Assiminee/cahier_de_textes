@@ -50,10 +50,10 @@ public class FilieresService {
             Boolean duplicateCoordinateur = false;
 
             if (method.equals("post")) {
-                duplicateIntitule = filiereRepository.existsByIntitule(filiere.getIntitule());
+                duplicateIntitule = filiereRepository.existsByIntituleIgnoreCase(filiere.getIntitule());
                 duplicateCoordinateur = filiereRepository.existsByCoordinateur(filiere.getCoordinateur());
             } else if (method.equals("put")) {
-                duplicateIntitule = filiereRepository.existsByIdIsNotAndIntitule(filiere.getId(), filiere.getIntitule());
+                duplicateIntitule = filiereRepository.existsByIdIsNotAndIntituleIgnoreCase(filiere.getId(), filiere.getIntitule());
                 duplicateCoordinateur = filiereRepository.existsByIdIsNotAndCoordinateur(filiere.getId(), filiere.getCoordinateur());
             }
 

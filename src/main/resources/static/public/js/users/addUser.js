@@ -31,7 +31,9 @@ export const addUser = (user) => {
         $("#userModalForm").attr("action", "/users");
         hiddenMethodInput(true);
 
-        $("#confPWD").removeClass("hidden").val("");
+        $("#confPWD").removeClass("hidden");
+        $("#pwd").removeClass("hidden");
+        $("#confirmPassword").val("");
         nom.val("");
         prenom.val("");
         email.val("");
@@ -140,9 +142,6 @@ export const modifyUser = () => {
             $("#confirmPassword").removeAttr("required");
             confPwd.removeClass("hidden");
             password.removeClass("hidden");
-            telephone.addClass("hidden");
-            cin.addClass("hidden");
-
         })
     })
 }

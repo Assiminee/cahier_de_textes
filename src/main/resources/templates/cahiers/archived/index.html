@@ -13,7 +13,7 @@
                 <div class="col-span-2 flex  justify-between">
                     <div class="flex flex-col">
                         <h1 class="text-4xl font-semibold">Archive des Cahiers de Textes</h1>
-                        <div th:replace="~{fragments/delete_modal}"></div>
+                        <div th:replace="~{cahiers/archived/delete_modal}"></div>
                         <div th:if="${error != null}"
                              th:class="|p-4 mt-2 text-sm ${!error ? 'text-green-800 bg-green-200' : 'text-red-800 bg-red-200'} rounded-lg |"
                              role="alert">

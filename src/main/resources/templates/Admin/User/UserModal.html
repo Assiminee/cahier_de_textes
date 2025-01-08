@@ -2,6 +2,7 @@
      id="userModal" tabindex="-1"
      aria-hidden="true"
      class="hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-1/2 md:inset-0 h-[calc(100%-1rem)] w-full max-h-[100vh]  overflow-hidden ">
+    <script src="/public/js/ValidationUser.js"></script>
     <div class="relative p-4 w-1/2 max-w-2xl max-h-full">
         <!-- Modal content -->
         <div class="relative bg-[#f2eee7] rounded-lg shadow">
@@ -21,8 +22,7 @@
             </div>
             <!-- Modal body -->
             <div class="p-4 md:p-5 max-h-[60vh] space-y-4 overflow-y-auto">
-                <form th:action="@{/users}" th:method="POST" id="userModalForm" onsubmit="return validateForm(this.id)">
-                    <script src="/public/js/ValidationUser.js"></script>
+                <form th:action="@{/users}" th:method="POST" id="userModalForm">
                     <!-- Nom -->
                     <div class="px-3 pb-3">
                         <label for="nom" class="block mb-2 font-medium">Nom</label>

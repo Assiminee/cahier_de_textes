@@ -7,9 +7,15 @@ export const addModule = () => {
 
         $("#moduleModalTitle").text("Ajouter un nouveau module");
         enableInputs(intitule, nombreHeures);
+
+        intitule.removeAttr("disabled");
+        nombreHeures.removeAttr("disabled");
+
         selectValue(responsable, "");
         selectValue(modeEvaluation, "");
         hideInputs(false, $("#confirmBtn"));
+
+        $("#moduleModalForm").attr("action", `/modules`);
 
         hiddenMethodInput(true);
     });
@@ -39,12 +45,13 @@ export const viewModuleInfo = () => {
             selectValue(responsable, responsableData);
             selectValue(modeEvaluation, evaluationData);
 
-            $("#moduleModalForm").attr("action", `/modules/${btn.data("id")}`);
             hiddenMethodInput(false);
             disableSelects("bg-gray-300", "bg-gray-100", true, responsable, modeEvaluation);
         });
     });
-};export const modifyModule = () => {
+};
+
+export const modifyModule = () => {
     $(".modBtns").each((i, btn) => {
         $(btn).on("click", (e) => {
             const button = $(e.currentTarget); // Correctly target the clicked button
@@ -63,6 +70,9 @@ export const viewModuleInfo = () => {
             });
 
             $("#moduleModalTitle").text(`Éditer le module ${intituleData}`);
+
+            $("#moduleIntitule").removeAttr("disabled");
+            $("#nombreHeures").removeAttr("disabled");
 
             enableInput($("#moduleIntitule"), intituleData);
             enableInput($("#nombreHeures"), heuresData);

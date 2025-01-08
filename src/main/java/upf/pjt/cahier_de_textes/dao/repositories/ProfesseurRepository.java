@@ -18,7 +18,6 @@ public interface ProfesseurRepository extends  JpaRepository<Professeur, UUID> {
     @Query("SELECT p.grade FROM Professeur p WHERE p.id = :id")
     Grade getProfesseurGrade(@Param("id") UUID id);
 
-
     @Query("SELECT p, COALESCE(SUM(m.nombre_heures), 0) " +
             "FROM Professeur p " +
             "LEFT JOIN FETCH p.affectations a " +
@@ -26,15 +25,6 @@ public interface ProfesseurRepository extends  JpaRepository<Professeur, UUID> {
             "WHERE p = :prof"
     )
     Object getTotalHoursTaught(@Param("prof") Professeur prof);
-
-    @Query("SELECT p FROM Professeur p " +
-            "LEFT JOIN FETCH p.affectations a " +
-            "LEFT JOIN a.module m " +
-            "GROUP BY p.id " +
-            "HAVING (p.grade = 'MA' AND COALESCE(SUM(m.nombre_heures), 0) <= 90) " +
-            "OR (p.grade = 'PHD' AND COALESCE(SUM(m.nombre_heures), 0) <= 150)"
-    )
-    List<Professeur> findAvailableProfesseurs();
 
     @Query("SELECT p FROM Professeur p WHERE " +
             "(:nomComplet = '' OR LOWER(CONCAT(p.nom, ' ', p.prenom)) LIKE LOWER(CONCAT('%', :nomComplet, '%'))) " +
@@ -47,24 +37,6 @@ public interface ProfesseurRepository extends  JpaRepository<Professeur, UUID> {
             @Param("grade") Grade grade,
             Pageable pageable
     );
-
-
-    @Query("SELECT COUNT(p) > 0 FROM Professeur p " +
-            "WHERE( LOWER(p.email) = LOWER(:email) OR LOWER(p.cin) = LOWER(:cin) OR p.telephone = :telephone) " +
-            "AND (:id IS NULL OR p.id <> :id)")
-    boolean existsByEmailOrCinOrTelephone(
-            @Param("email") String email,
-            @Param("cin") String cin,
-            @Param("telephone") String telephone,
-            @Param("id") UUID id
-    );
-
-    boolean existsByIdIsNotAndEmailIgnoreCase(UUID id, String email);
-    boolean existsByIdIsNotAndCinIgnoreCase(UUID id, String cin);
-    boolean existsByIdIsNotAndTelephone(UUID id, String telephone);
-    boolean existsByEmailIgnoreCase(String email);
-    boolean existsByCinIgnoreCase(String email);
-    boolean existsByTelephone(String email);
 
     @Query("SELECT p.grade, COUNT(p) FROM Professeur p GROUP BY p.grade")
     List<Object[]> countProfessorsByGrade();
