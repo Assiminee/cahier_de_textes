@@ -50,7 +50,7 @@ public interface ProfesseurRepository extends  JpaRepository<Professeur, UUID> {
 
 
     @Query("SELECT COUNT(p) > 0 FROM Professeur p " +
-            "WHERE (p.email = :email OR p.cin = :cin OR p.telephone = :telephone) " +
+            "WHERE( LOWER(p.email) = LOWER(:email) OR LOWER(p.cin) = LOWER(:cin) OR p.telephone = :telephone) " +
             "AND (:id IS NULL OR p.id <> :id)")
     boolean existsByEmailOrCinOrTelephone(
             @Param("email") String email,

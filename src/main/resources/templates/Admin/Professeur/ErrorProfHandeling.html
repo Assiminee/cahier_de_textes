@@ -35,4 +35,34 @@
             <p th:text="${error}"></p>
         </div>
     </div>
+    <div th:if="${actionAttributesExistsAdd == true}" class="p-4 text-sm text-[#B10C74] rounded-lg bg-red-100" role="alert">
+        <div th:if="${emailerror != null}">
+            <p>
+                Attention ! L'email <span class="font-bold" th:text="|'${emailerror}'|"></span>
+                existe déjà.
+            </p>
+        </div>
+        <div th:if="${telephone != null}">
+            <p>
+                Attention ! Le numéro de téléphone <span class="font-bold" th:text="|'${telephone}'|"></span>
+                existe déjà.
+            </p>
+        </div>
+        <div th:if="${cin != null}">
+            <p>
+                Attention ! Le numéro de la CIN <span class="font-bold" th:text="|'${cin}'|"></span>
+                existe déjà.
+            </p>
+        </div>
+        <div th:if="${error != null}">
+            <p th:text="${error}"></p>
+        </div>
+    </div>
+
+    <div th:if="${actionEdit == true }" class="p-4 text-sm text-green-800 rounded-lg bg-[#c9e8b9]" role="alert">
+        <p th:if="${successEdit != null}">
+            <span class="font-bold" th:text="${successEdit}" ></span>
+        </p>
+    </div>
+
 </div>

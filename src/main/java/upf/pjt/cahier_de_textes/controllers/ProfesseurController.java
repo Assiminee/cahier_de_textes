@@ -140,7 +140,6 @@ public class ProfesseurController {
 
         return "Admin/Professeur/professeur";
     }
-
     @PutMapping("/{id}")
     @Transactional
     public String editProf(@PathVariable UUID id,
@@ -148,49 +147,58 @@ public class ProfesseurController {
                            @Valid ProfEditDto updatedProfDto,
                            RedirectAttributes redirectAttributes) {
         UserDTO user = UserService.getAuthenticatedUser();
-
-        if (user == null)
-            return "redirect:/error/401";
-
-        // 1) Load security context (if needed)
+        if (user == null) return "redirect:/error/401";
 
         model.addAttribute("user", user);
         model.addAttribute("grades", Grade.values());
         model.addAttribute("roles", RoleEnum.values());
         model.addAttribute("genres", Genre.values());
 
-        // 2) Fetch existing professor
         Professeur prof = professeurRepository.findById(id).orElse(null);
+        if (prof == null) return "redirect:/error/404";
 
-        if (prof == null)
-            return "redirect:/error/404";
-
-        // 3) Check if any other professor already uses this email, CIN, or telephone
+        // Check for conflicts
         boolean alreadyExists = professeurRepository.existsByEmailOrCinOrTelephone(
                 updatedProfDto.getEmail(),
                 updatedProfDto.getCin(),
                 updatedProfDto.getTelephone(),
-                prof.getId() // exclude current prof by ID
+                prof.getId()
         );
 
         if (alreadyExists) {
-            // If so, redirect with an error message
+            redirectAttributes.addFlashAttribute("actionAttributesExists", true);
+
+            // Perform individual checks
+            boolean emailExists = professeurRepository.existsByEmailOrCinOrTelephone(
+                    updatedProfDto.getEmail(), null, null, prof.getId());
+            boolean cinExists = professeurRepository.existsByEmailOrCinOrTelephone(
+                    null, updatedProfDto.getCin(), null, prof.getId());
+            boolean telephoneExists = professeurRepository.existsByEmailOrCinOrTelephone(
+                    null, null, updatedProfDto.getTelephone(), prof.getId());
+
+            if (emailExists) {
+                redirectAttributes.addFlashAttribute("emailerror", updatedProfDto.getEmail());
+            }
+            if (cinExists) {
+                redirectAttributes.addFlashAttribute("cin", updatedProfDto.getCin());
+            }
+            if (telephoneExists) {
+                redirectAttributes.addFlashAttribute("telephone", updatedProfDto.getTelephone());
+            }
+
             redirectAttributes.addFlashAttribute("error",
-                    "Un professeur avec cet email, CIN ou téléphone existe déjà.");
+                    "Un professeur avec ces attributs existe déjà.");
             return "redirect:/professeurs";
         }
 
-        // 4) Everything is okay; update the fields
+        // 4) Update and save the professor...
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         updatedProfDto.updateEntity(prof, encoder);
-
-        // 5) Save
         professeurRepository.save(prof);
 
-        // 6) Success message
-        redirectAttributes.addFlashAttribute("success",
-                "Professeur mis à jour avec succès.");
-
+        redirectAttributes.addFlashAttribute("actionEdit", true);
+        redirectAttributes.addFlashAttribute("successEdit",
+                " Le Professeur "+ updatedProfDto.getNom() + ' ' + updatedProfDto.getPrenom() + " mis à jour avec succès.");
         return "redirect:/professeurs";
     }
 
@@ -208,6 +216,7 @@ public class ProfesseurController {
         model.addAttribute("roles", RoleEnum.values());
         model.addAttribute("genres", Genre.values());
         model.addAttribute("view", false);
+        model.addAttribute("add" , true);
 
         return "Admin/Professeur/profView";
     }
@@ -291,20 +300,40 @@ public class ProfesseurController {
     public String addProfesseur(
             @Valid Professeur professeur,
             RedirectAttributes redirectAttributes
-    )
-    {
+    ) {
+
         boolean exists = professeurRepository.existsByEmailOrCinOrTelephone(
-                            professeur.getEmail(),
-                            professeur.getCin(),
-                            professeur.getTelephone(),
-                            null
-                        );
+                professeur.getEmail(),
+                professeur.getCin(),
+                professeur.getTelephone(),
+                null
+        );
         System.out.println(exists);
         if (exists) {
-            redirectAttributes.addFlashAttribute("actionAttributesExists", true);
-            redirectAttributes.addFlashAttribute("error", "L'email, CIN, ou telephone existe déja.");
+            redirectAttributes.addFlashAttribute("actionAttributesExistsAdd", true);
+
+            // Vérifications séparées pour chaque attribut
+            boolean emailExists = professeurRepository.existsByEmailOrCinOrTelephone(
+                    professeur.getEmail(), null, null, null);
+            boolean cinExists = professeurRepository.existsByEmailOrCinOrTelephone(
+                    null, professeur.getCin(), null, null);
+            boolean telephoneExists = professeurRepository.existsByEmailOrCinOrTelephone(
+                    null, null, professeur.getTelephone(), null);
+
+            if (emailExists) {
+                redirectAttributes.addFlashAttribute("emailerror", professeur.getEmail());
+            }
+            if (cinExists) {
+                redirectAttributes.addFlashAttribute("cin", professeur.getCin());
+            }
+            if (telephoneExists) {
+                redirectAttributes.addFlashAttribute("telephone", professeur.getTelephone());
+            }
+
+            redirectAttributes.addFlashAttribute("error", "L'email, CIN, ou téléphone existe déjà.");
             redirectAttributes.addFlashAttribute("professeur", professeur);
             redirectAttributes.addFlashAttribute("view", false);
+            redirectAttributes.addFlashAttribute("add", true);
             return "redirect:/professeurs/viewprof";
         }
 
@@ -314,8 +343,8 @@ public class ProfesseurController {
 
             if (professeur.getQualifications() != null) {
                 for (Qualification qualification : professeur.getQualifications()) {
-                    qualification.setProf(professeur); // Associate qualifications with the professor
-                }
+                        qualification.setProf(professeur); // Associer les qualifications au professeur
+                    }
             }
 
             BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
@@ -327,11 +356,12 @@ public class ProfesseurController {
             redirectAttributes.addFlashAttribute("added", professeur.getFullName());
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            redirectAttributes.addFlashAttribute("error", "An error occurred while adding the professor: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("error", "Une erreur est survenue lors de l'ajout du professeur : " + e.getMessage());
         }
 
         redirectAttributes.addFlashAttribute("professeur", professeur);
         redirectAttributes.addFlashAttribute("view", false);
-        return "redirect:/professeurs/viewprof";
+        return "redirect:/professeurs";
     }
+
 }
