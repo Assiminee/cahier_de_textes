@@ -20,10 +20,10 @@ public class DashboardController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication.getPrincipal() instanceof CustomUserDetails userDetails)
 
-    {
-        User currentUser = userDetails.getUser();
-        model.addAttribute("user", currentUser);
-    }
+        {
+            User currentUser = userDetails.getUser();
+            model.addAttribute("user", currentUser);
+        }
         model.addAttribute("pageTitle", "Statistiques de l'application");
         return "Admin/dashboard/dash"; // Name of the Thymeleaf HTML file (without .html)
     }

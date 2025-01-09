@@ -12,11 +12,11 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
- public class DashboardRestController  {
+public class DashboardRestController  {
     private final UserRepository userRepository;
     private final ProfesseurRepository professeurRepository;
 
-     public DashboardRestController (UserRepository userRepository, ProfesseurRepository professeurRepository) {
+    public DashboardRestController (UserRepository userRepository, ProfesseurRepository professeurRepository) {
         this.userRepository = userRepository;
         this.professeurRepository = professeurRepository;
     }
