@@ -1,0 +1,45 @@
+version: '3.9'
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: mysql-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: cahier_de_textes
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - db_data:/var/lib/mysql
+
+  app:
+    build: .
+    container_name: spring-app
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/cahier_de_textes?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+    ports:
+      - "3000:3000"
+    restart: on-failure
+
+  db-seed:
+    image: mysql:8.0
+    depends_on:
+      - app
+    entrypoint: sh -c "mysql -h db -u root -proot cahier_de_textes < /docker-entrypoint-initdb.d/inserts.sql"
+    volumes:
+      - ./database:/docker-entrypoint-initdb.d
+    restart: "no"
+
+volumes:
+  db_data:
