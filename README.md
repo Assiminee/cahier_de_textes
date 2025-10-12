@@ -146,4 +146,4 @@ Note: The Docker setup ensures the DB is populated on first run, allowing immedi
 
 ## 📈 Usage & Navigation
 For a step-by-step visual guide, watch the video tutorial below:
-<iframe src="https://player.vimeo.com/video/1126653083?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" width="1920" height="1080" frameborder="0" allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share" referrerpolicy="strict-origin-when-cross-origin" title="demo_video"></iframe>
+[![Video Thumbnail](https://github.com/Assiminee/cahier_de_textes/blob/main/thumbnail.png)](https://vimeo.com/1126653083)
