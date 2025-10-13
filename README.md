@@ -115,7 +115,9 @@ The project follows a standard Spring Boot layout with modular organization:
 git clone https://github.com/Assiminee/cahier_de_textes.git
 cd cahier_de_textes
 ```
-- Set up MySQL: Create database cahier_de_textes; run scripts from database/ to initialize schema and data.
+- Set up MySQL:
+  - Create database cahier_de_textes;
+  - run the script database/inserts.sql to initialize schema and data.
 - Configure application.properties with DB credentials.
 - Build & run:
 ```bash
