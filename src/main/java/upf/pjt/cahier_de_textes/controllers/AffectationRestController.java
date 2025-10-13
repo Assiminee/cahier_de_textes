@@ -29,6 +29,7 @@ public class AffectationRestController {
     public ResponseEntity<?> saveAffecation(@PathVariable("id") UUID id, @RequestBody SaveEditAffectationDTO affectationDTO, RedirectAttributes redAtts) {
         ErrorResponse err = new ErrorResponse();
         Filiere filiere = filiereRepository.findById(id).orElse(null);
+        System.out.println("Affectation prof: " +  affectationDTO.getNiveau());
 
         if (filiere == null)
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("La filière n'existe pas");

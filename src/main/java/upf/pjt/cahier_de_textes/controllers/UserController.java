@@ -99,7 +99,7 @@ public class UserController {
         model.addAttribute("currentPage", page);
         model.addAttribute("size", size);
 
-        return "Admin/User/users";
+        return "Admin/User/Users";
     }
 
     @PostMapping()

@@ -18,13 +18,11 @@ public interface ProfesseurRepository extends  JpaRepository<Professeur, UUID> {
     @Query("SELECT p.grade FROM Professeur p WHERE p.id = :id")
     Grade getProfesseurGrade(@Param("id") UUID id);
 
-    @Query("SELECT p, COALESCE(SUM(m.nombre_heures), 0) " +
-            "FROM Professeur p " +
-            "LEFT JOIN FETCH p.affectations a " +
-            "LEFT JOIN a.module m " +
-            "WHERE p = :prof"
-    )
-    Object getTotalHoursTaught(@Param("prof") Professeur prof);
+    @Query("SELECT COALESCE(SUM(m.nombre_heures), 0) " +
+            "FROM Affectation a " +
+            "JOIN a.module m " +
+            "WHERE a.prof = :prof")
+    Long getTotalHoursTaught(@Param("prof") Professeur prof);
 
     @Query("SELECT p FROM Professeur p WHERE " +
             "(:nomComplet = '' OR LOWER(CONCAT(p.nom, ' ', p.prenom)) LIKE LOWER(CONCAT('%', :nomComplet, '%'))) " +

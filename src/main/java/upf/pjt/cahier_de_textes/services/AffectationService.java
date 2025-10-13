@@ -318,9 +318,7 @@ public class AffectationService {
     }
 
     private Boolean hoursSurpassed(Professeur prof, Module module) {
-        Object result = professeurRepository.getTotalHoursTaught(prof);
-        Object[] resultList = (Object[]) result;
-        Long hours = (Long) resultList[1];
+        Long hours = professeurRepository.getTotalHoursTaught(prof);
         int max = prof.getGrade() == Grade.MA ? 90 : 150;
 
         return hours + module.getNombre_heures() > max;
