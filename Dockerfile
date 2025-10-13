@@ -10,12 +10,13 @@ WORKDIR /app
 
 # Install netcat for waiting for DB (optional)
 RUN apt-get update && \
-    apt-get install -y netcat-openbsd && \
+    apt-get install -y netcat-openbsd dos2unix && \
     rm -rf /var/lib/apt/lists/*
 
 COPY --from=builder /app/target/*.jar app.jar
 COPY entrypoint.sh .
-RUN chmod +x entrypoint.sh
+RUN dos2unix entrypoint.sh && \
+    chmod +x entrypoint.sh
 
 EXPOSE 3000
 ENTRYPOINT ["./entrypoint.sh"]
