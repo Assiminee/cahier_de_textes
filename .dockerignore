@@ -1,0 +1,10 @@
+.github
+qodana.yaml
+.git
+README.md
+thumbnail.png
+.gitignore
+.gitattributes
+Dockerfile
+docker-compose.yaml
+.idea
